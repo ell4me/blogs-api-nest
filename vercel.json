@@ -1,6 +1,6 @@
 {
 	"version": 2,
-	"name": "blogs-api",
+	"name": "blogs-api-nest",
 	"builds": [
 		{
 			"src": "src/main.ts",
@@ -10,7 +10,7 @@
 	"routes": [
 		{
 			"src": "/(.*)",
-			"dest": "src/index.ts"
+			"dest": "src/main.ts"
 		}
 	]
 }
