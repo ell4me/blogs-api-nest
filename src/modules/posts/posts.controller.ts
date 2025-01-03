@@ -103,7 +103,7 @@ export class PostsController {
     return;
   }
 
-  @Delete()
+  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePostById(@Param('id') id: string): Promise<void> {
     const isDeleted = await this.postsService.deletePostById(id);

@@ -49,7 +49,7 @@ export class BlogsController {
     return blog;
   }
 
-  @Get('id')
+  @Get(':id/posts')
   async getPostsByBlogId(
     @Query() query: FilteredBlogQueries,
     @Param('id') id: string,
