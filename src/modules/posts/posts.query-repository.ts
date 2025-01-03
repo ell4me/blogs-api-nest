@@ -21,6 +21,8 @@ export class PostsQueryRepository {
     additionalFilter?: { blogId?: string },
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     const postsQuery = this.PostsModel.find();
+    const pageSizeToNumber = Number(pageSize);
+    const pageNumberToNumber = Number(pageNumber);
 
     if (searchNameTerm) {
       postsQuery.where('title').regex(RegExp(searchNameTerm, 'i'));
@@ -31,18 +33,18 @@ export class PostsQueryRepository {
     }
 
     const posts: Post[] = await postsQuery
-      .skip((pageNumber - 1) * pageSize)
+      .skip((pageNumberToNumber - 1) * pageSizeToNumber)
       .sort({ [sortBy]: sortDirection })
-      .limit(pageSize)
+      .limit(pageSizeToNumber)
       .select('-__v -_id -updatedAt')
       .lean();
 
     const postsCountByFilter = await this.getCountPosts(additionalFilter);
 
     return {
-      page: pageNumber,
-      pagesCount: Math.ceil(postsCountByFilter / pageSize),
-      pageSize,
+      page: pageNumberToNumber,
+      pagesCount: Math.ceil(postsCountByFilter / pageSizeToNumber),
+      pageSize: pageSizeToNumber,
       totalCount: postsCountByFilter,
       items: posts.map((post) => ({
         ...post,

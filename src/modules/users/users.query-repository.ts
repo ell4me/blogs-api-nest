@@ -20,12 +20,14 @@ export class UsersQueryRepository {
     searchEmailTerm,
   }: FilteredUserQueries): Promise<ItemsPaginationViewDto<UserViewDto>> {
     const filterOr = getUsersFilterRepository(searchLoginTerm, searchEmailTerm);
+    const pageSizeToNumber = Number(pageSize);
+    const pageNumberToNumber = Number(pageNumber);
 
     const users = await this.UsersModel.find()
       .or(filterOr)
-      .skip((Number(pageNumber) - 1) * Number(pageSize))
+      .skip((pageNumberToNumber - 1) * pageSizeToNumber)
       .sort({ [sortBy]: sortDirection })
-      .limit(Number(pageSize))
+      .limit(Number(pageSizeToNumber))
       .select(
         '-_id -__v -updatedAt -password -emailConfirmation -passwordRecovery',
       )
@@ -37,9 +39,9 @@ export class UsersQueryRepository {
     );
 
     return {
-      page: pageNumber,
-      pagesCount: Math.ceil(totalCount / pageSize),
-      pageSize,
+      page: pageNumberToNumber,
+      pagesCount: Math.ceil(totalCount / pageSizeToNumber),
+      pageSize: pageSizeToNumber,
       totalCount,
       items: users,
     };

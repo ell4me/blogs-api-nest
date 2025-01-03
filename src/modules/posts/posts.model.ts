@@ -20,7 +20,7 @@ export type TPostModel = Model<Post, object, PostInstanceMethods> &
 
 export type PostDocument = HydratedDocument<Post, PostInstanceMethods>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Post {
   @Prop({ required: true })
   id: string;

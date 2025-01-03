@@ -4,6 +4,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -74,6 +76,7 @@ export class PostsController {
   }
 
   @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updatePostById(
     @Param('id') id: string,
     @Body() postUpdateDto: PostUpdateDto,
@@ -101,6 +104,7 @@ export class PostsController {
   }
 
   @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deletePostById(@Param('id') id: string): Promise<void> {
     const isDeleted = await this.postsService.deletePostById(id);
 

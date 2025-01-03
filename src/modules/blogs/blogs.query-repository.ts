@@ -17,6 +17,8 @@ export class BlogsQueryRepository {
     sortDirection = 'desc',
     searchNameTerm,
   }: FilteredBlogQueries): Promise<ItemsPaginationViewDto<BlogViewDto>> {
+    const pageSizeToNumber = Number(pageSize);
+    const pageNumberToNumber = Number(pageNumber);
     const blogsQuery = this.BlogsModel.find();
 
     if (searchNameTerm) {
@@ -24,18 +26,18 @@ export class BlogsQueryRepository {
     }
 
     const blogs = await blogsQuery
-      .skip((pageNumber - 1) * pageSize)
+      .skip((pageNumberToNumber - 1) * pageSizeToNumber)
       .sort({ [sortBy]: sortDirection })
-      .limit(pageSize)
+      .limit(pageSizeToNumber)
       .select('-_id -__v -updatedAt')
       .exec();
 
     const totalCount = await this.getCountBlogsByFilter(searchNameTerm);
 
     return {
-      page: pageNumber,
-      pagesCount: Math.ceil(totalCount / pageSize),
-      pageSize,
+      page: pageNumberToNumber,
+      pagesCount: Math.ceil(totalCount / pageSizeToNumber),
+      pageSize: pageSizeToNumber,
       totalCount,
       items: blogs,
     };

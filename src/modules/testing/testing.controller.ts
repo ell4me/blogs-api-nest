@@ -1,4 +1,4 @@
-import { Controller, Delete } from '@nestjs/common';
+import { Controller, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 
 import { ROUTERS_PATH } from '../../constants';
 import { UsersRepository } from '../users/users.repository';
@@ -14,6 +14,7 @@ export class TestingController {
   ) {}
 
   @Delete('all-data')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAllData() {
     await this.usersRepository.deleteAll();
     await this.postsRepository.deleteAll();

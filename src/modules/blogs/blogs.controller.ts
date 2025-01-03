@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -71,7 +73,7 @@ export class BlogsController {
     return await this.blogsQueryRepository.getById(id);
   }
 
-  @Post(':blogId')
+  @Post(':blogId/posts')
   async createPostByBlogId(
     @Body() postCreateDto: PostCreateDto,
     @Param('blogId') blogId: string,
@@ -94,6 +96,7 @@ export class BlogsController {
   }
 
   @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlogById(
     @Body() blogUpdateDto: BlogUpdateDto,
     @Param('id') id: string,
@@ -108,6 +111,7 @@ export class BlogsController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlogById(@Param('id') id: string) {
     const isDeleted = await this.blogsService.deleteBlogById(id);
 
