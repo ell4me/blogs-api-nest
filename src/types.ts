@@ -36,3 +36,13 @@ export interface ItemsPaginationViewDto<T = object> {
 }
 
 export type StatusLike = (typeof STATUSES_LIKE)[number];
+
+export interface AccessTokenPayload {
+  userId: string;
+  iat: number;
+  exp: number;
+}
+
+export interface UserRequest {
+  id: string;
+}

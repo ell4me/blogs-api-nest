@@ -2,22 +2,29 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 
 import { UserCreateDto } from '../users/users.dto';
 import { UsersQueryRepository } from '../users/users.query-repository';
 import { ROUTERS_PATH } from '../../constants';
+import { LocalAuthGuard } from '../../guards/local-auth.guard';
+import { CurrentUser } from '../../decorators/currentUser.decorator';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { CurrentUserViewDto } from '../../dto/currentUserView.dto';
+import { Token } from '../users/users.types';
 
-import { AuthService } from './auth.service';
 import {
   PasswordRecoveryDto,
   PasswordRecoveryEmailDto,
   RegistrationConfirmationDto,
   RegistrationEmailResendingDto,
 } from './auth.dto';
+import { AuthService } from './auth.service';
 
 @Controller(ROUTERS_PATH.AUTH)
 export class AuthController {
@@ -26,22 +33,16 @@ export class AuthController {
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
 
-  // @Post('login')
-  // async login() {
-  //   const token = await this.authService.login(req.user.id);
-  //   if (!token) {
-  //     res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-  //     return;
-  //   }
-  //
-  //   return token;
-  // }
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@CurrentUser('id') userId: string): Promise<Token> {
+    return this.authService.login(userId);
+  }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registration(@Body() userCreateDto: UserCreateDto): Promise<void> {
     const result = await this.authService.registration(userCreateDto);
-
     if (result) {
       throw new BadRequestException(result);
     }
@@ -49,10 +50,13 @@ export class AuthController {
     return;
   }
 
-  // @Get('me')
-  // async getCurrentUser(): Promise<CurrentUserViewDto> {
-  //   return this.usersQueryRepository.getCurrentUser(req.user?.id!);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getCurrentUser(
+    @CurrentUser('id') userId: string,
+  ): Promise<CurrentUserViewDto> {
+    return this.usersQueryRepository.getCurrentUser(userId);
+  }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
