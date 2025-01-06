@@ -9,10 +9,14 @@ import { UserCreateDto } from './users.dto';
 export class UsersRepository {
   constructor(@InjectModel(User.name) private UsersModel: TUserModel) {}
 
-  async create(userCreateDto: UserCreateDto): Promise<UserDocument> {
+  async create(
+    userCreateDto: UserCreateDto,
+    emailConfirmation?: boolean,
+  ): Promise<UserDocument> {
     const user = await this.UsersModel.createInstance(
       userCreateDto,
       this.UsersModel,
+      emailConfirmation,
     );
     return await user.save();
   }
@@ -35,5 +39,17 @@ export class UsersRepository {
     login: string;
   }>): Promise<UserDocument | null> {
     return this.UsersModel.findOne().or([{ email }, { login }]);
+  }
+
+  getByConfirmationCode(code: string): Promise<UserDocument | null> {
+    return this.UsersModel.findOne({ 'emailConfirmation.code': code }).exec();
+  }
+
+  save(user: UserDocument): Promise<UserDocument> {
+    return user.save();
+  }
+
+  getUserByPasswordRecoveryCode(code: string): Promise<UserDocument | null> {
+    return this.UsersModel.findOne({ 'passwordRecovery.code': code });
   }
 }

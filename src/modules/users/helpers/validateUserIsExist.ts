@@ -1,7 +1,10 @@
 import { VALIDATION_MESSAGES } from '../../../constants';
-import { User } from '../users.model';
+import { UserDocument } from '../users.model';
 
-export const validateUserIsExist = (user: User, currentEmail: string) => {
+export const validateUserIsExist = (
+  user: UserDocument,
+  currentEmail: string,
+) => {
   if (currentEmail === user.email) {
     return {
       errorsMessages: [

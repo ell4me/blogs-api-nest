@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { FilteredUserQueries, ItemsPaginationViewDto } from '../../types';
+import { CurrentUserViewDto } from '../../dto/currentUserView.dto';
 
 import { getUsersFilterRepository } from './helpers/getUsersFilterRepository';
 import { UserViewDto } from './users.dto';
@@ -61,5 +62,15 @@ export class UsersQueryRepository {
   ): Promise<number> {
     const filterOr = getUsersFilterRepository(searchLoginTerm, searchEmailTerm);
     return this.UsersModel.countDocuments().or(filterOr).exec();
+  }
+
+  async getCurrentUser(id: string): Promise<CurrentUserViewDto> {
+    const user = await this.UsersModel.findOne({ id }).exec();
+
+    return {
+      email: user!.email,
+      login: user!.login,
+      userId: user!.id,
+    };
   }
 }

@@ -1,18 +1,3 @@
-export const SETTINGS = {
-  PORT: process.env.PORT || 80,
-  DB_HOST: process.env.DB_HOST || 'mongodb://mongodb:27017',
-  DB_NAME: process.env.DB_NAME || 'blog_nest_db',
-  DB_USER: process.env.DB_USER || 'root',
-  DB_PASS: process.env.DB_PASS || 'password',
-  LOGIN: process.env.LOGIN || 'admin',
-  PASSWORD: process.env.PASSWORD || 'qwerty',
-  JWT_SECRET: process.env.JWT_SECRET || 'cat',
-  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'dog',
-  SMTP_USER: process.env.SMTP_USER,
-  SMTP_PASSWORD: process.env.SMTP_PASSWORD,
-  HOST: process.env.HOST,
-};
-
 // In seconds
 export const EXPIRATION_TOKEN = {
   ACCESS: 600,

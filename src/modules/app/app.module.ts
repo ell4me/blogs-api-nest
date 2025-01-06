@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { SETTINGS } from '../../constants';
 import { UsersModule } from '../users/users.module';
 import { PostsModule } from '../posts/posts.module';
 import { BlogsModule } from '../blogs/blogs.module';
 import { TestingController } from '../testing/testing.controller';
 import { CommentsModule } from '../comments/comments.module';
+import { AuthModule } from '../auth/auth.module';
+import { ENV_NAMES } from '../../env';
 
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
@@ -15,17 +16,23 @@ import { AppController } from './app.controller';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(SETTINGS.DB_HOST, {
-      auth: {
-        username: SETTINGS.DB_USER,
-        password: SETTINGS.DB_PASS,
-      },
-      dbName: SETTINGS.DB_NAME,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+        uri: config.get(ENV_NAMES.DB_HOST),
+        auth: {
+          username: config.get(ENV_NAMES.DB_USER),
+          password: config.get(ENV_NAMES.DB_PASS),
+        },
+        dbName: config.get(ENV_NAMES.DB_NAME),
+      }),
+      inject: [ConfigService],
     }),
     UsersModule,
     PostsModule,
     BlogsModule,
     CommentsModule,
+    AuthModule,
   ],
   controllers: [AppController, TestingController],
   providers: [AppService],
