@@ -1,18 +1,21 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
+import { SortDirection } from 'mongodb';
 
-import { FilteredBlogQueries, ItemsPaginationViewDto } from '../../types';
+import { ItemsPaginationViewDto } from '../../types';
 import { PostsQueryRepository } from '../posts/posts.query-repository';
 import { PostCreateDto, PostViewDto } from '../posts/posts.dto';
 import { PostsService } from '../posts/posts.service';
@@ -33,9 +36,21 @@ export class BlogsController {
 
   @Get()
   async getAllBlogs(
-    @Query() query: FilteredBlogQueries,
+    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
+    @Query('sortDirection', new DefaultValuePipe('desc'))
+    sortDirection: SortDirection,
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe)
+    pageNumber: number,
+    @Query('searchNameTerm') searchNameTerm: string,
   ): Promise<ItemsPaginationViewDto<BlogViewDto>> {
-    return await this.blogsQueryRepository.getAll(query);
+    return await this.blogsQueryRepository.getAll({
+      sortBy,
+      pageSize,
+      pageNumber,
+      sortDirection,
+      searchNameTerm,
+    });
   }
 
   @Get(':id')
@@ -51,7 +66,13 @@ export class BlogsController {
 
   @Get(':id/posts')
   async getPostsByBlogId(
-    @Query() query: FilteredBlogQueries,
+    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
+    @Query('sortDirection', new DefaultValuePipe('desc'))
+    sortDirection: SortDirection,
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe)
+    pageNumber: number,
+    @Query('searchNameTerm') searchNameTerm: string,
     @Param('id') id: string,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     const blog = await this.blogsQueryRepository.getById(id);
@@ -60,9 +81,18 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
-    return await this.postsQueryRepository.getAllPosts(query, {
-      blogId: id,
-    });
+    return await this.postsQueryRepository.getAllPosts(
+      {
+        sortBy,
+        pageSize,
+        pageNumber,
+        sortDirection,
+        searchNameTerm,
+      },
+      {
+        blogId: id,
+      },
+    );
   }
 
   @Post()

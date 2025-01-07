@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -9,12 +10,14 @@ import {
   Inject,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { SortDirection } from 'mongodb';
 
-import { FilteredUserQueries, ItemsPaginationViewDto } from '../../types';
+import { ItemsPaginationViewDto } from '../../types';
 import { ROUTERS_PATH } from '../../constants';
 import { BasicAuthGuard } from '../../guards/basic-auth.guard';
 
@@ -33,9 +36,23 @@ export class UsersController {
 
   @Get()
   async getAllUsers(
-    @Query() query: FilteredUserQueries,
+    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
+    @Query('sortDirection', new DefaultValuePipe('desc'))
+    sortDirection: SortDirection,
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe)
+    pageNumber: number,
+    @Query('searchEmailTerm') searchEmailTerm: string,
+    @Query('searchLoginTerm') searchLoginTerm: string,
   ): Promise<ItemsPaginationViewDto<UserViewDto>> {
-    return this.usersQueryRepository.getAll(query);
+    return this.usersQueryRepository.getAll({
+      sortBy,
+      pageSize,
+      pageNumber,
+      sortDirection,
+      searchEmailTerm,
+      searchLoginTerm,
+    });
   }
 
   @Post()

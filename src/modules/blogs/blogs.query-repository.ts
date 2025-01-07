@@ -11,14 +11,12 @@ export class BlogsQueryRepository {
   constructor(@InjectModel(Blog.name) private BlogsModel: TBlogModel) {}
 
   async getAll({
-    pageSize = 10,
-    pageNumber = 1,
-    sortBy = 'createdAt',
-    sortDirection = 'desc',
+    pageSize,
+    pageNumber,
+    sortBy,
+    sortDirection,
     searchNameTerm,
   }: FilteredBlogQueries): Promise<ItemsPaginationViewDto<BlogViewDto>> {
-    const pageSizeToNumber = Number(pageSize);
-    const pageNumberToNumber = Number(pageNumber);
     const blogsQuery = this.BlogsModel.find();
 
     if (searchNameTerm) {
@@ -26,18 +24,18 @@ export class BlogsQueryRepository {
     }
 
     const blogs = await blogsQuery
-      .skip((pageNumberToNumber - 1) * pageSizeToNumber)
+      .skip((pageNumber - 1) * pageSize)
       .sort({ [sortBy]: sortDirection })
-      .limit(pageSizeToNumber)
+      .limit(pageSize)
       .select('-_id -__v -updatedAt')
       .exec();
 
     const totalCount = await this.getCountBlogsByFilter(searchNameTerm);
 
     return {
-      page: pageNumberToNumber,
-      pagesCount: Math.ceil(totalCount / pageSizeToNumber),
-      pageSize: pageSizeToNumber,
+      page: pageNumber,
+      pagesCount: Math.ceil(totalCount / pageSize),
+      pageSize: pageSize,
       totalCount,
       items: blogs,
     };

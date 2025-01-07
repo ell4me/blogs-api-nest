@@ -15,29 +15,22 @@ export class CommentsQueryRepository {
 
   async getCommentsByPostId(
     postId: string,
-    {
-      pageSize = 10,
-      pageNumber = 1,
-      sortBy = 'createdAt',
-      sortDirection = 'desc',
-    }: PaginationQueries,
+    { pageSize, pageNumber, sortBy, sortDirection }: PaginationQueries,
     userId?: string,
   ): Promise<ItemsPaginationViewDto<CommentViewDto>> {
-    const pageSizeToNumber = Number(pageSize);
-    const pageNumberToNumber = Number(pageNumber);
     const comments: Comment[] = await this.CommentsModel.find({ postId })
-      .skip((pageNumberToNumber - 1) * pageSizeToNumber)
+      .skip((pageNumber - 1) * pageSize)
       .sort({ [sortBy]: sortDirection })
-      .limit(pageSizeToNumber)
+      .limit(pageSize)
       .select('-__v -_id -updatedAt -postId')
       .lean();
 
     const commentsCountByFilter = await this.getCountComments(postId);
 
     return {
-      page: pageNumberToNumber,
-      pagesCount: Math.ceil(commentsCountByFilter / pageSizeToNumber),
-      pageSize: pageSizeToNumber,
+      page: pageNumber,
+      pagesCount: Math.ceil(commentsCountByFilter / pageSize),
+      pageSize: pageSize,
       totalCount: commentsCountByFilter,
       items: comments.length
         ? comments.map((comment) => ({

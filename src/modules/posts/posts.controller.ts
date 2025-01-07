@@ -2,23 +2,21 @@ import {
   BadRequestException,
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
+import { SortDirection } from 'mongodb';
 
-import {
-  FilteredBlogQueries,
-  ItemsPaginationViewDto,
-  PaginationQueries,
-  ValidationErrorViewDto,
-} from '../../types';
+import { ItemsPaginationViewDto, ValidationErrorViewDto } from '../../types';
 import { ROUTERS_PATH, VALIDATION_MESSAGES } from '../../constants';
 import { BlogsQueryRepository } from '../blogs/blogs.query-repository';
 import { CommentsQueryRepository } from '../comments/comments.query-repository';
@@ -38,9 +36,21 @@ export class PostsController {
 
   @Get()
   async getAllPosts(
-    @Query() query: FilteredBlogQueries,
+    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
+    @Query('sortDirection', new DefaultValuePipe('desc'))
+    sortDirection: SortDirection,
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe)
+    pageNumber: number,
+    @Query('searchNameTerm') searchNameTerm: string,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
-    return this.postsQueryRepository.getAllPosts(query);
+    return this.postsQueryRepository.getAllPosts({
+      sortBy,
+      pageSize,
+      pageNumber,
+      sortDirection,
+      searchNameTerm,
+    });
   }
 
   @Get(':id')
@@ -117,7 +127,12 @@ export class PostsController {
 
   @Get(':id/comments')
   async getCommentsByPostId(
-    @Query() query: PaginationQueries,
+    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
+    @Query('sortDirection', new DefaultValuePipe('desc'))
+    sortDirection: SortDirection,
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe)
+    pageNumber: number,
     @Param('id') id: string,
   ) {
     const post = await this.postsQueryRepository.getPostById(id);
@@ -125,6 +140,11 @@ export class PostsController {
       throw new NotFoundException();
     }
 
-    return await this.commentsQueryRepository.getCommentsByPostId(id, query);
+    return await this.commentsQueryRepository.getCommentsByPostId(id, {
+      sortBy,
+      pageSize,
+      pageNumber,
+      sortDirection,
+    });
   }
 }

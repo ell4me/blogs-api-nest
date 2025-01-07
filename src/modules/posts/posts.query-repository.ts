@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { FilteredBlogQueries, ItemsPaginationViewDto } from '../../types';
+import { FilteredPostQueries, ItemsPaginationViewDto } from '../../types';
 
 import { PostViewDto } from './posts.dto';
 import { Post, TPostModel } from './posts.model';
@@ -12,17 +12,15 @@ export class PostsQueryRepository {
 
   async getAllPosts(
     {
-      pageSize = 10,
-      pageNumber = 1,
-      sortBy = 'createdAt',
-      sortDirection = 'desc',
+      pageSize,
+      pageNumber,
+      sortBy,
+      sortDirection,
       searchNameTerm,
-    }: FilteredBlogQueries,
+    }: FilteredPostQueries,
     additionalFilter?: { blogId?: string },
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     const postsQuery = this.PostsModel.find();
-    const pageSizeToNumber = Number(pageSize);
-    const pageNumberToNumber = Number(pageNumber);
 
     if (searchNameTerm) {
       postsQuery.where('title').regex(RegExp(searchNameTerm, 'i'));
@@ -33,18 +31,18 @@ export class PostsQueryRepository {
     }
 
     const posts: Post[] = await postsQuery
-      .skip((pageNumberToNumber - 1) * pageSizeToNumber)
+      .skip((pageNumber - 1) * pageSize)
       .sort({ [sortBy]: sortDirection })
-      .limit(pageSizeToNumber)
+      .limit(pageSize)
       .select('-__v -_id -updatedAt')
       .lean();
 
     const postsCountByFilter = await this.getCountPosts(additionalFilter);
 
     return {
-      page: pageNumberToNumber,
-      pagesCount: Math.ceil(postsCountByFilter / pageSizeToNumber),
-      pageSize: pageSizeToNumber,
+      page: pageNumber,
+      pagesCount: Math.ceil(postsCountByFilter / pageSize),
+      pageSize: pageSize,
       totalCount: postsCountByFilter,
       items: posts.map((post) => ({
         ...post,

@@ -22,6 +22,10 @@ export interface FilteredBlogQueries extends PaginationQueries {
   searchNameTerm: string | null;
 }
 
+export interface FilteredPostQueries extends PaginationQueries {
+  searchNameTerm: string | null;
+}
+
 export interface FilteredUserQueries extends PaginationQueries {
   searchLoginTerm: string | null;
   searchEmailTerm: string | null;

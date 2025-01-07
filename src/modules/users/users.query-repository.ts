@@ -13,22 +13,19 @@ export class UsersQueryRepository {
   constructor(@InjectModel(User.name) private UsersModel: TUserModel) {}
 
   async getAll({
-    pageSize = 10,
-    pageNumber = 1,
-    sortBy = 'createdAt',
-    sortDirection = 'desc',
+    pageSize,
+    pageNumber,
+    sortBy,
+    sortDirection,
     searchLoginTerm,
     searchEmailTerm,
   }: FilteredUserQueries): Promise<ItemsPaginationViewDto<UserViewDto>> {
     const filterOr = getUsersFilterRepository(searchLoginTerm, searchEmailTerm);
-    const pageSizeToNumber = Number(pageSize);
-    const pageNumberToNumber = Number(pageNumber);
-
     const users = await this.UsersModel.find()
       .or(filterOr)
-      .skip((pageNumberToNumber - 1) * pageSizeToNumber)
+      .skip((pageNumber - 1) * pageSize)
       .sort({ [sortBy]: sortDirection })
-      .limit(Number(pageSizeToNumber))
+      .limit(pageSize)
       .select(
         '-_id -__v -updatedAt -password -emailConfirmation -passwordRecovery',
       )
@@ -40,9 +37,9 @@ export class UsersQueryRepository {
     );
 
     return {
-      page: pageNumberToNumber,
-      pagesCount: Math.ceil(totalCount / pageSizeToNumber),
-      pageSize: pageSizeToNumber,
+      page: pageNumber,
+      pagesCount: Math.ceil(totalCount / pageSize),
+      pageSize: pageSize,
       totalCount,
       items: users,
     };
