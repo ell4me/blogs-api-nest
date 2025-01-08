@@ -1,21 +1,42 @@
-export interface AuthLoginDto {
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
+
+export class AuthLoginDto {
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty()
   loginOrEmail: string;
+
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty()
   password: string;
 }
 
-export interface RegistrationConfirmationDto {
+export class RegistrationConfirmationDto {
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty()
   code: string;
 }
 
-export interface RegistrationEmailResendingDto {
+export class RegistrationEmailResendingDto {
+  @IsEmail()
   email: string;
 }
 
-export interface PasswordRecoveryEmailDto {
+export class PasswordRecoveryEmailDto {
+  @IsEmail()
   email: string;
 }
 
-export interface PasswordRecoveryDto {
+export class PasswordRecoveryDto {
+  @IsString()
+  @Length(6, 20)
   newPassword: string;
+
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty()
   recoveryCode: string;
 }

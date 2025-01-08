@@ -1,3 +1,6 @@
+import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
+
 import { StatusLike } from '../../types';
 
 export interface PostViewDto {
@@ -11,23 +14,46 @@ export interface PostViewDto {
   extendedLikesInfo: ExtendedLikesInfo;
 }
 
-export interface PostCreateByBlogIdDto {
+export class PostCreateByBlogIdDto {
+  @Length(1, 30)
   title: string;
+
+  @Length(1, 100)
   shortDescription: string;
+
+  @Length(1, 1000)
   content: string;
+
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty()
   blogId: string;
 }
 
-export interface PostCreateDto {
+export class PostCreateDto {
+  @Length(1, 30)
   title: string;
+
+  @Length(1, 100)
   shortDescription: string;
+
+  @Length(1, 1000)
   content: string;
 }
 
-export interface PostUpdateDto {
+export class PostUpdateDto {
+  @Length(1, 30)
   title: string;
+
+  @Length(1, 100)
   shortDescription: string;
+
+  @Length(1, 1000)
   content: string;
+
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty()
   blogId: string;
 }
 

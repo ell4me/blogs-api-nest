@@ -8,7 +8,6 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -39,8 +38,8 @@ export class BlogsController {
     @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
     @Query('sortDirection', new DefaultValuePipe('desc'))
     sortDirection: SortDirection,
-    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
-    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe)
+    @Query('pageSize', new DefaultValuePipe(10)) pageSize: number,
+    @Query('pageNumber', new DefaultValuePipe(1))
     pageNumber: number,
     @Query('searchNameTerm') searchNameTerm: string,
   ): Promise<ItemsPaginationViewDto<BlogViewDto>> {
@@ -69,8 +68,8 @@ export class BlogsController {
     @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
     @Query('sortDirection', new DefaultValuePipe('desc'))
     sortDirection: SortDirection,
-    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
-    @Query('pageNumber', new DefaultValuePipe(1), ParseIntPipe)
+    @Query('pageSize', new DefaultValuePipe(10)) pageSize: number,
+    @Query('pageNumber', new DefaultValuePipe(1))
     pageNumber: number,
     @Query('searchNameTerm') searchNameTerm: string,
     @Param('id') id: string,

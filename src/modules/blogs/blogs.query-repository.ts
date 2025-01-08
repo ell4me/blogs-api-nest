@@ -18,7 +18,6 @@ export class BlogsQueryRepository {
     searchNameTerm,
   }: FilteredBlogQueries): Promise<ItemsPaginationViewDto<BlogViewDto>> {
     const blogsQuery = this.BlogsModel.find();
-
     if (searchNameTerm) {
       blogsQuery.where('name').regex(new RegExp(searchNameTerm, 'i'));
     }
