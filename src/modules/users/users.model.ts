@@ -136,12 +136,12 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-UserSchema.methods = {
-  updateConfirmation: User.prototype.updateEmailConfirmation,
-  updatePasswordRecovery: User.prototype.updatePasswordRecovery,
-  updatePassword: User.prototype.updatePassword,
-};
+// Methods
+UserSchema.methods.updateEmailConfirmation =
+  User.prototype.updateEmailConfirmation;
+UserSchema.methods.updatePasswordRecovery =
+  User.prototype.updatePasswordRecovery;
+UserSchema.methods.updatePassword = User.prototype.updatePassword;
 
-UserSchema.statics = {
-  createInstance: User.createInstance,
-};
+// Statics
+UserSchema.statics.createInstance = User.createInstance;

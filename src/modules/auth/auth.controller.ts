@@ -34,6 +34,7 @@ export class AuthController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@CurrentUser('id') userId: string): Promise<Token> {
     return this.authService.login(userId);
