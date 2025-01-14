@@ -18,10 +18,12 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
     let errorsMessages: ErrorMessage[] = [];
 
     if (typeof exceptionResponse === 'object') {
+      // Class-validator BadRequestException
       if ('message' in exceptionResponse) {
         errorsMessages = (exceptionResponse as { message: [] }).message;
       }
 
+      // Own BadRequestException
       if ('errorsMessages' in exceptionResponse) {
         errorsMessages = (exceptionResponse as ValidationErrorViewDto)
           .errorsMessages;
