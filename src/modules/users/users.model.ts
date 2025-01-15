@@ -38,10 +38,10 @@ export class EmailConfirmation {
 
 @Schema()
 export class PasswordRecovery {
-  @Prop({ required: true })
+  @Prop({ default: '' })
   code: string;
 
-  @Prop({ required: true })
+  @Prop({ default: 0 })
   expiration: number;
 }
 
