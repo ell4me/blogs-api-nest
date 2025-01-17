@@ -1,9 +1,9 @@
 import { Controller, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 
 import { ROUTERS_PATH } from '../../constants';
-import { UsersRepository } from '../users/users.repository';
-import { PostsRepository } from '../posts/posts.repository';
-import { BlogsRepository } from '../blogs/blogs.repository';
+import { UsersRepository } from '../users/infrastructure/users.repository';
+import { PostsRepository } from '../posts/infrastructure/posts.repository';
+import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
 
 @Controller(ROUTERS_PATH.TESTING)
 export class TestingController {

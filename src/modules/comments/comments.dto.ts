@@ -1,6 +1,6 @@
 import { StatusLike } from '../../types';
 
-import { CommentatorInfo } from './comments.model';
+import { CommentatorInfo } from './infrastructure/comments.model';
 
 export interface CommentViewDto {
   id: string;

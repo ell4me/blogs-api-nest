@@ -3,7 +3,7 @@ import { BasicStrategy as Strategy } from 'passport-http';
 import { ConfigService } from '@nestjs/config';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
-import { ENV_NAMES } from '../../../env';
+import { ENV_NAMES } from '../../../../env';
 
 @Injectable()
 export class BasicStrategy extends PassportStrategy(Strategy) {

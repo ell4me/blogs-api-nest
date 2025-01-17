@@ -2,12 +2,12 @@ import { compare } from 'bcryptjs';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { VALIDATION_MESSAGES } from '../../constants';
-import { UserCreateDto } from '../users/users.dto';
-import { ValidationErrorViewDto } from '../../types';
-import { UsersService } from '../users/users.service';
-import { Token } from '../users/users.types';
-import { getErrorMessage } from '../../helpers/getErrorMessage';
+import { VALIDATION_MESSAGES } from '../../../constants';
+import { UserCreateDto } from '../../users/users.dto';
+import { ValidationErrorViewDto } from '../../../types';
+import { UsersService } from '../../users/application/users.service';
+import { Token } from '../../users/users.types';
+import { getErrorMessage } from '../../../helpers/getErrorMessage';
 
 import { EmailAdapter } from './adapters/email.adapter';
 import {
@@ -16,7 +16,7 @@ import {
   PasswordRecoveryEmailDto,
   RegistrationConfirmationDto,
   RegistrationEmailResendingDto,
-} from './auth.dto';
+} from '../auth.dto';
 
 @Injectable()
 export class AuthService {

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { FilteredPostQueries, ItemsPaginationViewDto } from '../../types';
+import { FilteredPostQueries, ItemsPaginationViewDto } from '../../../types';
 
-import { PostViewDto } from './posts.dto';
+import { PostViewDto } from '../posts.dto';
 import { Post, TPostModel } from './posts.model';
 
 @Injectable()

@@ -15,14 +15,14 @@ import {
 import { SortDirection } from 'mongodb';
 
 import { ItemsPaginationViewDto } from '../../types';
-import { PostsQueryRepository } from '../posts/posts.query-repository';
+import { PostsQueryRepository } from '../posts/infrastructure/posts.query-repository';
 import { PostCreateDto, PostViewDto } from '../posts/posts.dto';
-import { PostsService } from '../posts/posts.service';
+import { PostsService } from '../posts/application/posts.service';
 import { ROUTERS_PATH } from '../../constants';
 
-import { BlogsService } from './blogs.service';
+import { BlogsService } from './application/blogs.service';
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
-import { BlogsQueryRepository } from './blogs.query-repository';
+import { BlogsQueryRepository } from './infrastructure/blogs.query-repository';
 
 @Controller(ROUTERS_PATH.BLOGS)
 export class BlogsController {

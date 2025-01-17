@@ -2,7 +2,7 @@ import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 
 import { ROUTERS_PATH } from '../../constants';
 
-import { CommentsQueryRepository } from './comments.query-repository';
+import { CommentsQueryRepository } from './infrastructure/comments.query-repository';
 import { CommentViewDto } from './comments.dto';
 
 @Controller(ROUTERS_PATH.COMMENTS)

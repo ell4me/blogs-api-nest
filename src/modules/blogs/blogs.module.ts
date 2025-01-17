@@ -4,10 +4,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PostsModule } from '../posts/posts.module';
 
 import { BlogsController } from './blogs.controller';
-import { BlogsQueryRepository } from './blogs.query-repository';
-import { BlogsRepository } from './blogs.repository';
-import { BlogsService } from './blogs.service';
-import { Blog, BlogsSchema } from './blogs.model';
+import { BlogsQueryRepository } from './infrastructure/blogs.query-repository';
+import { BlogsRepository } from './infrastructure/blogs.repository';
+import { BlogsService } from './application/blogs.service';
+import { Blog, BlogsSchema } from './infrastructure/blogs.model';
 
 @Module({
   imports: [

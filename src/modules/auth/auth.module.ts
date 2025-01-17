@@ -7,12 +7,12 @@ import { UsersModule } from '../users/users.module';
 import { ENV_NAMES } from '../../env';
 import { EXPIRATION_TOKEN } from '../../constants';
 
-import { BasicStrategy } from './strategies/basic.strategy';
-import { EmailAdapter } from './adapters/email.adapter';
-import { AuthService } from './auth.service';
+import { BasicStrategy } from './application/strategies/basic.strategy';
+import { EmailAdapter } from './application/adapters/email.adapter';
+import { AuthService } from './application/auth.service';
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './application/strategies/jwt.strategy';
+import { LocalStrategy } from './application/strategies/local.strategy';
 
 @Module({
   imports: [

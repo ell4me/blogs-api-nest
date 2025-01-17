@@ -2,8 +2,8 @@ import { DeleteResult, ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
-import { BlogUpdateDto, BlogViewDto } from './blogs.dto';
-import { BlogCreate } from './blogs.types';
+import { BlogUpdateDto, BlogViewDto } from '../blogs.dto';
+import { BlogCreate } from '../blogs.types';
 import { Blog, BlogDocument, TBlogModel } from './blogs.model';
 
 @Injectable()

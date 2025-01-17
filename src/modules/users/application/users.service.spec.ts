@@ -4,15 +4,15 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   closeMongoConnection,
   rootMongooseTestModule,
-} from '../../testing/helpers/mongoMemoryServer';
-import { ValidationErrorViewDto } from '../../types';
-import { VALIDATION_MESSAGES } from '../../constants';
-import { createUserByUserService } from '../../testing/helpers/createUserByUserService';
+} from '../../../testing/helpers/mongoMemoryServer';
+import { ValidationErrorViewDto } from '../../../types';
+import { VALIDATION_MESSAGES } from '../../../constants';
+import { createUserByUserService } from '../../../testing/helpers/createUserByUserService';
 
 import { UsersService } from './users.service';
-import { User, UserDocument, UserSchema } from './users.model';
-import { UserCreateDto } from './users.dto';
-import { UsersRepository } from './users.repository';
+import { User, UserDocument, UserSchema } from '../infrastructure/users.model';
+import { UserCreateDto } from '../users.dto';
+import { UsersRepository } from '../infrastructure/users.repository';
 
 describe('UsersService', () => {
   let usersService: UsersService;

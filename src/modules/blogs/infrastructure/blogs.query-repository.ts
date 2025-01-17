@@ -1,9 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
-import { FilteredBlogQueries, ItemsPaginationViewDto } from '../../types';
+import { FilteredBlogQueries, ItemsPaginationViewDto } from '../../../types';
 
-import { BlogViewDto } from './blogs.dto';
+import { BlogViewDto } from '../blogs.dto';
 import { Blog, TBlogModel } from './blogs.model';
 
 @Injectable()

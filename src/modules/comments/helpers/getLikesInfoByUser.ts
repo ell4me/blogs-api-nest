@@ -1,5 +1,5 @@
 import { StatusLike } from '../../../types';
-import { LikesInfo } from '../comments.model';
+import { LikesInfo } from '../infrastructure/comments.model';
 import { LikesInfoDto } from '../comments.dto';
 
 export const getLikesInfoByUser = (

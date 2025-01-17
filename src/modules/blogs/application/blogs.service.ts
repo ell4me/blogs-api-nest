@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { PostsRepository } from '../posts/posts.repository';
+import { PostsRepository } from '../../posts/infrastructure/posts.repository';
 
-import { BlogsRepository } from './blogs.repository';
-import { BlogCreateDto, BlogUpdateDto } from './blogs.dto';
-import { BlogCreate } from './blogs.types';
+import { BlogsRepository } from '../infrastructure/blogs.repository';
+import { BlogCreateDto, BlogUpdateDto } from '../blogs.dto';
+import { BlogCreate } from '../blogs.types';
 
 @Injectable()
 export class BlogsService {

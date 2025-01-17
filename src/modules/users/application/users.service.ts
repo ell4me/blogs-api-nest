@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { ValidationErrorViewDto } from '../../types';
+import { ValidationErrorViewDto } from '../../../types';
 
-import { UsersRepository } from './users.repository';
-import { UserCreateDto } from './users.dto';
-import { UserDocument } from './users.model';
-import { validateUserIsExist } from './helpers/validateUserIsExist';
+import { UsersRepository } from '../infrastructure/users.repository';
+import { UserCreateDto } from '../users.dto';
+import { UserDocument } from '../infrastructure/users.model';
+import { validateUserIsExist } from '../helpers/validateUserIsExist';
 
 @Injectable()
 export class UsersService {

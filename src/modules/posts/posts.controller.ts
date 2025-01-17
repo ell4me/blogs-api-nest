@@ -17,12 +17,12 @@ import { SortDirection } from 'mongodb';
 
 import { ItemsPaginationViewDto, ValidationErrorViewDto } from '../../types';
 import { ROUTERS_PATH, VALIDATION_MESSAGES } from '../../constants';
-import { BlogsQueryRepository } from '../blogs/blogs.query-repository';
-import { CommentsQueryRepository } from '../comments/comments.query-repository';
+import { BlogsQueryRepository } from '../blogs/infrastructure/blogs.query-repository';
+import { CommentsQueryRepository } from '../comments/infrastructure/comments.query-repository';
 
-import { PostsQueryRepository } from './posts.query-repository';
+import { PostsQueryRepository } from './infrastructure/posts.query-repository';
 import { PostCreateByBlogIdDto, PostUpdateDto, PostViewDto } from './posts.dto';
-import { PostsService } from './posts.service';
+import { PostsService } from './application/posts.service';
 
 @Controller(ROUTERS_PATH.POSTS)
 export class PostsController {

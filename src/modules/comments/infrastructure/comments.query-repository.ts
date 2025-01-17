@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { ItemsPaginationViewDto, PaginationQueries } from '../../types';
+import { ItemsPaginationViewDto, PaginationQueries } from '../../../types';
 
-import { CommentViewDto } from './comments.dto';
-import { getLikesInfoByUser } from './helpers/getLikesInfoByUser';
+import { CommentViewDto } from '../comments.dto';
+import { getLikesInfoByUser } from '../helpers/getLikesInfoByUser';
 import { Comment, TCommentModel } from './comments.model';
 
 @Injectable()

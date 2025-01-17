@@ -3,7 +3,7 @@ import Mail from 'nodemailer/lib/mailer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { ENV_NAMES } from '../../../env';
+import { ENV_NAMES } from '../../../../env';
 
 @Injectable()
 export class EmailAdapter {

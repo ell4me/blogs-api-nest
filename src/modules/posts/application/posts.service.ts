@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { PostCreateByBlogIdDto, PostUpdateDto } from './posts.dto';
-import { PostsRepository } from './posts.repository';
+import { PostCreateByBlogIdDto, PostUpdateDto } from '../posts.dto';
+import { PostsRepository } from '../infrastructure/posts.repository';
 
 @Injectable()
 export class PostsService {

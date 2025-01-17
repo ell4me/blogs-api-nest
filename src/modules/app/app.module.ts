@@ -5,16 +5,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
 import { PostsModule } from '../posts/posts.module';
 import { BlogsModule } from '../blogs/blogs.module';
-import { TestingController } from '../testing/testing.controller';
 import { CommentsModule } from '../comments/comments.module';
 import { AuthModule } from '../auth/auth.module';
 import { ENV_NAMES } from '../../env';
-
-import { AppService } from './app.service';
-import { AppController } from './app.controller';
+import { TestingModule } from '../testing/testing.module';
 
 @Module({
   imports: [
+    TestingModule,
     ConfigModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -34,7 +32,5 @@ import { AppController } from './app.controller';
     CommentsModule,
     AuthModule,
   ],
-  controllers: [AppController, TestingController],
-  providers: [AppService],
 })
 export class AppModule {}

@@ -1,7 +1,7 @@
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { PostCreateByBlogIdDto, PostUpdateDto } from './posts.dto';
+import { PostCreateByBlogIdDto, PostUpdateDto } from '../posts.dto';
 
 interface PostInstanceMethods {
   updatePost: (post: PostUpdateDto) => void;

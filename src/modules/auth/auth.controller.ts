@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 
 import { UserCreateDto } from '../users/users.dto';
-import { UsersQueryRepository } from '../users/users.query-repository';
+import { UsersQueryRepository } from '../users/infrastructure/users.query-repository';
 import { ROUTERS_PATH } from '../../constants';
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
 import { CurrentUser } from '../../decorators/currentUser.decorator';
@@ -24,7 +24,7 @@ import {
   RegistrationConfirmationDto,
   RegistrationEmailResendingDto,
 } from './auth.dto';
-import { AuthService } from './auth.service';
+import { AuthService } from './application/auth.service';
 
 @Controller(ROUTERS_PATH.AUTH)
 export class AuthController {

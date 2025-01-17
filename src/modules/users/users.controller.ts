@@ -20,9 +20,9 @@ import { ItemsPaginationViewDto } from '../../types';
 import { ROUTERS_PATH } from '../../constants';
 import { BasicAuthGuard } from '../../guards/basic-auth.guard';
 
-import { UsersQueryRepository } from './users.query-repository';
+import { UsersQueryRepository } from './infrastructure/users.query-repository';
 import { UserCreateDto, UserViewDto } from './users.dto';
-import { UsersService } from './users.service';
+import { UsersService } from './application/users.service';
 
 @Controller(ROUTERS_PATH.USERS)
 @UseGuards(BasicAuthGuard)

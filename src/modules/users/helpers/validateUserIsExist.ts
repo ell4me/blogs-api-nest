@@ -1,5 +1,5 @@
 import { VALIDATION_MESSAGES } from '../../../constants';
-import { UserDocument } from '../users.model';
+import { UserDocument } from '../infrastructure/users.model';
 
 export const validateUserIsExist = (
   user: UserDocument,

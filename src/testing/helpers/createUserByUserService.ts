@@ -1,5 +1,5 @@
-import { UsersService } from '../../modules/users/users.service';
-import { UserDocument } from '../../modules/users/users.model';
+import { UsersService } from '../../modules/users/application/users.service';
+import { UserDocument } from '../../modules/users/infrastructure/users.model';
 
 export const createUserByUserService = async (
   usersService: UsersService,

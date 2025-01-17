@@ -5,10 +5,10 @@ import { BlogsModule } from '../blogs/blogs.module';
 import { CommentsModule } from '../comments/comments.module';
 
 import { PostsController } from './posts.controller';
-import { Post, PostsSchema } from './posts.model';
-import { PostsQueryRepository } from './posts.query-repository';
-import { PostsRepository } from './posts.repository';
-import { PostsService } from './posts.service';
+import { Post, PostsSchema } from './infrastructure/posts.model';
+import { PostsQueryRepository } from './infrastructure/posts.query-repository';
+import { PostsRepository } from './infrastructure/posts.repository';
+import { PostsService } from './application/posts.service';
 
 @Module({
   imports: [
