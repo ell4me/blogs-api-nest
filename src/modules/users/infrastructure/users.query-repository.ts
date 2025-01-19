@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { FilteredUserQueries, ItemsPaginationViewDto } from '../../../types';
-import { CurrentUserViewDto } from '../../../dto/currentUserView.dto';
-
+import { CurrentUserViewDto } from '../../../common/dto/currentUserView.dto';
 import { getUsersFilterRepository } from '../helpers/getUsersFilterRepository';
 import { UserViewDto } from '../users.dto';
+
 import { TUserModel, User } from './users.model';
 
 @Injectable()
