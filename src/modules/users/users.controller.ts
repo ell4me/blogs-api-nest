@@ -18,7 +18,7 @@ import { SortDirection } from 'mongodb';
 
 import { ItemsPaginationViewDto } from '../../types';
 import { ROUTERS_PATH } from '../../constants';
-import { BasicAuthGuard } from '../../guards/basic-auth.guard';
+import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 
 import { UsersQueryRepository } from './infrastructure/users.query-repository';
 import { UserCreateDto, UserViewDto } from './users.dto';

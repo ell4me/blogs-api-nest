@@ -7,9 +7,7 @@ import { UserCreateDto } from '../../users/users.dto';
 import { ValidationErrorViewDto } from '../../../types';
 import { UsersService } from '../../users/application/users.service';
 import { Token } from '../../users/users.types';
-import { getErrorMessage } from '../../../helpers/getErrorMessage';
-
-import { EmailAdapter } from './adapters/email.adapter';
+import { getErrorMessage } from '../../../common/helpers/getErrorMessage';
 import {
   AuthLoginDto,
   PasswordRecoveryDto,
@@ -17,6 +15,8 @@ import {
   RegistrationConfirmationDto,
   RegistrationEmailResendingDto,
 } from '../auth.dto';
+
+import { EmailAdapter } from './adapters/email.adapter';
 
 @Injectable()
 export class AuthService {

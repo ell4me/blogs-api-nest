@@ -12,10 +12,10 @@ import {
 import { UserCreateDto } from '../users/users.dto';
 import { UsersQueryRepository } from '../users/infrastructure/users.query-repository';
 import { ROUTERS_PATH } from '../../constants';
-import { LocalAuthGuard } from '../../guards/local-auth.guard';
-import { CurrentUser } from '../../decorators/currentUser.decorator';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { CurrentUserViewDto } from '../../dto/currentUserView.dto';
+import { LocalAuthGuard } from '../../common/guards/local-auth.guard';
+import { CurrentUser } from '../../common/decorators/currentUser.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CurrentUserViewDto } from '../../common/dto/currentUserView.dto';
 import { Token } from '../users/users.types';
 
 import {
