@@ -2,8 +2,9 @@ import { DeleteResult } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
-import { TUserModel, User, UserDocument } from './users.model';
 import { UserCreateDto } from '../users.dto';
+
+import { TUserModel, User, UserDocument } from './users.model';
 
 @Injectable()
 export class UsersRepository {
@@ -31,7 +32,7 @@ export class UsersRepository {
     return this.UsersModel.deleteMany().exec();
   }
 
-  getByEmailOrLogin({
+  findByEmailOrLogin({
     email,
     login,
   }: Partial<{

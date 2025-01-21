@@ -37,6 +37,7 @@ services:
       - DB_PASS=password
       - DB_NAME=blog_db
       - DB_HOST=mongodb://mongodb:27017
+      - INCLUDE_TESTING_MODULE=true
       - JWT_SECRET=cat
       - LOGIN=admin
       - PASSWORD=qwerty

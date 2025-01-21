@@ -1,30 +1,35 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { CqrsModule } from '@nestjs/cqrs';
 
 import { UsersModule } from '../users/users.module';
 import { PostsModule } from '../posts/posts.module';
 import { BlogsModule } from '../blogs/blogs.module';
 import { CommentsModule } from '../comments/comments.module';
 import { AuthModule } from '../auth/auth.module';
-import { ENV_NAMES } from '../../env';
 import { TestingModule } from '../testing/testing.module';
+import { CommonConfigModule } from '../../common/config/common-config.module';
+import { CommonConfig } from '../../common/config/common.config';
 
 @Module({
   imports: [
-    TestingModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    CqrsModule.forRoot(),
+    CommonConfigModule,
     MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
-        uri: config.get(ENV_NAMES.DB_HOST),
+      imports: [CommonConfigModule],
+      useFactory: (config: CommonConfig) => ({
+        uri: config.dbHost,
         auth: {
-          username: config.get(ENV_NAMES.DB_USER),
-          password: config.get(ENV_NAMES.DB_PASS),
+          username: config.dbUser,
+          password: config.dbPass,
         },
-        dbName: config.get(ENV_NAMES.DB_NAME),
+        dbName: config.dbName,
       }),
-      inject: [ConfigService],
+      inject: [CommonConfig],
     }),
     UsersModule,
     PostsModule,
@@ -33,4 +38,19 @@ import { TestingModule } from '../testing/testing.module';
     AuthModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  static async forRoot(commonConfig: CommonConfig): Promise<DynamicModule> {
+    // Такой мудрёный способ мы используем, чтобы добавить к основным модулям необязательный модуль.
+    // Чтобы не обращаться в декораторе(@Module) к переменной окружения через process.env, потому что
+    // запуск декораторов происходит на этапе склейки всех модулей до старта жизненного цикла самого NestJS
+    const additionalModules: any[] = [];
+    if (commonConfig.includeTestingModule) {
+      additionalModules.push(TestingModule);
+    }
+
+    return {
+      module: AppModule,
+      imports: additionalModules, // Add dynamic modules here
+    };
+  }
+}

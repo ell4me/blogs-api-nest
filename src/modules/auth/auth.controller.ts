@@ -8,6 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
 
 import { UserCreateDto } from '../users/users.dto';
 import { UsersQueryRepository } from '../users/infrastructure/users.query-repository';
@@ -17,6 +18,8 @@ import { CurrentUser } from '../../common/decorators/currentUser.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUserViewDto } from '../../common/dto/currentUserView.dto';
 import { Token } from '../users/users.types';
+import { CreateUserCommand } from '../users/application/use-cases/create-user.useCase';
+import { ValidationErrorViewDto } from '../../types';
 
 import {
   PasswordRecoveryDto,
@@ -24,27 +27,52 @@ import {
   RegistrationConfirmationDto,
   RegistrationEmailResendingDto,
 } from './auth.dto';
-import { AuthService } from './application/auth.service';
+import {
+  RegistrationConfirmationCommand,
+  TExecuteRegistrationConfirmationResult,
+} from './application/use-cases/registration-confirmation.useCase';
+import {
+  RegistrationEmailResendingCommand,
+  TExecuteRegistrationEmailResendingResult,
+} from './application/use-cases/registration-email-resending.useCase';
+import {
+  SendPasswordRecoveryEmailCommand,
+  TExecuteSendPasswordRecoveryEmailResult,
+} from './application/use-cases/send-password-recovery-email.useCase';
+import {
+  TExecuteUpdateUserPasswordByRecoveryCodeResult,
+  UpdateUserPasswordByRecoveryCodeCommand,
+} from './application/use-cases/update-user-password-by-recovery-code.useCase';
+import {
+  LoginUserCommand,
+  TExecuteLoginUserResult,
+} from './application/use-cases/login-user.useCase';
 
 @Controller(ROUTERS_PATH.AUTH)
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
     private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@CurrentUser('id') userId: string): Promise<Token> {
-    return this.authService.login(userId);
+    return this.commandBus.execute<LoginUserCommand, TExecuteLoginUserResult>(
+      new LoginUserCommand(userId),
+    );
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registration(@Body() userCreateDto: UserCreateDto): Promise<void> {
-    const result = await this.authService.registration(userCreateDto);
-    if (result) {
+    const result = await this.commandBus.execute<
+      CreateUserCommand,
+      { id: string } | ValidationErrorViewDto
+    >(new CreateUserCommand(userCreateDto, true));
+
+    if ('errorsMessages' in result) {
       throw new BadRequestException(result);
     }
 
@@ -64,9 +92,10 @@ export class AuthController {
   async registrationConfirmation(
     @Body() registrationConfirmationDto: RegistrationConfirmationDto,
   ): Promise<void> {
-    const result = await this.authService.registrationConfirmation(
-      registrationConfirmationDto,
-    );
+    const result = await this.commandBus.execute<
+      RegistrationConfirmationCommand,
+      TExecuteRegistrationConfirmationResult
+    >(new RegistrationConfirmationCommand(registrationConfirmationDto));
 
     if (result) {
       throw new BadRequestException(result);
@@ -80,9 +109,10 @@ export class AuthController {
   async registrationEmailResending(
     @Body() registrationEmailResendingDto: RegistrationEmailResendingDto,
   ): Promise<void> {
-    const result = await this.authService.registrationEmailResending(
-      registrationEmailResendingDto,
-    );
+    const result = await this.commandBus.execute<
+      RegistrationEmailResendingCommand,
+      TExecuteRegistrationEmailResendingResult
+    >(new RegistrationEmailResendingCommand(registrationEmailResendingDto));
 
     if (result) {
       throw new BadRequestException(result);
@@ -96,8 +126,10 @@ export class AuthController {
   async sendPasswordRecoveryEmail(
     @Body() passwordRecoveryEmailDto: PasswordRecoveryEmailDto,
   ): Promise<void> {
-    await this.authService.sendPasswordRecoveryEmail(passwordRecoveryEmailDto);
-    return;
+    return this.commandBus.execute<
+      SendPasswordRecoveryEmailCommand,
+      TExecuteSendPasswordRecoveryEmailResult
+    >(new SendPasswordRecoveryEmailCommand(passwordRecoveryEmailDto));
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -105,10 +137,10 @@ export class AuthController {
   async updateUserPasswordByRecoveryCode(
     @Body() passwordRecoveryDto: PasswordRecoveryDto,
   ): Promise<void> {
-    const result =
-      await this.authService.updateUserPasswordByRecoveryCode(
-        passwordRecoveryDto,
-      );
+    const result = await this.commandBus.execute<
+      UpdateUserPasswordByRecoveryCodeCommand,
+      TExecuteUpdateUserPasswordByRecoveryCodeResult
+    >(new UpdateUserPasswordByRecoveryCodeCommand(passwordRecoveryDto));
 
     if ('errorsMessages' in result) {
       throw new BadRequestException(result);

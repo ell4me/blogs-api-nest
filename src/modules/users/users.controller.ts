@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -14,15 +13,22 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { SortDirection } from 'mongodb';
+import { CommandBus } from '@nestjs/cqrs';
 
-import { ItemsPaginationViewDto } from '../../types';
+import { FilteredUserQueries, ItemsPaginationViewDto } from '../../types';
 import { ROUTERS_PATH } from '../../constants';
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 
 import { UsersQueryRepository } from './infrastructure/users.query-repository';
 import { UserCreateDto, UserViewDto } from './users.dto';
-import { UsersService } from './application/users.service';
+import {
+  CreateUserCommand,
+  TExecuteCreateUserResult,
+} from './application/use-cases/create-user.useCase';
+import {
+  DeleteUserByIdCommand,
+  TExecuteDeleteUserByIdResult,
+} from './application/use-cases/delete-user-by-id.useCase';
 
 @Controller(ROUTERS_PATH.USERS)
 @UseGuards(BasicAuthGuard)
@@ -30,33 +36,24 @@ export class UsersController {
   constructor(
     @Inject(UsersQueryRepository)
     private readonly usersQueryRepository: UsersQueryRepository,
-    @Inject(UsersService) private readonly usersService: UsersService,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Get()
   async getAllUsers(
-    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
-    @Query('sortDirection', new DefaultValuePipe('desc'))
-    sortDirection: SortDirection,
-    @Query('pageSize', new DefaultValuePipe(10)) pageSize: number,
-    @Query('pageNumber', new DefaultValuePipe(1))
-    pageNumber: number,
-    @Query('searchEmailTerm') searchEmailTerm: string,
-    @Query('searchLoginTerm') searchLoginTerm: string,
+    @Query() queries: FilteredUserQueries,
   ): Promise<ItemsPaginationViewDto<UserViewDto>> {
-    return this.usersQueryRepository.getAll({
-      sortBy,
-      pageSize,
-      pageNumber,
-      sortDirection,
-      searchEmailTerm,
-      searchLoginTerm,
-    });
+    return this.usersQueryRepository.getAll(queries);
   }
 
   @Post()
-  async createUser(@Body() body: UserCreateDto): Promise<UserViewDto | null> {
-    const result = await this.usersService.createUser(body);
+  async createUser(
+    @Body() userCreateDto: UserCreateDto,
+  ): Promise<UserViewDto | null> {
+    const result = await this.commandBus.execute<
+      CreateUserCommand,
+      TExecuteCreateUserResult
+    >(new CreateUserCommand(userCreateDto));
 
     if ('errorsMessages' in result) {
       throw new BadRequestException(result.errorsMessages);
@@ -68,7 +65,10 @@ export class UsersController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUserById(@Param('id') id: string): Promise<boolean> {
-    const isDeleted = await this.usersService.deleteUserById(id);
+    const isDeleted = await this.commandBus.execute<
+      DeleteUserByIdCommand,
+      TExecuteDeleteUserByIdResult
+    >(new DeleteUserByIdCommand(id));
 
     if (!isDeleted) {
       throw new NotFoundException();

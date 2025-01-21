@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -13,43 +12,48 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { SortDirection } from 'mongodb';
+import { CommandBus } from '@nestjs/cqrs';
 
-import { ItemsPaginationViewDto, ValidationErrorViewDto } from '../../types';
+import {
+  FilteredPostQueries,
+  ItemsPaginationViewDto,
+  PaginationQueries,
+  ValidationErrorViewDto,
+} from '../../types';
 import { ROUTERS_PATH, VALIDATION_MESSAGES } from '../../constants';
 import { BlogsQueryRepository } from '../blogs/infrastructure/blogs.query-repository';
 import { CommentsQueryRepository } from '../comments/infrastructure/comments.query-repository';
+import { getErrorMessage } from '../../common/helpers/getErrorMessage';
 
 import { PostsQueryRepository } from './infrastructure/posts.query-repository';
 import { PostCreateByBlogIdDto, PostUpdateDto, PostViewDto } from './posts.dto';
-import { PostsService } from './application/posts.service';
+import {
+  TExecuteUpdatePostById,
+  UpdatePostByIdCommand,
+} from './application/use-cases/update-post.useCase';
+import {
+  CreatePostCommand,
+  TExecuteCreatePost,
+} from './application/use-cases/create-post.useCase';
+import {
+  DeletePostCommand,
+  TExecuteDeletePost,
+} from './application/use-cases/delete-post.useCase';
 
 @Controller(ROUTERS_PATH.POSTS)
 export class PostsController {
   constructor(
     private readonly postsQueryRepository: PostsQueryRepository,
     private readonly blogsQueryRepository: BlogsQueryRepository,
-    private readonly postsService: PostsService,
     private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Get()
   async getAllPosts(
-    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
-    @Query('sortDirection', new DefaultValuePipe('desc'))
-    sortDirection: SortDirection,
-    @Query('pageSize', new DefaultValuePipe(10)) pageSize: number,
-    @Query('pageNumber', new DefaultValuePipe(1))
-    pageNumber: number,
-    @Query('searchNameTerm') searchNameTerm: string,
+    @Query() queries: FilteredPostQueries,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
-    return this.postsQueryRepository.getAllPosts({
-      sortBy,
-      pageSize,
-      pageNumber,
-      sortDirection,
-      searchNameTerm,
-    });
+    return this.postsQueryRepository.getAllPosts(queries);
   }
 
   @Get(':id')
@@ -80,7 +84,11 @@ export class PostsController {
       } as ValidationErrorViewDto);
     }
 
-    const { id } = await this.postsService.createPost(newPost, blog.name);
+    const { id } = await this.commandBus.execute<
+      CreatePostCommand,
+      TExecuteCreatePost
+    >(new CreatePostCommand(newPost, blog.name));
+
     return await this.postsQueryRepository.getPostById(id);
   }
 
@@ -93,17 +101,15 @@ export class PostsController {
     const blog = await this.blogsQueryRepository.getById(postUpdateDto.blogId);
 
     if (!blog) {
-      throw new BadRequestException({
-        errorsMessages: [
-          {
-            field: 'blogId',
-            message: VALIDATION_MESSAGES.BLOG_IS_NOT_EXIST,
-          },
-        ],
-      } as ValidationErrorViewDto);
+      throw new BadRequestException(
+        getErrorMessage('blogId', VALIDATION_MESSAGES.BLOG_IS_NOT_EXIST),
+      );
     }
 
-    const isUpdated = await this.postsService.updatePostById(id, postUpdateDto);
+    const isUpdated = await this.commandBus.execute<
+      UpdatePostByIdCommand,
+      TExecuteUpdatePostById
+    >(new UpdatePostByIdCommand(id, postUpdateDto));
 
     if (!isUpdated) {
       throw new NotFoundException();
@@ -115,7 +121,10 @@ export class PostsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePostById(@Param('id') id: string): Promise<void> {
-    const isDeleted = await this.postsService.deletePostById(id);
+    const isDeleted = await this.commandBus.execute<
+      DeletePostCommand,
+      TExecuteDeletePost
+    >(new DeletePostCommand(id));
 
     if (!isDeleted) {
       throw new NotFoundException();
@@ -126,12 +135,7 @@ export class PostsController {
 
   @Get(':id/comments')
   async getCommentsByPostId(
-    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
-    @Query('sortDirection', new DefaultValuePipe('desc'))
-    sortDirection: SortDirection,
-    @Query('pageSize', new DefaultValuePipe(10)) pageSize: number,
-    @Query('pageNumber', new DefaultValuePipe(1))
-    pageNumber: number,
+    @Query() queries: PaginationQueries,
     @Param('id') id: string,
   ) {
     const post = await this.postsQueryRepository.getPostById(id);
@@ -139,11 +143,6 @@ export class PostsController {
       throw new NotFoundException();
     }
 
-    return await this.commentsQueryRepository.getCommentsByPostId(id, {
-      sortBy,
-      pageSize,
-      pageNumber,
-      sortDirection,
-    });
+    return await this.commentsQueryRepository.getCommentsByPostId(id, queries);
   }
 }

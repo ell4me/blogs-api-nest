@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -12,44 +11,49 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { SortDirection } from 'mongodb';
+import { CommandBus } from '@nestjs/cqrs';
 
-import { ItemsPaginationViewDto } from '../../types';
+import {
+  FilteredBlogQueries,
+  FilteredPostQueries,
+  ItemsPaginationViewDto,
+} from '../../types';
 import { PostsQueryRepository } from '../posts/infrastructure/posts.query-repository';
 import { PostCreateDto, PostViewDto } from '../posts/posts.dto';
-import { PostsService } from '../posts/application/posts.service';
 import { ROUTERS_PATH } from '../../constants';
+import {
+  CreatePostCommand,
+  TExecuteCreatePost,
+} from '../posts/application/use-cases/create-post.useCase';
 
-import { BlogsService } from './application/blogs.service';
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 import { BlogsQueryRepository } from './infrastructure/blogs.query-repository';
+import {
+  DeleteBlogCommand,
+  TExecuteDeleteBlog,
+} from './application/use-cases/delete-blog.useCase';
+import {
+  TExecuteUpdateBlog,
+  UpdateBlogCommand,
+} from './application/use-cases/update-blog.useCase';
+import {
+  CreateBlogCommand,
+  TExecuteCreateBlog,
+} from './application/use-cases/create-blog.useCase';
 
 @Controller(ROUTERS_PATH.BLOGS)
 export class BlogsController {
   constructor(
     private readonly blogsQueryRepository: BlogsQueryRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
-    private readonly blogsService: BlogsService,
-    private readonly postsService: PostsService,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Get()
   async getAllBlogs(
-    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
-    @Query('sortDirection', new DefaultValuePipe('desc'))
-    sortDirection: SortDirection,
-    @Query('pageSize', new DefaultValuePipe(10)) pageSize: number,
-    @Query('pageNumber', new DefaultValuePipe(1))
-    pageNumber: number,
-    @Query('searchNameTerm') searchNameTerm: string,
+    @Query() queries: FilteredBlogQueries,
   ): Promise<ItemsPaginationViewDto<BlogViewDto>> {
-    return await this.blogsQueryRepository.getAll({
-      sortBy,
-      pageSize,
-      pageNumber,
-      sortDirection,
-      searchNameTerm,
-    });
+    return await this.blogsQueryRepository.getAll(queries);
   }
 
   @Get(':id')
@@ -65,13 +69,7 @@ export class BlogsController {
 
   @Get(':id/posts')
   async getPostsByBlogId(
-    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: string,
-    @Query('sortDirection', new DefaultValuePipe('desc'))
-    sortDirection: SortDirection,
-    @Query('pageSize', new DefaultValuePipe(10)) pageSize: number,
-    @Query('pageNumber', new DefaultValuePipe(1))
-    pageNumber: number,
-    @Query('searchNameTerm') searchNameTerm: string,
+    @Query() queries: FilteredPostQueries,
     @Param('id') id: string,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     const blog = await this.blogsQueryRepository.getById(id);
@@ -80,25 +78,20 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
-    return await this.postsQueryRepository.getAllPosts(
-      {
-        sortBy,
-        pageSize,
-        pageNumber,
-        sortDirection,
-        searchNameTerm,
-      },
-      {
-        blogId: id,
-      },
-    );
+    return await this.postsQueryRepository.getAllPosts(queries, {
+      blogId: id,
+    });
   }
 
   @Post()
   async createBlog(
     @Body() blogCreateDto: BlogCreateDto,
   ): Promise<BlogViewDto | null> {
-    const { id } = await this.blogsService.createBlog(blogCreateDto);
+    const { id } = await this.commandBus.execute<
+      CreateBlogCommand,
+      TExecuteCreateBlog
+    >(new CreateBlogCommand(blogCreateDto));
+
     return await this.blogsQueryRepository.getById(id);
   }
 
@@ -113,12 +106,17 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
-    const { id } = await this.postsService.createPost(
-      {
-        ...postCreateDto,
-        blogId,
-      },
-      blog.name,
+    const { id } = await this.commandBus.execute<
+      CreatePostCommand,
+      TExecuteCreatePost
+    >(
+      new CreatePostCommand(
+        {
+          ...postCreateDto,
+          blogId,
+        },
+        blog.name,
+      ),
     );
 
     return await this.postsQueryRepository.getPostById(id);
@@ -130,7 +128,10 @@ export class BlogsController {
     @Body() blogUpdateDto: BlogUpdateDto,
     @Param('id') id: string,
   ): Promise<void> {
-    const isUpdated = await this.blogsService.updateBlogById(id, blogUpdateDto);
+    const isUpdated = await this.commandBus.execute<
+      UpdateBlogCommand,
+      TExecuteUpdateBlog
+    >(new UpdateBlogCommand(id, blogUpdateDto));
 
     if (!isUpdated) {
       throw new NotFoundException();
@@ -142,7 +143,10 @@ export class BlogsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlogById(@Param('id') id: string) {
-    const isDeleted = await this.blogsService.deleteBlogById(id);
+    const isDeleted = await this.commandBus.execute<
+      DeleteBlogCommand,
+      TExecuteDeleteBlog
+    >(new DeleteBlogCommand(id));
 
     if (!isDeleted) {
       throw new NotFoundException();

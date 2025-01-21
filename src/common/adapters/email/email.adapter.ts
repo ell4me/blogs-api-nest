@@ -1,20 +1,19 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
-import { ENV_NAMES } from '../../../../env';
+import { EmailConfig } from './email.config';
 
 @Injectable()
 export class EmailAdapter {
   private readonly transporter: Transporter;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(private readonly emailConfig: EmailConfig) {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: this.configService.get(ENV_NAMES.SMTP_USER),
-        pass: this.configService.get(ENV_NAMES.SMTP_PASSWORD),
+        user: this.emailConfig.smtpUser,
+        pass: this.emailConfig.smtpPassword,
       },
     });
   }
@@ -26,7 +25,7 @@ export class EmailAdapter {
     const mailOptions: Mail.Options = {
       from: {
         name: 'Blogs-api',
-        address: this.configService.get(ENV_NAMES.SMTP_USER)!,
+        address: this.emailConfig.smtpUser,
       },
       to: emailTo,
       subject: 'Confirm your email',
@@ -34,7 +33,7 @@ export class EmailAdapter {
         '<h1>Thanks for your registration</h1>\n' +
         '<p>To finish registration please follow the link below:\n' +
         '<a href=' +
-        this.configService.get(ENV_NAMES.HOST) +
+        this.emailConfig.host +
         '/confirm-email?code=' +
         emailConfirmationCode +
         '>complete registration</a>\n' +
@@ -51,7 +50,7 @@ export class EmailAdapter {
     const mailOptions: Mail.Options = {
       from: {
         name: 'Blogs-api',
-        address: this.configService.get(ENV_NAMES.SMTP_USER)!,
+        address: this.emailConfig.smtpUser,
       },
       to: emailTo,
       subject: 'Password recovery',
@@ -59,7 +58,7 @@ export class EmailAdapter {
         '<h1>Password recovery</h1>\n' +
         '<p>To finish password recovery please follow the link below:\n' +
         '<a href=' +
-        this.configService.get(ENV_NAMES.HOST) +
+        this.emailConfig.host +
         '/password-recovery?recoveryCode=' +
         passwordRecoveryCode +
         '>recovery password</a>\n' +

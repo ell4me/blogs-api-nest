@@ -1,4 +1,6 @@
 import { SortDirection } from 'mongodb';
+import { IsIn, IsInt, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 import { STATUSES_LIKE } from './constants';
 
@@ -11,24 +13,39 @@ export interface ValidationErrorViewDto {
   errorsMessages: ErrorMessage[];
 }
 
-export interface PaginationQueries {
-  sortBy: string;
-  sortDirection: SortDirection;
-  pageNumber: number;
-  pageSize: number;
+export class PaginationQueries {
+  @IsIn(['createdAt', 'updatedAt'])
+  sortBy: string = 'createdAt';
+
+  @IsIn(['asc', 'desc', 'ascending', 'descending', 1, -1] as SortDirection[])
+  sortDirection: SortDirection = 'desc';
+
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  pageNumber: number = 1;
+
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  pageSize: number = 10;
 }
 
-export interface FilteredBlogQueries extends PaginationQueries {
-  searchNameTerm: string | null;
+export class FilteredBlogQueries extends PaginationQueries {
+  @IsString()
+  searchNameTerm: string = '';
 }
 
-export interface FilteredPostQueries extends PaginationQueries {
-  searchNameTerm: string | null;
+export class FilteredPostQueries extends PaginationQueries {
+  @IsString()
+  searchNameTerm: string = '';
 }
 
-export interface FilteredUserQueries extends PaginationQueries {
-  searchLoginTerm: string | null;
-  searchEmailTerm: string | null;
+export class FilteredUserQueries extends PaginationQueries {
+  @IsString()
+  searchLoginTerm: string = '';
+  @IsString()
+  searchEmailTerm: string = '';
 }
 
 export interface ItemsPaginationViewDto<T = object> {
