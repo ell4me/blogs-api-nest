@@ -18,7 +18,6 @@ import {
   FilteredPostQueries,
   ItemsPaginationViewDto,
   PaginationQueries,
-  ValidationErrorViewDto,
 } from '../../types';
 import { ROUTERS_PATH, VALIDATION_MESSAGES } from '../../constants';
 import { BlogsQueryRepository } from '../blogs/infrastructure/blogs.query-repository';
@@ -74,14 +73,9 @@ export class PostsController {
     const blog = await this.blogsQueryRepository.getById(newPost.blogId);
 
     if (!blog) {
-      throw new BadRequestException({
-        errorsMessages: [
-          {
-            field: 'blogId',
-            message: VALIDATION_MESSAGES.BLOG_IS_NOT_EXIST,
-          },
-        ],
-      } as ValidationErrorViewDto);
+      throw new BadRequestException(
+        getErrorMessage('blogId', VALIDATION_MESSAGES.BLOG_IS_NOT_EXIST),
+      );
     }
 
     const { id } = await this.commandBus.execute<
@@ -97,7 +91,7 @@ export class PostsController {
   async updatePostById(
     @Param('id') id: string,
     @Body() postUpdateDto: PostUpdateDto,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const blog = await this.blogsQueryRepository.getById(postUpdateDto.blogId);
 
     if (!blog) {
@@ -106,31 +100,18 @@ export class PostsController {
       );
     }
 
-    const isUpdated = await this.commandBus.execute<
+    return this.commandBus.execute<
       UpdatePostByIdCommand,
       TExecuteUpdatePostById
     >(new UpdatePostByIdCommand(id, postUpdateDto));
-
-    if (!isUpdated) {
-      throw new NotFoundException();
-    }
-
-    return;
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePostById(@Param('id') id: string): Promise<void> {
-    const isDeleted = await this.commandBus.execute<
-      DeletePostCommand,
-      TExecuteDeletePost
-    >(new DeletePostCommand(id));
-
-    if (!isDeleted) {
-      throw new NotFoundException();
-    }
-
-    return;
+  deletePostById(@Param('id') id: string): Promise<boolean> {
+    return this.commandBus.execute<DeletePostCommand, TExecuteDeletePost>(
+      new DeletePostCommand(id),
+    );
   }
 
   @Get(':id/comments')

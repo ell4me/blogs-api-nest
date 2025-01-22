@@ -1,16 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { ValidationErrorViewDto } from '../../../../types';
-import { getErrorMessage } from '../../../../common/helpers/getErrorMessage';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { PasswordRecoveryDto } from '../../auth.dto';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
 
-export type TExecuteUpdateUserPasswordByRecoveryCodeResult =
-  | ValidationErrorViewDto
-  | {
-      result: boolean;
-    };
+export type TExecuteUpdateUserPasswordByRecoveryCodeResult = void;
 
 export class UpdateUserPasswordByRecoveryCodeCommand {
   constructor(public passwordRecoveryDto: PasswordRecoveryDto) {}
@@ -30,20 +25,15 @@ export class UpdateUserPasswordByRecoveryCodeUseCase
     passwordRecoveryDto: { recoveryCode, newPassword },
   }: UpdateUserPasswordByRecoveryCodeCommand) {
     const user =
-      await this.usersRepository.getUserByPasswordRecoveryCode(recoveryCode);
-
-    if (!user) {
-      return getErrorMessage(
-        'recoveryCode',
-        VALIDATION_MESSAGES.CODE_IS_NOT_CORRECT('Recovery'),
+      await this.usersRepository.getUserByPasswordRecoveryCodeOrBadRequestFail(
+        recoveryCode,
       );
-    }
 
     if (
       !user.passwordRecovery?.expiration ||
       user.passwordRecovery.expiration < new Date().getTime()
     ) {
-      return getErrorMessage(
+      throw BadRequestDomainException.create(
         'recoveryCode',
         VALIDATION_MESSAGES.CODE_EXPIRED('Recovery'),
       );
@@ -52,7 +42,5 @@ export class UpdateUserPasswordByRecoveryCodeUseCase
     user.updatePasswordRecovery();
     user.updatePassword(newPassword);
     await this.usersRepository.save(user);
-
-    return { result: true };
   }
 }

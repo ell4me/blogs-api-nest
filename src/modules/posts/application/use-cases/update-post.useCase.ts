@@ -22,11 +22,7 @@ export class UpdatePostUseCase
     id,
     updatedPost,
   }: UpdatePostByIdCommand): Promise<TExecuteUpdatePostById> {
-    const post = await this.postsRepository.getById(id);
-    if (!post) {
-      return false;
-    }
-
+    const post = await this.postsRepository.findOrNotFoundFail(id);
     post.updatePost(updatedPost);
     await this.postsRepository.save(post);
 

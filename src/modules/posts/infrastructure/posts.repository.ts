@@ -2,15 +2,23 @@ import { DeleteResult } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { Post, PostDocument, TPostModel } from './posts.model';
 import { PostCreateByBlogIdDto } from '../posts.dto';
+import { NotFoundDomainException } from '../../../common/exception/domain-exception';
+
+import { Post, PostDocument, TPostModel } from './posts.model';
 
 @Injectable()
 export class PostsRepository {
   constructor(@InjectModel(Post.name) private PostsModel: TPostModel) {}
 
-  async getById(id: string): Promise<PostDocument | null> {
-    return this.PostsModel.findOne({ id }).exec();
+  async findOrNotFoundFail(id: string): Promise<PostDocument> {
+    const post = await this.PostsModel.findOne({ id }).exec();
+
+    if (!post) {
+      throw NotFoundDomainException.create();
+    }
+
+    return post;
   }
 
   async deleteAllByBlogId(blogId: string): Promise<boolean> {
@@ -23,10 +31,14 @@ export class PostsRepository {
     return post.save();
   }
 
-  async deleteById(id: string): Promise<boolean> {
+  async deleteOrNotFoundFail(id: string): Promise<boolean> {
     const result = await this.PostsModel.deleteOne({ id }).exec();
 
-    return result.deletedCount === 1;
+    if (!result.deletedCount) {
+      throw NotFoundDomainException.create();
+    }
+
+    return true;
   }
 
   deleteAll(): Promise<DeleteResult> {

@@ -15,6 +15,6 @@ export class DeletePostUseCase
   constructor(private readonly postsRepository: PostsRepository) {}
 
   async execute({ id }: DeletePostCommand): Promise<TExecuteDeletePost> {
-    return this.postsRepository.deleteById(id);
+    return this.postsRepository.deleteOrNotFoundFail(id);
   }
 }

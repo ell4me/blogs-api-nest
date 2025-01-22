@@ -4,13 +4,15 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { HttpExceptionFilter } from '../exception-filters/http-exception.filter';
-import { BadRequestExceptionFilter } from '../exception-filters/badRequest-exception.filter';
+import { HttpExceptionFilter } from '../exception/filters/http-exception.filter';
+import { BadRequestExceptionFilter } from '../exception/filters/badRequest-exception.filter';
+import { DomainExceptionFilter } from '../exception/filters/domain-exception.filter';
 
 export const useAppSettings = (app: INestApplication) => {
   app.useGlobalFilters(
     new HttpExceptionFilter(),
     new BadRequestExceptionFilter(),
+    new DomainExceptionFilter(),
   );
 
   app.useGlobalPipes(

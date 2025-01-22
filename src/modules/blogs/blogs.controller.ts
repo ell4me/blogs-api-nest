@@ -127,31 +127,17 @@ export class BlogsController {
   async updateBlogById(
     @Body() blogUpdateDto: BlogUpdateDto,
     @Param('id') id: string,
-  ): Promise<void> {
-    const isUpdated = await this.commandBus.execute<
-      UpdateBlogCommand,
-      TExecuteUpdateBlog
-    >(new UpdateBlogCommand(id, blogUpdateDto));
-
-    if (!isUpdated) {
-      throw new NotFoundException();
-    }
-
-    return;
+  ): Promise<boolean> {
+    return this.commandBus.execute<UpdateBlogCommand, TExecuteUpdateBlog>(
+      new UpdateBlogCommand(id, blogUpdateDto),
+    );
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteBlogById(@Param('id') id: string) {
-    const isDeleted = await this.commandBus.execute<
-      DeleteBlogCommand,
-      TExecuteDeleteBlog
-    >(new DeleteBlogCommand(id));
-
-    if (!isDeleted) {
-      throw new NotFoundException();
-    }
-
-    return;
+  async deleteBlogById(@Param('id') id: string): Promise<boolean> {
+    return this.commandBus.execute<DeleteBlogCommand, TExecuteDeleteBlog>(
+      new DeleteBlogCommand(id),
+    );
   }
 }

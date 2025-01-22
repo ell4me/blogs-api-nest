@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -19,7 +18,6 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUserViewDto } from '../../common/dto/currentUserView.dto';
 import { Token } from '../users/users.types';
 import { CreateUserCommand } from '../users/application/use-cases/create-user.useCase';
-import { ValidationErrorViewDto } from '../../types';
 
 import {
   PasswordRecoveryDto,
@@ -67,14 +65,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registration(@Body() userCreateDto: UserCreateDto): Promise<void> {
-    const result = await this.commandBus.execute<
-      CreateUserCommand,
-      { id: string } | ValidationErrorViewDto
-    >(new CreateUserCommand(userCreateDto, true));
-
-    if ('errorsMessages' in result) {
-      throw new BadRequestException(result);
-    }
+    await this.commandBus.execute(new CreateUserCommand(userCreateDto, true));
 
     return;
   }
@@ -89,36 +80,24 @@ export class AuthController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
-  async registrationConfirmation(
+  registrationConfirmation(
     @Body() registrationConfirmationDto: RegistrationConfirmationDto,
   ): Promise<void> {
-    const result = await this.commandBus.execute<
+    return this.commandBus.execute<
       RegistrationConfirmationCommand,
       TExecuteRegistrationConfirmationResult
     >(new RegistrationConfirmationCommand(registrationConfirmationDto));
-
-    if (result) {
-      throw new BadRequestException(result);
-    }
-
-    return;
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
-  async registrationEmailResending(
+  registrationEmailResending(
     @Body() registrationEmailResendingDto: RegistrationEmailResendingDto,
   ): Promise<void> {
-    const result = await this.commandBus.execute<
+    return this.commandBus.execute<
       RegistrationEmailResendingCommand,
       TExecuteRegistrationEmailResendingResult
     >(new RegistrationEmailResendingCommand(registrationEmailResendingDto));
-
-    if (result) {
-      throw new BadRequestException(result);
-    }
-
-    return;
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -134,18 +113,12 @@ export class AuthController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('new-password')
-  async updateUserPasswordByRecoveryCode(
+  updateUserPasswordByRecoveryCode(
     @Body() passwordRecoveryDto: PasswordRecoveryDto,
   ): Promise<void> {
-    const result = await this.commandBus.execute<
+    return this.commandBus.execute<
       UpdateUserPasswordByRecoveryCodeCommand,
       TExecuteUpdateUserPasswordByRecoveryCodeResult
     >(new UpdateUserPasswordByRecoveryCodeCommand(passwordRecoveryDto));
-
-    if ('errorsMessages' in result) {
-      throw new BadRequestException(result);
-    }
-
-    return;
   }
 }

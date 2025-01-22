@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
-  NotFoundException,
   Param,
   Post,
   Query,
@@ -55,25 +53,15 @@ export class UsersController {
       TExecuteCreateUserResult
     >(new CreateUserCommand(userCreateDto));
 
-    if ('errorsMessages' in result) {
-      throw new BadRequestException(result.errorsMessages);
-    }
-
     return this.usersQueryRepository.getById(result.id);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUserById(@Param('id') id: string): Promise<boolean> {
-    const isDeleted = await this.commandBus.execute<
+  deleteUserById(@Param('id') id: string): Promise<boolean> {
+    return this.commandBus.execute<
       DeleteUserByIdCommand,
       TExecuteDeleteUserByIdResult
     >(new DeleteUserByIdCommand(id));
-
-    if (!isDeleted) {
-      throw new NotFoundException();
-    }
-
-    return isDeleted;
   }
 }

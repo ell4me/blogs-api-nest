@@ -3,6 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
 import { UserCreateDto } from '../users.dto';
+import {
+  BadRequestDomainException,
+  NotFoundDomainException,
+} from '../../../common/exception/domain-exception';
+import { VALIDATION_MESSAGES } from '../../../constants';
 
 import { TUserModel, User, UserDocument } from './users.model';
 
@@ -22,10 +27,14 @@ export class UsersRepository {
     return await user.save();
   }
 
-  async deleteById(id: string): Promise<boolean> {
+  async deleteOrNotFoundFail(id: string): Promise<boolean> {
     const result = await this.UsersModel.deleteOne({ id }).exec();
 
-    return result.deletedCount === 1;
+    if (!result.deletedCount) {
+      throw NotFoundDomainException.create('create');
+    }
+
+    return true;
   }
 
   deleteAll(): Promise<DeleteResult> {
@@ -42,15 +51,41 @@ export class UsersRepository {
     return this.UsersModel.findOne().or([{ email }, { login }]);
   }
 
-  getByConfirmationCode(code: string): Promise<UserDocument | null> {
-    return this.UsersModel.findOne({ 'emailConfirmation.code': code }).exec();
+  async getByConfirmationCodeOrBadRequestFail(
+    code: string,
+  ): Promise<UserDocument> {
+    const user = await this.UsersModel.findOne({
+      'emailConfirmation.code': code,
+    }).exec();
+
+    if (!user) {
+      throw BadRequestDomainException.create(
+        'code',
+        VALIDATION_MESSAGES.CODE_IS_NOT_CORRECT('Confirmation'),
+      );
+    }
+
+    return user;
   }
 
   save(user: UserDocument): Promise<UserDocument> {
     return user.save();
   }
 
-  getUserByPasswordRecoveryCode(code: string): Promise<UserDocument | null> {
-    return this.UsersModel.findOne({ 'passwordRecovery.code': code });
+  async getUserByPasswordRecoveryCodeOrBadRequestFail(
+    code: string,
+  ): Promise<UserDocument> {
+    const user = await this.UsersModel.findOne({
+      'passwordRecovery.code': code,
+    });
+
+    if (!user) {
+      throw BadRequestDomainException.create(
+        'recoveryCode',
+        VALIDATION_MESSAGES.CODE_IS_NOT_CORRECT('Recovery'),
+      );
+    }
+
+    return user;
   }
 }

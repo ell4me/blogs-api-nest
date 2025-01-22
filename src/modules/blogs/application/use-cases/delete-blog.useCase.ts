@@ -19,7 +19,7 @@ export class DeleteBlogUseCase
   ) {}
 
   async execute({ id }: DeleteBlogCommand): Promise<TExecuteDeleteBlog> {
-    const isDeleted = await this.blogsRepository.deleteById(id);
+    const isDeleted = await this.blogsRepository.deleteOrNotFoundFail(id);
 
     if (isDeleted) {
       await this.postsRepository.deleteAllByBlogId(id);

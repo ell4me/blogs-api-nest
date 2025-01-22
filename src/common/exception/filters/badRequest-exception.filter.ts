@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 
-import { ErrorMessage, ValidationErrorViewDto } from '../../types';
+import { ErrorMessage, ValidationErrorViewDto } from '../../../types';
 
 @Catch(BadRequestException)
 export class BadRequestExceptionFilter implements ExceptionFilter {

@@ -16,6 +16,6 @@ export class DeleteUserByIdUseCase
   constructor(private readonly usersRepository: UsersRepository) {}
 
   execute({ id }: DeleteUserByIdCommand) {
-    return this.usersRepository.deleteById(id);
+    return this.usersRepository.deleteOrNotFoundFail(id);
   }
 }

@@ -1,8 +1,9 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { BasicStrategy as Strategy } from 'passport-http';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { AuthConfig } from '../../config/auth.config';
+import { UnauthorizedDomainException } from '../../../../common/exception/domain-exception';
 
 @Injectable()
 export class BasicStrategy extends PassportStrategy(Strategy) {
@@ -18,6 +19,6 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
       return true;
     }
 
-    throw new UnauthorizedException();
+    throw UnauthorizedDomainException.create();
   }
 }

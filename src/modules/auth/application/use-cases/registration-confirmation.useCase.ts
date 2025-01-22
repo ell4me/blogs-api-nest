@@ -2,12 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { RegistrationConfirmationDto } from '../../auth.dto';
-import { ValidationErrorViewDto } from '../../../../types';
-import { getErrorMessage } from '../../../../common/helpers/getErrorMessage';
 import { VALIDATION_MESSAGES } from '../../../../constants';
+import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
 
-export type TExecuteRegistrationConfirmationResult =
-  ValidationErrorViewDto | void;
+export type TExecuteRegistrationConfirmationResult = void;
 
 export class RegistrationConfirmationCommand {
   constructor(
@@ -17,35 +15,25 @@ export class RegistrationConfirmationCommand {
 
 @CommandHandler(RegistrationConfirmationCommand)
 export class RegistrationConfirmationUseCase
-  implements
-    ICommandHandler<
-      RegistrationConfirmationCommand,
-      TExecuteRegistrationConfirmationResult
-    >
+  implements ICommandHandler<RegistrationConfirmationCommand>
 {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute({
     registrationConfirmationDto: { code },
   }: RegistrationConfirmationCommand) {
-    const user = await this.usersRepository.getByConfirmationCode(code);
-
-    if (!user) {
-      return getErrorMessage(
-        'code',
-        VALIDATION_MESSAGES.CODE_IS_NOT_CORRECT('Confirmation'),
-      );
-    }
+    const user =
+      await this.usersRepository.getByConfirmationCodeOrBadRequestFail(code);
 
     if (user.emailConfirmation.isConfirmed) {
-      return getErrorMessage(
+      throw BadRequestDomainException.create(
         'code',
         VALIDATION_MESSAGES.USER_ALREADY_CONFIRMED,
       );
     }
 
     if (user.emailConfirmation.expiration < new Date().getTime()) {
-      return getErrorMessage(
+      throw BadRequestDomainException.create(
         'code',
         VALIDATION_MESSAGES.CODE_EXPIRED('Confirmation'),
       );

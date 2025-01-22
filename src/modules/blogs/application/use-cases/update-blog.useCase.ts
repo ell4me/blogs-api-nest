@@ -26,16 +26,15 @@ export class UpdateBlogUseCase
     id,
     updatedBlog,
   }: UpdateBlogCommand): Promise<TExecuteUpdateBlog> {
-    const blog = await this.blogsRepository.updateById(id, updatedBlog);
-
-    if (!blog) {
-      return !!blog;
-    }
+    const blog = await this.blogsRepository.updateOrNotFoundFail(
+      id,
+      updatedBlog,
+    );
 
     if (blog.name !== updatedBlog.name) {
       await this.postsRepository.updateByBlogId(id, updatedBlog.name);
     }
 
-    return !!blog;
+    return true;
   }
 }

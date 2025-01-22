@@ -2,13 +2,12 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { UserCreateDto } from '../../users.dto';
 import { UserDocument } from '../../infrastructure/users.model';
-import { ValidationErrorViewDto } from '../../../../types';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { EmailAdapter } from '../../../../common/adapters/email/email.adapter';
-import { getErrorMessage } from '../../../../common/helpers/getErrorMessage';
+import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
 
-export type TExecuteCreateUserResult = { id: string } | ValidationErrorViewDto;
+export type TExecuteCreateUserResult = { id: string };
 
 export class CreateUserCommand {
   constructor(
@@ -33,7 +32,12 @@ export class CreateUserUseCase
     });
 
     if (user) {
-      return this.throwErrorDuplicateEmailOrLogin(user, userCreateDto.email);
+      const error = this.throwErrorDuplicateEmailOrLogin(
+        user,
+        userCreateDto.email,
+      );
+
+      throw BadRequestDomainException.create(error.message, error.field);
     }
 
     const createdUser = await this.usersRepository.create(
@@ -58,15 +62,15 @@ export class CreateUserUseCase
     currentEmail: string,
   ) {
     if (currentEmail === user.email) {
-      return getErrorMessage(
-        'email',
-        VALIDATION_MESSAGES.FIELD_IS_EXIST('email'),
-      );
+      return {
+        field: 'email',
+        message: VALIDATION_MESSAGES.FIELD_IS_EXIST('email'),
+      };
     }
 
-    return getErrorMessage(
-      'login',
-      VALIDATION_MESSAGES.FIELD_IS_EXIST('login'),
-    );
+    return {
+      field: 'login',
+      message: VALIDATION_MESSAGES.FIELD_IS_EXIST('login'),
+    };
   }
 }

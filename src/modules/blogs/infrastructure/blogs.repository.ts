@@ -4,16 +4,27 @@ import { Injectable } from '@nestjs/common';
 
 import { BlogUpdateDto, BlogViewDto } from '../blogs.dto';
 import { BlogCreate } from '../blogs.types';
+import { NotFoundDomainException } from '../../../common/exception/domain-exception';
+
 import { Blog, BlogDocument, TBlogModel } from './blogs.model';
 
 @Injectable()
 export class BlogsRepository {
   constructor(@InjectModel(Blog.name) private BlogsModel: TBlogModel) {}
 
-  updateById(id: string, newBlog: BlogUpdateDto): Promise<BlogViewDto | null> {
-    return this.BlogsModel.findOneAndUpdate({ id }, newBlog, {
+  async updateOrNotFoundFail(
+    id: string,
+    newBlog: BlogUpdateDto,
+  ): Promise<BlogViewDto> {
+    const blog = await this.BlogsModel.findOneAndUpdate({ id }, newBlog, {
       returnDocument: 'before',
     }).exec();
+
+    if (!blog) {
+      throw NotFoundDomainException.create();
+    }
+
+    return blog;
   }
 
   async create(createdBlog: BlogCreate): Promise<ObjectId> {
@@ -26,10 +37,14 @@ export class BlogsRepository {
     return blog.save();
   }
 
-  async deleteById(id: string): Promise<boolean> {
+  async deleteOrNotFoundFail(id: string): Promise<boolean> {
     const result = await this.BlogsModel.deleteOne({ id }).exec();
 
-    return result.deletedCount === 1;
+    if (!result.deletedCount) {
+      throw NotFoundDomainException.create();
+    }
+
+    return true;
   }
 
   deleteAll(): Promise<DeleteResult> {
