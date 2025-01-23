@@ -21,27 +21,8 @@ export const VALIDATION_MESSAGES = {
   FIELD_RANGE: 'Field must be to have value in range from 1 to 18',
   AVAILABLE_RESOLUTIONS:
     'Field must include at least one of this value and nothing else: P144, P240, P360, P480, P720, P1080, P1440, P2160',
-  FIELD_INVALID_TYPE: (type: string) => `Field must be ${type}`,
-  LENGTH: ({
-    maxLength,
-    minLength,
-  }: {
-    maxLength?: number;
-    minLength?: number;
-  }) => {
-    if (maxLength && minLength) {
-      return `Field must not be more than ${maxLength} symbols and less than ${minLength}`;
-    }
-
-    if (maxLength) {
-      return `Field must not be more than ${maxLength} symbols`;
-    }
-
-    return `Field must not be less than ${minLength} symbols`;
-  },
   FIELD_IS_EXIST: (field: string) =>
     `User with current ${field} is already exist`,
-  FIELD_IS_NOT_MATCH: (field: string) => `${field} doesn't match to pattern`,
   USER_IS_NOT_FOUND: 'User with that email is not found',
   CODE_IS_NOT_CORRECT: (nameCode?: string) => `${nameCode} code is not correct`,
   CODE_EXPIRED: (nameCode?: string) => `${nameCode} code has already expired`,
@@ -49,4 +30,8 @@ export const VALIDATION_MESSAGES = {
   LIKE_STATUS: 'Like status is not correct',
 };
 
-export const STATUSES_LIKE = ['None', 'Like', 'Dislike'] as const;
+export enum STATUSES_LIKE {
+  NONE = 'None',
+  LIKE = 'Like',
+  DISLIKE = 'Dislike',
+}

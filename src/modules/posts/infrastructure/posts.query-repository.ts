@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { FilteredPostQueries, ItemsPaginationViewDto } from '../../../types';
-
 import { PostViewDto } from '../posts.dto';
+import { STATUSES_LIKE } from '../../../constants';
+
 import { Post, TPostModel } from './posts.model';
 
 @Injectable()
@@ -50,7 +51,7 @@ export class PostsQueryRepository {
           likesCount: 0,
           dislikesCount: 0,
           newestLikes: [],
-          myStatus: 'None',
+          myStatus: STATUSES_LIKE.NONE,
         },
       })),
     };
@@ -71,7 +72,7 @@ export class PostsQueryRepository {
         likesCount: 0,
         dislikesCount: 0,
         newestLikes: [],
-        myStatus: 'None',
+        myStatus: STATUSES_LIKE.NONE,
       },
     };
   }

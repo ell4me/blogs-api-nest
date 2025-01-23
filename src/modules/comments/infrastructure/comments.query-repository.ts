@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { ItemsPaginationViewDto, PaginationQueries } from '../../../types';
+import { CommentViewDto, LikesInfoDto } from '../comments.dto';
+import { STATUSES_LIKE } from '../../../constants';
 
-import { CommentViewDto } from '../comments.dto';
-import { getLikesInfoByUser } from '../helpers/getLikesInfoByUser';
-import { Comment, TCommentModel } from './comments.model';
+import { Comment, LikesInfo, TCommentModel } from './comments.model';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -35,7 +35,7 @@ export class CommentsQueryRepository {
       items: comments.length
         ? comments.map((comment) => ({
             ...comment,
-            likesInfo: getLikesInfoByUser(comment?.likesInfo, userId),
+            likesInfo: this.getLikesInfoByUser(comment?.likesInfo, userId),
           }))
         : [],
     };
@@ -57,11 +57,34 @@ export class CommentsQueryRepository {
 
     return {
       ...comment,
-      likesInfo: getLikesInfoByUser(comment.likesInfo, userId),
+      likesInfo: this.getLikesInfoByUser(comment.likesInfo, userId),
     };
   }
 
   getCountComments(postId: string): Promise<number> {
     return this.CommentsModel.countDocuments({ postId }).exec();
+  }
+
+  private getLikesInfoByUser(
+    likesInfo: LikesInfo,
+    userId?: string,
+  ): LikesInfoDto {
+    let myStatus: STATUSES_LIKE = STATUSES_LIKE.NONE;
+
+    if (userId) {
+      if (likesInfo.likes.includes(String(userId))) {
+        myStatus = STATUSES_LIKE.LIKE;
+      }
+
+      if (likesInfo.dislikes.includes(String(userId))) {
+        myStatus = STATUSES_LIKE.DISLIKE;
+      }
+    }
+
+    return {
+      likesCount: likesInfo.likes.length,
+      dislikesCount: likesInfo.dislikes.length,
+      myStatus,
+    };
   }
 }

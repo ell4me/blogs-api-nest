@@ -2,8 +2,6 @@ import { SortDirection } from 'mongodb';
 import { IsIn, IsInt, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { STATUSES_LIKE } from './constants';
-
 export interface ErrorMessage {
   message: string;
   field: string;
@@ -55,8 +53,6 @@ export interface ItemsPaginationViewDto<T = object> {
   totalCount: number;
   items: T[];
 }
-
-export type StatusLike = (typeof STATUSES_LIKE)[number];
 
 export interface AccessTokenPayload {
   userId: string;

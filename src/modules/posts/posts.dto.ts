@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { StatusLike } from '../../types';
+import { STATUSES_LIKE } from '../../constants';
 
 export interface PostViewDto {
   id: string;
@@ -60,7 +60,7 @@ export class PostUpdateDto {
 export interface ExtendedLikesInfo {
   likesCount: number;
   dislikesCount: number;
-  myStatus: StatusLike;
+  myStatus: STATUSES_LIKE;
   newestLikes: LikesInfo[];
 }
 

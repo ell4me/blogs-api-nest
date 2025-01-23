@@ -1,4 +1,6 @@
-import { StatusLike } from '../../types';
+import { IsEnum, Length } from 'class-validator';
+
+import { STATUSES_LIKE } from '../../constants';
 
 import { CommentatorInfo } from './infrastructure/comments.model';
 
@@ -10,20 +12,23 @@ export interface CommentViewDto {
   likesInfo: LikesInfoDto;
 }
 
-export interface CommentCreateDto {
-  content: string;
-}
-
-export interface CommentUpdateDto {
-  content: string;
-}
-
-export interface CommentLikeDto {
-  likeStatus: StatusLike;
-}
-
 export interface LikesInfoDto {
   likesCount: number;
   dislikesCount: number;
-  myStatus: StatusLike;
+  myStatus: STATUSES_LIKE;
+}
+
+export class CommentCreateDto {
+  @Length(20, 300)
+  content: string;
+}
+
+export class CommentUpdateDto {
+  @Length(20, 300)
+  content: string;
+}
+
+export class CommentLikeDto {
+  @IsEnum(STATUSES_LIKE)
+  likeStatus: STATUSES_LIKE;
 }
