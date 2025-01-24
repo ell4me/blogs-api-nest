@@ -67,7 +67,7 @@ export class AuthController {
       TExecuteLoginUserResult
     >(new LoginUserCommand(userId));
 
-    res.cookie('refreshToken', refreshToken);
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 
     return { accessToken };
   }
