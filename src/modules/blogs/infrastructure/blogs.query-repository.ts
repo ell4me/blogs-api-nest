@@ -25,9 +25,9 @@ export class BlogsQueryRepository {
     }
 
     const blogs = await blogsQuery
-      .skip((pageNumber - 1) * Number(pageSize))
+      .skip((pageNumber - 1) * pageSize)
       .sort({ [sortBy]: sortDirection })
-      .limit(Number(pageSize))
+      .limit(pageSize)
       .select('-_id -__v -updatedAt')
       .exec();
 
@@ -35,8 +35,8 @@ export class BlogsQueryRepository {
 
     return {
       page: pageNumber,
-      pagesCount: Math.ceil(totalCount / Number(pageSize)),
-      pageSize: Number(pageSize),
+      pagesCount: Math.ceil(totalCount / pageSize),
+      pageSize: pageSize,
       totalCount,
       items: blogs,
     };

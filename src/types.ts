@@ -1,6 +1,6 @@
 import { SortDirection } from 'mongodb';
-import { IsInt, IsString } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export interface ErrorMessage {
   message: string;
@@ -20,16 +20,14 @@ export class PaginationQueries {
   @IsString()
   sortDirection: SortDirection = 'desc';
 
-  @IsInt()
+  // @IsInt()
   // @Min(1)
   @Type(() => Number)
-  @Transform(({ value }) => (value ? value : 1))
   pageNumber: number = 1;
 
-  @IsInt()
+  // @IsInt()
   // @Min(1)
   @Type(() => Number)
-  @Transform(({ value }) => (value ? value : 10))
   pageSize: number = 10;
 }
 
