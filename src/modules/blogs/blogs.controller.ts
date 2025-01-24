@@ -29,6 +29,7 @@ import {
 import { Public } from '../../common/decorators/public.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/currentUser.decorator';
+import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 import { BlogsQueryRepository } from './infrastructure/blogs.query-repository';
@@ -44,7 +45,6 @@ import {
   CreateBlogCommand,
   TExecuteCreateBlog,
 } from './application/use-cases/create-blog.useCase';
-import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 
 @Controller(ROUTERS_PATH.BLOGS)
 export class BlogsController {
@@ -58,6 +58,7 @@ export class BlogsController {
   async getAllBlogs(
     @Query() queries: FilteredBlogQueries,
   ): Promise<ItemsPaginationViewDto<BlogViewDto>> {
+    console.log(queries, 'queries');
     return await this.blogsQueryRepository.getAll(queries);
   }
 
