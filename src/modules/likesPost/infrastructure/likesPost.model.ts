@@ -19,7 +19,7 @@ export type LikesPostDocument = HydratedDocument<
   LikesPostInstanceMethods
 >;
 
-@Schema()
+@Schema({ _id: false })
 export class LikePostUserInfo {
   @Prop({ required: true })
   id: string;

@@ -24,7 +24,7 @@ interface UserStaticMethods {
   ) => Promise<UserDocument>;
 }
 
-@Schema()
+@Schema({ _id: false })
 export class EmailConfirmation {
   @Prop({ default: false })
   isConfirmed: boolean;
@@ -36,7 +36,7 @@ export class EmailConfirmation {
   code: string;
 }
 
-@Schema()
+@Schema({ _id: false })
 export class PasswordRecovery {
   @Prop({ default: '' })
   code: string;

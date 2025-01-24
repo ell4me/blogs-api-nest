@@ -16,7 +16,7 @@ interface CommentInstanceMethods {
 export type TCommentModel = Model<Comment, object, CommentInstanceMethods>;
 export type CommentDocument = HydratedDocument<Comment, CommentInstanceMethods>;
 
-@Schema()
+@Schema({ _id: false })
 export class CommentatorInfo {
   @Prop({ required: true })
   userId: string;
@@ -25,7 +25,7 @@ export class CommentatorInfo {
   userLogin: string;
 }
 
-@Schema()
+@Schema({ _id: false })
 export class LikesInfo {
   @Prop({ type: [String], default: [] })
   likes: string[];
@@ -104,5 +104,5 @@ export class Comment {
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 
 // Methods
-CommentSchema.methods.updatePost = Comment.prototype.updateComment;
+CommentSchema.methods.updateComment = Comment.prototype.updateComment;
 CommentSchema.methods.updateLikeStatus = Comment.prototype.updateLikeStatus;
