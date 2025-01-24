@@ -1,5 +1,5 @@
 import { SortDirection } from 'mongodb';
-import { IsIn, IsInt, IsString, Min } from 'class-validator';
+import { IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export interface ErrorMessage {
@@ -12,19 +12,21 @@ export interface ValidationErrorViewDto {
 }
 
 export class PaginationQueries {
-  @IsIn(['createdAt', 'updatedAt'])
+  // @IsIn(['createdAt', 'updatedAt'])
+  @IsString()
   sortBy: string = 'createdAt';
 
-  @IsIn(['asc', 'desc', 'ascending', 'descending', 1, -1] as SortDirection[])
+  // @IsIn(['asc', 'desc', 'ascending', 'descending', 1, -1] as SortDirection[])
+  @IsString()
   sortDirection: SortDirection = 'desc';
 
-  @IsInt()
-  @Min(1)
+  // @IsInt()
+  // @Min(1)
   @Type(() => Number)
   pageNumber: number = 1;
 
-  @IsInt()
-  @Min(1)
+  // @IsInt()
+  // @Min(1)
   @Type(() => Number)
   pageSize: number = 10;
 }
