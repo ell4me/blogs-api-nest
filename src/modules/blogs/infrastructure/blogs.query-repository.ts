@@ -13,8 +13,8 @@ export class BlogsQueryRepository {
   ) {}
 
   async getAll({
-    pageSize = 10,
-    pageNumber = 1,
+    pageSize,
+    pageNumber,
     sortBy,
     sortDirection,
     searchNameTerm,

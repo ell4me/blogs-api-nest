@@ -15,7 +15,7 @@ export class CommentsQueryRepository {
 
   async getCommentsByPostId(
     postId: string,
-    { pageSize = 10, pageNumber = 1, sortBy, sortDirection }: PaginationQueries,
+    { pageSize, pageNumber, sortBy, sortDirection }: PaginationQueries,
     userId?: string,
   ): Promise<ItemsPaginationViewDto<CommentViewDto>> {
     const comments: Comment[] = await this.CommentsModel.find({ postId })
