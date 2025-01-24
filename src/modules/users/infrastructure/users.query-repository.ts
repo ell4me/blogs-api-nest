@@ -15,8 +15,8 @@ export class UsersQueryRepository {
   ) {}
 
   async getAll({
-    pageSize,
-    pageNumber,
+    pageSize = 10,
+    pageNumber = 1,
     sortBy,
     sortDirection,
     searchLoginTerm,

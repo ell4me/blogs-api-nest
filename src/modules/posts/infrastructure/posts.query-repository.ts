@@ -16,8 +16,8 @@ export class PostsQueryRepository {
 
   async getAllPosts(
     {
-      pageSize,
-      pageNumber,
+      pageSize = 10,
+      pageNumber = 1,
       sortBy,
       sortDirection,
       searchNameTerm,
