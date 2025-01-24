@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { BlogsModule } from '../blogs/blogs.module';
 import { CommentsModule } from '../comments/comments.module';
+import { LikesPostModule } from '../likesPost/likesPost.module';
 
 import { PostsController } from './posts.controller';
 import { Post, PostsSchema } from './infrastructure/posts.model';
@@ -19,6 +20,7 @@ const useCases = [UpdatePostUseCase, CreatePostUseCase, DeletePostUseCase];
     MongooseModule.forFeature([{ name: Post.name, schema: PostsSchema }]),
     forwardRef(() => BlogsModule),
     CommentsModule,
+    LikesPostModule,
   ],
   controllers: [PostsController],
   providers: [PostsQueryRepository, PostsRepository, ...useCases],

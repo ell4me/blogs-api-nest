@@ -10,7 +10,7 @@ import { Comment, CommentDocument, TCommentModel } from './comments.model';
 @Injectable()
 export class CommentsRepository {
   constructor(
-    @InjectModel(Comment.name) private CommentsModel: TCommentModel,
+    @InjectModel(Comment.name) private readonly CommentsModel: TCommentModel,
   ) {}
 
   async create(comment: CommentCreate): Promise<CommentDocument> {

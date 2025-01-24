@@ -3,13 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { FilteredPostQueries, ItemsPaginationViewDto } from '../../../types';
 import { PostViewDto } from '../posts.dto';
-import { STATUSES_LIKE } from '../../../constants';
+import { LikesPostQueryRepository } from '../../likesPost/infrastructure/likesPost.query-repository';
 
 import { Post, TPostModel } from './posts.model';
 
 @Injectable()
 export class PostsQueryRepository {
-  constructor(@InjectModel(Post.name) private PostsModel: TPostModel) {}
+  constructor(
+    @InjectModel(Post.name) private readonly PostsModel: TPostModel,
+    private readonly likesPostQueryRepository: LikesPostQueryRepository,
+  ) {}
 
   async getAllPosts(
     {
@@ -19,6 +22,7 @@ export class PostsQueryRepository {
       sortDirection,
       searchNameTerm,
     }: FilteredPostQueries,
+    userId?: string,
     additionalFilter?: { blogId?: string },
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     const postsQuery = this.PostsModel.find();
@@ -38,6 +42,12 @@ export class PostsQueryRepository {
       .select('-__v -_id -updatedAt')
       .lean();
 
+    const postIds = posts.map(({ id }) => id);
+    const likesByPostIds = await this.likesPostQueryRepository.getByPostIds(
+      postIds,
+      userId,
+    );
+
     const postsCountByFilter = await this.getCountPosts(additionalFilter);
 
     return {
@@ -47,17 +57,15 @@ export class PostsQueryRepository {
       totalCount: postsCountByFilter,
       items: posts.map((post) => ({
         ...post,
-        extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          newestLikes: [],
-          myStatus: STATUSES_LIKE.NONE,
-        },
+        extendedLikesInfo: likesByPostIds[post.id],
       })),
     };
   }
 
-  async getPostById(postId: string): Promise<PostViewDto | null> {
+  async getPostById(
+    postId: string,
+    userId?: string,
+  ): Promise<PostViewDto | null> {
     const post: Post | null = await this.PostsModel.findOne({ id: postId })
       .select('-__v -_id -updatedAt')
       .lean();
@@ -66,15 +74,12 @@ export class PostsQueryRepository {
       return post;
     }
 
-    return {
-      ...post,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        newestLikes: [],
-        myStatus: STATUSES_LIKE.NONE,
-      },
-    };
+    const extendedLikesInfo = await this.likesPostQueryRepository.getByPostId(
+      postId,
+      userId,
+    );
+
+    return { ...post, extendedLikesInfo };
   }
 
   getCountPosts(filter?: { blogId?: string }): Promise<number> {

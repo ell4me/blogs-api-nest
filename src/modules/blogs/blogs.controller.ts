@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
@@ -25,6 +26,9 @@ import {
   CreatePostCommand,
   TExecuteCreatePost,
 } from '../posts/application/use-cases/create-post.useCase';
+import { Public } from '../../common/decorators/public.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../../common/decorators/currentUser.decorator';
 
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 import { BlogsQueryRepository } from './infrastructure/blogs.query-repository';
@@ -67,9 +71,12 @@ export class BlogsController {
     return blog;
   }
 
+  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get(':id/posts')
   async getPostsByBlogId(
     @Query() queries: FilteredPostQueries,
+    @CurrentUser('id') userId: string,
     @Param('id') id: string,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     const blog = await this.blogsQueryRepository.getById(id);
@@ -78,7 +85,7 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
-    return await this.postsQueryRepository.getAllPosts(queries, {
+    return await this.postsQueryRepository.getAllPosts(queries, userId, {
       blogId: id,
     });
   }

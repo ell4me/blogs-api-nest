@@ -10,7 +10,9 @@ import { Blog, BlogDocument, TBlogModel } from './blogs.model';
 
 @Injectable()
 export class BlogsRepository {
-  constructor(@InjectModel(Blog.name) private BlogsModel: TBlogModel) {}
+  constructor(
+    @InjectModel(Blog.name) private readonly BlogsModel: TBlogModel,
+  ) {}
 
   async updateOrNotFoundFail(
     id: string,

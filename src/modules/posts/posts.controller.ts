@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
@@ -23,6 +24,16 @@ import { ROUTERS_PATH, VALIDATION_MESSAGES } from '../../constants';
 import { BlogsQueryRepository } from '../blogs/infrastructure/blogs.query-repository';
 import { CommentsQueryRepository } from '../comments/infrastructure/comments.query-repository';
 import { getErrorMessage } from '../../common/helpers/getErrorMessage';
+import { CurrentUser } from '../../common/decorators/currentUser.decorator';
+import { CommentCreateDto, CommentViewDto } from '../comments/comments.dto';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CreateCommentCommand } from '../comments/application/use-cases/create-comment.useCase';
+import { Public } from '../../common/decorators/public.decorator';
+import { LikesPostUpdateDto } from '../likesPost/likesPost.dto';
+import {
+  TExecuteUpdateLikeStatusPost,
+  UpdateLikeStatusPostCommand,
+} from '../likesPost/application/use-cases/update-like-status-post.useCase';
 
 import { PostsQueryRepository } from './infrastructure/posts.query-repository';
 import { PostCreateByBlogIdDto, PostUpdateDto, PostViewDto } from './posts.dto';
@@ -48,16 +59,24 @@ export class PostsController {
     private readonly commandBus: CommandBus,
   ) {}
 
+  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllPosts(
     @Query() queries: FilteredPostQueries,
+    @CurrentUser('id') userId: string,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
-    return this.postsQueryRepository.getAllPosts(queries);
+    return this.postsQueryRepository.getAllPosts(queries, userId);
   }
 
+  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getPostById(@Param('id') id: string) {
-    const post = await this.postsQueryRepository.getPostById(id);
+  async getPostById(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    const post = await this.postsQueryRepository.getPostById(id, userId);
 
     if (!post) {
       throw new NotFoundException();
@@ -114,16 +133,67 @@ export class PostsController {
     );
   }
 
-  @Get(':id/comments')
+  @Public()
+  @UseGuards(JwtAuthGuard)
+  @Get(':postId/comments')
   async getCommentsByPostId(
     @Query() queries: PaginationQueries,
-    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @Param('postId') postId: string,
   ) {
-    const post = await this.postsQueryRepository.getPostById(id);
+    const post = await this.postsQueryRepository.getPostById(postId);
     if (!post) {
       throw new NotFoundException();
     }
 
-    return await this.commentsQueryRepository.getCommentsByPostId(id, queries);
+    return await this.commentsQueryRepository.getCommentsByPostId(
+      postId,
+      queries,
+      userId,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':postId/comments')
+  async createComment(
+    @Body() commentCreateDto: CommentCreateDto,
+    @CurrentUser('id') userId: string,
+    @Param('postId') postId: string,
+  ): Promise<CommentViewDto> {
+    const post = await this.postsQueryRepository.getPostById(postId);
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    const { id } = await this.commandBus.execute(
+      new CreateCommentCommand(commentCreateDto, postId, userId),
+    );
+
+    const comment = await this.commentsQueryRepository.getCommentById(
+      id,
+      userId,
+    );
+
+    return comment!;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':postId/like-status')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async likePostById(
+    @Body() likesPostUpdateDto: LikesPostUpdateDto,
+    @CurrentUser('id') userId: string,
+    @Param('postId') postId: string,
+  ): Promise<void> {
+    const post = await this.postsQueryRepository.getPostById(postId);
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    return this.commandBus.execute<
+      UpdateLikeStatusPostCommand,
+      TExecuteUpdateLikeStatusPost
+    >(new UpdateLikeStatusPostCommand(postId, userId, likesPostUpdateDto));
   }
 }

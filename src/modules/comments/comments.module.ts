@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { UsersModule } from '../users/users.module';
+
 import { CommentsQueryRepository } from './infrastructure/comments.query-repository';
 import { CommentsController } from './comments.controller';
 import { Comment, CommentSchema } from './infrastructure/comments.model';
@@ -20,6 +22,7 @@ const useCases = [
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
+    UsersModule,
   ],
   controllers: [CommentsController],
   providers: [CommentsQueryRepository, CommentsRepository, ...useCases],

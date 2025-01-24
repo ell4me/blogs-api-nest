@@ -15,6 +15,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { ROUTERS_PATH } from '../../constants';
 import { CurrentUser } from '../../common/decorators/currentUser.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { Public } from '../../common/decorators/public.decorator';
 
 import { CommentsQueryRepository } from './infrastructure/comments.query-repository';
 import {
@@ -42,9 +43,17 @@ export class CommentsController {
     private readonly commandBus: CommandBus,
   ) {}
 
+  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getCommentById(@Param('id') id: string): Promise<CommentViewDto> {
-    const comment = await this.commentsQueryRepository.getCommentById(id);
+  async getCommentById(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+  ): Promise<CommentViewDto> {
+    const comment = await this.commentsQueryRepository.getCommentById(
+      id,
+      userId,
+    );
 
     if (!comment) {
       throw new NotFoundException();

@@ -2,8 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { CommentLikeDto } from '../../comments.dto';
-import { STATUSES_LIKE, VALIDATION_MESSAGES } from '../../../../constants';
-import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
+import { STATUSES_LIKE } from '../../../../constants';
 
 export type TExecuteLikeComment = boolean;
 
@@ -28,13 +27,6 @@ export class LikeCommentUseCase
     userId,
     commentLikeDto: { likeStatus },
   }: LikeCommentCommand): Promise<TExecuteLikeComment> {
-    if (!STATUSES_LIKE[likeStatus]) {
-      throw BadRequestDomainException.create(
-        VALIDATION_MESSAGES.LIKE_STATUS,
-        'likeStatus',
-      );
-    }
-
     if (currentUserLikeStatus === likeStatus) {
       return false;
     }

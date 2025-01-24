@@ -57,7 +57,7 @@ export class Comment {
   @Prop({ type: CommentatorInfoSchema, required: true })
   commentatorInfo: CommentatorInfo;
 
-  @Prop({ type: LikesInfoSchema })
+  @Prop({ type: LikesInfoSchema, default: {} })
   likesInfo: LikesInfo;
 
   updateComment(comment: CommentUpdateDto) {

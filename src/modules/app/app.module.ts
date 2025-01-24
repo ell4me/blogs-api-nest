@@ -11,6 +11,7 @@ import { AuthModule } from '../auth/auth.module';
 import { TestingModule } from '../testing/testing.module';
 import { CommonConfigModule } from '../../common/config/common-config.module';
 import { CommonConfig } from '../../common/config/common.config';
+import { LikesPostModule } from '../likesPost/likesPost.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CommonConfig } from '../../common/config/common.config';
       inject: [CommonConfig],
     }),
     UsersModule,
+    LikesPostModule,
     PostsModule,
     BlogsModule,
     CommentsModule,

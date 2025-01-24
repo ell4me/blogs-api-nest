@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { STATUSES_LIKE } from '../../constants';
+import { ExtendedLikesInfo } from '../likesPost/likesPost.types';
 
 export interface PostViewDto {
   id: string;
@@ -55,17 +55,4 @@ export class PostUpdateDto {
   @Transform(({ value }) => value?.trim())
   @IsNotEmpty()
   blogId: string;
-}
-
-export interface ExtendedLikesInfo {
-  likesCount: number;
-  dislikesCount: number;
-  myStatus: STATUSES_LIKE;
-  newestLikes: LikesInfo[];
-}
-
-interface LikesInfo {
-  addedAt: Date;
-  userId: string;
-  login: string;
 }
