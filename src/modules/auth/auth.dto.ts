@@ -32,6 +32,7 @@ export class PasswordRecoveryEmailDto {
 
 export class PasswordRecoveryDto {
   @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(6, 20)
   newPassword: string;
 

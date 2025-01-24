@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import {
   Body,
   Controller,
@@ -6,6 +7,7 @@ import {
   HttpStatus,
   Post,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
@@ -56,10 +58,18 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@CurrentUser('id') userId: string): Promise<Token> {
-    return this.commandBus.execute<LoginUserCommand, TExecuteLoginUserResult>(
-      new LoginUserCommand(userId),
-    );
+  async login(
+    @Res({ passthrough: true }) res: Response,
+    @CurrentUser('id') userId: string,
+  ): Promise<Pick<Token, 'accessToken'>> {
+    const { accessToken, refreshToken } = await this.commandBus.execute<
+      LoginUserCommand,
+      TExecuteLoginUserResult
+    >(new LoginUserCommand(userId));
+
+    res.cookie('refreshToken', refreshToken);
+
+    return { accessToken };
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

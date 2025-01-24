@@ -1,4 +1,5 @@
-import { IsUrl, Length, MaxLength } from 'class-validator';
+import { IsString, IsUrl, Length, MaxLength } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export interface BlogViewDto {
   id: string;
@@ -10,9 +11,13 @@ export interface BlogViewDto {
 }
 
 export class BlogCreateDto {
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 15)
   name: string;
 
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 500)
   description: string;
 
@@ -22,9 +27,13 @@ export class BlogCreateDto {
 }
 
 export class BlogUpdateDto {
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 15)
   name: string;
 
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 500)
   description: string;
 

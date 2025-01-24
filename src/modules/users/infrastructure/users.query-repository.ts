@@ -10,7 +10,9 @@ import { TUserModel, User } from './users.model';
 
 @Injectable()
 export class UsersQueryRepository {
-  constructor(@InjectModel(User.name) private UsersModel: TUserModel) {}
+  constructor(
+    @InjectModel(User.name) private readonly UsersModel: TUserModel,
+  ) {}
 
   async getAll({
     pageSize,

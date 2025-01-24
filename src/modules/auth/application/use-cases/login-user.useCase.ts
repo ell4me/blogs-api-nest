@@ -18,6 +18,7 @@ export class LoginUserUseCase
   async execute({ userId }: LoginUserCommand) {
     return {
       accessToken: this.jwtService.sign({ userId }),
+      refreshToken: this.jwtService.sign({ userId }),
     };
   }
 }

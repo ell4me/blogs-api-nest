@@ -10,7 +10,7 @@ import { Comment, LikesInfo, TCommentModel } from './comments.model';
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
-    @InjectModel(Comment.name) private CommentsModel: TCommentModel,
+    @InjectModel(Comment.name) private readonly CommentsModel: TCommentModel,
   ) {}
 
   async getCommentsByPostId(

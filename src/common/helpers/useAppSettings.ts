@@ -3,6 +3,7 @@ import {
   INestApplication,
   ValidationPipe,
 } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
 
 import { HttpExceptionFilter } from '../exception/filters/http-exception.filter';
 import { BadRequestExceptionFilter } from '../exception/filters/badRequest-exception.filter';
@@ -35,5 +36,6 @@ export const useAppSettings = (app: INestApplication) => {
     }),
   );
 
+  app.use(cookieParser());
   app.enableCors();
 };

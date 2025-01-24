@@ -13,8 +13,10 @@ export class DomainExceptionFilter implements ExceptionFilter {
   catch(exception: DomainException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
+    const request = ctx.getRequest();
+    const statusCode = this.matchHttpCode(exception.code);
 
-    response.status(this.matchHttpCode(exception.code)).json(
+    response.status(statusCode).json(
       !!exception.extension.length
         ? ({
             errorsMessages: exception.extension.map(({ message, key }) => ({
@@ -22,7 +24,12 @@ export class DomainExceptionFilter implements ExceptionFilter {
               field: key,
             })),
           } as ValidationErrorViewDto)
-        : {},
+        : {
+            statusCode,
+            message: exception.message,
+            timestamp: new Date().toISOString(),
+            path: request.url,
+          },
     );
   }
 

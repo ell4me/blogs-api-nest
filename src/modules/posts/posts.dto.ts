@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { STATUSES_LIKE } from '../../constants';
+import { ExtendedLikesInfo } from '../likesPost/likesPost.types';
 
 export interface PostViewDto {
   id: string;
@@ -15,12 +15,18 @@ export interface PostViewDto {
 }
 
 export class PostCreateByBlogIdDto {
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 30)
   title: string;
 
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 100)
   shortDescription: string;
 
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 1000)
   content: string;
 
@@ -31,23 +37,35 @@ export class PostCreateByBlogIdDto {
 }
 
 export class PostCreateDto {
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 30)
   title: string;
 
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 100)
   shortDescription: string;
 
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 1000)
   content: string;
 }
 
 export class PostUpdateDto {
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 30)
   title: string;
 
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 100)
   shortDescription: string;
 
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(1, 1000)
   content: string;
 
@@ -55,17 +73,4 @@ export class PostUpdateDto {
   @Transform(({ value }) => value?.trim())
   @IsNotEmpty()
   blogId: string;
-}
-
-export interface ExtendedLikesInfo {
-  likesCount: number;
-  dislikesCount: number;
-  myStatus: STATUSES_LIKE;
-  newestLikes: LikesInfo[];
-}
-
-interface LikesInfo {
-  addedAt: Date;
-  userId: string;
-  login: string;
 }

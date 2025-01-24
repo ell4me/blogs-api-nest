@@ -25,7 +25,7 @@ export class UpdateUserPasswordByRecoveryCodeUseCase
     passwordRecoveryDto: { recoveryCode, newPassword },
   }: UpdateUserPasswordByRecoveryCodeCommand) {
     const user =
-      await this.usersRepository.getUserByPasswordRecoveryCodeOrBadRequestFail(
+      await this.usersRepository.findByPasswordRecoveryCodeOrBadRequestFail(
         recoveryCode,
       );
 

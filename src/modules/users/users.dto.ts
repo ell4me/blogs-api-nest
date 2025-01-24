@@ -19,6 +19,7 @@ export class UserCreateDto {
   email: string;
 
   @IsString()
+  @Transform(({ value }) => value?.trim())
   @Length(6, 20)
   password: string;
 }

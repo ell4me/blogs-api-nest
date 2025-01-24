@@ -23,7 +23,7 @@ export class RegistrationConfirmationUseCase
     registrationConfirmationDto: { code },
   }: RegistrationConfirmationCommand) {
     const user =
-      await this.usersRepository.getByConfirmationCodeOrBadRequestFail(code);
+      await this.usersRepository.findByConfirmationCodeOrBadRequestFail(code);
 
     if (user.emailConfirmation.isConfirmed) {
       throw BadRequestDomainException.create(

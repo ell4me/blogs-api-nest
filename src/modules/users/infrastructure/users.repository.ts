@@ -6,6 +6,7 @@ import { UserCreateDto } from '../users.dto';
 import {
   BadRequestDomainException,
   NotFoundDomainException,
+  UnauthorizedDomainException,
 } from '../../../common/exception/domain-exception';
 import { VALIDATION_MESSAGES } from '../../../constants';
 
@@ -13,7 +14,9 @@ import { TUserModel, User, UserDocument } from './users.model';
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectModel(User.name) private UsersModel: TUserModel) {}
+  constructor(
+    @InjectModel(User.name) private readonly UsersModel: TUserModel,
+  ) {}
 
   async create(
     userCreateDto: UserCreateDto,
@@ -51,7 +54,27 @@ export class UsersRepository {
     return this.UsersModel.findOne().or([{ email }, { login }]);
   }
 
-  async getByConfirmationCodeOrBadRequestFail(
+  async findOrNotFoundFail(id: string): Promise<UserDocument> {
+    const user = await this.UsersModel.findOne({ id });
+
+    if (!user) {
+      throw NotFoundDomainException.create();
+    }
+
+    return user;
+  }
+
+  async findOrUnauthorizedFail(id: string): Promise<UserDocument> {
+    const user = await this.UsersModel.findOne({ id });
+
+    if (!user) {
+      throw UnauthorizedDomainException.create();
+    }
+
+    return user;
+  }
+
+  async findByConfirmationCodeOrBadRequestFail(
     code: string,
   ): Promise<UserDocument> {
     const user = await this.UsersModel.findOne({
@@ -72,7 +95,7 @@ export class UsersRepository {
     return user.save();
   }
 
-  async getUserByPasswordRecoveryCodeOrBadRequestFail(
+  async findByPasswordRecoveryCodeOrBadRequestFail(
     code: string,
   ): Promise<UserDocument> {
     const user = await this.UsersModel.findOne({

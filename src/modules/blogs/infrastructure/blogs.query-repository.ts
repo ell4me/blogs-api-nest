@@ -2,13 +2,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
 import { FilteredBlogQueries, ItemsPaginationViewDto } from '../../../types';
-
 import { BlogViewDto } from '../blogs.dto';
+
 import { Blog, TBlogModel } from './blogs.model';
 
 @Injectable()
 export class BlogsQueryRepository {
-  constructor(@InjectModel(Blog.name) private BlogsModel: TBlogModel) {}
+  constructor(
+    @InjectModel(Blog.name) private readonly BlogsModel: TBlogModel,
+  ) {}
 
   async getAll({
     pageSize,

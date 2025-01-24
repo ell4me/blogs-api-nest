@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
@@ -25,6 +26,9 @@ import {
   CreatePostCommand,
   TExecuteCreatePost,
 } from '../posts/application/use-cases/create-post.useCase';
+import { Public } from '../../common/decorators/public.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../../common/decorators/currentUser.decorator';
 
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 import { BlogsQueryRepository } from './infrastructure/blogs.query-repository';
@@ -40,6 +44,7 @@ import {
   CreateBlogCommand,
   TExecuteCreateBlog,
 } from './application/use-cases/create-blog.useCase';
+import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 
 @Controller(ROUTERS_PATH.BLOGS)
 export class BlogsController {
@@ -67,9 +72,12 @@ export class BlogsController {
     return blog;
   }
 
+  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get(':id/posts')
   async getPostsByBlogId(
     @Query() queries: FilteredPostQueries,
+    @CurrentUser('id') userId: string,
     @Param('id') id: string,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     const blog = await this.blogsQueryRepository.getById(id);
@@ -78,11 +86,12 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
-    return await this.postsQueryRepository.getAllPosts(queries, {
+    return await this.postsQueryRepository.getAllPosts(queries, userId, {
       blogId: id,
     });
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createBlog(
     @Body() blogCreateDto: BlogCreateDto,
@@ -95,6 +104,7 @@ export class BlogsController {
     return await this.blogsQueryRepository.getById(id);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post(':blogId/posts')
   async createPostByBlogId(
     @Body() postCreateDto: PostCreateDto,
@@ -122,6 +132,7 @@ export class BlogsController {
     return await this.postsQueryRepository.getPostById(id);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlogById(
@@ -133,6 +144,7 @@ export class BlogsController {
     );
   }
 
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlogById(@Param('id') id: string): Promise<boolean> {
