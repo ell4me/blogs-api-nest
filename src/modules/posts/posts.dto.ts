@@ -1,4 +1,4 @@
-import { IsString, Length, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 import { ExtendedLikesInfo } from '../likesPost/likesPost.types';
@@ -32,7 +32,7 @@ export class PostCreateByBlogIdDto {
 
   @IsString()
   @Transform(({ value }) => value?.trim())
-  @MinLength(6)
+  @IsNotEmpty()
   blogId: string;
 }
 
@@ -71,6 +71,6 @@ export class PostUpdateDto {
 
   @IsString()
   @Transform(({ value }) => value?.trim())
-  @MinLength(6)
+  @IsNotEmpty()
   blogId: string;
 }
