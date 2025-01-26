@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { LikesPostUpdateDto } from '../../likesPost.dto';
-import { LikesPostRepository } from '../../infrastructure/likesPost.repository';
+import { LikesPostUpdateDto } from '../../likes-post.dto';
+import { LikesPostRepository } from '../../infrastructure/likes-post.repository';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 
 export type TExecuteUpdateLikeStatusPost = void;

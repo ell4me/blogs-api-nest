@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { ExtendedLikesInfo } from '../likesPost/likesPost.types';
+import { ExtendedLikesInfo } from '../likes-post/likes-post.types';
 
 export interface PostViewDto {
   id: string;

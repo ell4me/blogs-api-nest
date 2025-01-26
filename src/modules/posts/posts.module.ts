@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { BlogsModule } from '../blogs/blogs.module';
 import { CommentsModule } from '../comments/comments.module';
-import { LikesPostModule } from '../likesPost/likesPost.module';
+import { LikesPostModule } from '../likes-post/likes-post.module';
 
 import { PostsController } from './posts.controller';
 import { Post, PostsSchema } from './infrastructure/posts.model';

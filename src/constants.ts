@@ -1,7 +1,7 @@
 // In seconds
 export const EXPIRATION_TOKEN = {
-  ACCESS: 600,
-  REFRESH: 1200,
+  ACCESS: 10,
+  REFRESH: 20,
 };
 
 export const ROUTERS_PATH = {
@@ -35,3 +35,5 @@ export enum STATUSES_LIKE {
   LIKE = 'Like',
   DISLIKE = 'Dislike',
 }
+
+export const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken';

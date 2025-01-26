@@ -24,16 +24,16 @@ import { ROUTERS_PATH, VALIDATION_MESSAGES } from '../../constants';
 import { BlogsQueryRepository } from '../blogs/infrastructure/blogs.query-repository';
 import { CommentsQueryRepository } from '../comments/infrastructure/comments.query-repository';
 import { getErrorMessage } from '../../common/helpers/getErrorMessage';
-import { CurrentUser } from '../../common/decorators/currentUser.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CommentCreateDto, CommentViewDto } from '../comments/comments.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { AccessTokenGuard } from '../../common/guards/access-token.guard';
 import { CreateCommentCommand } from '../comments/application/use-cases/create-comment.useCase';
 import { Public } from '../../common/decorators/public.decorator';
-import { LikesPostUpdateDto } from '../likesPost/likesPost.dto';
+import { LikesPostUpdateDto } from '../likes-post/likes-post.dto';
 import {
   TExecuteUpdateLikeStatusPost,
   UpdateLikeStatusPostCommand,
-} from '../likesPost/application/use-cases/update-like-status-post.useCase';
+} from '../likes-post/application/use-cases/update-like-status-post.useCase';
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 
 import { PostsQueryRepository } from './infrastructure/posts.query-repository';
@@ -61,7 +61,7 @@ export class PostsController {
   ) {}
 
   @Public()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllPosts(
     @Query() queries: FilteredPostQueries,
@@ -71,7 +71,7 @@ export class PostsController {
   }
 
   @Public()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get(':id')
   async getPostById(
     @Param('id') id: string,
@@ -138,7 +138,7 @@ export class PostsController {
   }
 
   @Public()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get(':postId/comments')
   async getCommentsByPostId(
     @Query() queries: PaginationQueries,
@@ -157,7 +157,7 @@ export class PostsController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Post(':postId/comments')
   async createComment(
     @Body() commentCreateDto: CommentCreateDto,
@@ -181,7 +181,7 @@ export class PostsController {
     return comment!;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Put(':postId/like-status')
   @HttpCode(HttpStatus.NO_CONTENT)
   async likePostById(

@@ -6,7 +6,7 @@ import { AccessTokenPayload, UserRequest } from '../../../../types';
 import { AuthConfig } from '../../config/auth.config';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private readonly authConfig: AuthConfig) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

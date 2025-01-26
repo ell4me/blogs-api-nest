@@ -13,8 +13,8 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 
 import { ROUTERS_PATH } from '../../constants';
-import { CurrentUser } from '../../common/decorators/currentUser.decorator';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { AccessTokenGuard } from '../../common/guards/access-token.guard';
 import { Public } from '../../common/decorators/public.decorator';
 
 import { CommentsQueryRepository } from './infrastructure/comments.query-repository';
@@ -44,7 +44,7 @@ export class CommentsController {
   ) {}
 
   @Public()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get(':id')
   async getCommentById(
     @Param('id') id: string,
@@ -62,7 +62,7 @@ export class CommentsController {
     return comment;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':commentId')
   async updateCommentById(
@@ -77,7 +77,7 @@ export class CommentsController {
     return;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':commentId/like-status')
   async likeCommentById(
@@ -106,7 +106,7 @@ export class CommentsController {
     return;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':commentId')
   async deleteCommentById(

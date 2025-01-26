@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { STATUSES_LIKE } from '../../../constants';
-import { ExtendedLikesInfo } from '../likesPost.types';
+import { ExtendedLikesInfo } from '../likes-post.types';
 
 import {
   LikesPost,
   LikesPostDocument,
   TLikesPostModel,
-} from './likesPost.model';
+} from './likes-post.model';
 
 @Injectable()
 export class LikesPostQueryRepository {

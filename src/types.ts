@@ -60,6 +60,14 @@ export interface AccessTokenPayload {
   exp: number;
 }
 
+export interface RefreshTokenPayload {
+  deviceId: string;
+  userId: string;
+  iat: number;
+  exp: number;
+}
+
 export interface UserRequest {
   id: string;
+  deviceId?: string;
 }

@@ -9,7 +9,9 @@ import { Post, PostDocument, TPostModel } from './posts.model';
 
 @Injectable()
 export class PostsRepository {
-  constructor(@InjectModel(Post.name) private readonly PostsModel: TPostModel) {}
+  constructor(
+    @InjectModel(Post.name) private readonly PostsModel: TPostModel,
+  ) {}
 
   async findOrNotFoundFail(id: string): Promise<PostDocument> {
     const post = await this.PostsModel.findOne({ id }).exec();

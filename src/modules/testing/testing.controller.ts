@@ -5,7 +5,8 @@ import { UsersRepository } from '../users/infrastructure/users.repository';
 import { PostsRepository } from '../posts/infrastructure/posts.repository';
 import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
-import { LikesPostRepository } from '../likesPost/infrastructure/likesPost.repository';
+import { LikesPostRepository } from '../likes-post/infrastructure/likes-post.repository';
+import { SecurityDevicesRepository } from '../security-devices/infrastructure/security-devices.repository';
 
 @Controller(ROUTERS_PATH.TESTING)
 export class TestingController {
@@ -15,6 +16,7 @@ export class TestingController {
     private readonly blogsRepository: BlogsRepository,
     private readonly commentsRepository: CommentsRepository,
     private readonly likesPostRepository: LikesPostRepository,
+    private readonly securityDevicesRepository: SecurityDevicesRepository,
   ) {}
 
   @Delete('all-data')
@@ -25,5 +27,6 @@ export class TestingController {
     await this.blogsRepository.deleteAll();
     await this.commentsRepository.deleteAll();
     await this.likesPostRepository.deleteAll();
+    await this.securityDevicesRepository.deleteAll();
   }
 }

@@ -9,7 +9,7 @@ import {
   LikesPost,
   LikesPostDocument,
   TLikesPostModel,
-} from './likesPost.model';
+} from './likes-post.model';
 
 @Injectable()
 export class LikesPostRepository {

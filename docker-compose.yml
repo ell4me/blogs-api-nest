@@ -42,5 +42,7 @@ services:
       - LOGIN=admin
       - PASSWORD=qwerty
       - JWT_REFRESH_SECRET=dog
+      - TTL_RATE_LIMIT=10
+      - NUMBER_RATE_LIMIT=5
     depends_on:
       - mongodb

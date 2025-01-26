@@ -2,6 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
+import { seconds, ThrottlerModule } from '@nestjs/throttler';
 
 import { UsersModule } from '../users/users.module';
 import { PostsModule } from '../posts/posts.module';
@@ -11,7 +12,8 @@ import { AuthModule } from '../auth/auth.module';
 import { TestingModule } from '../testing/testing.module';
 import { CommonConfigModule } from '../../common/config/common-config.module';
 import { CommonConfig } from '../../common/config/common.config';
-import { LikesPostModule } from '../likesPost/likesPost.module';
+import { LikesPostModule } from '../likes-post/likes-post.module';
+import { SecurityDevicesModule } from '../security-devices/security-devices.module';
 
 @Module({
   imports: [
@@ -32,12 +34,23 @@ import { LikesPostModule } from '../likesPost/likesPost.module';
       }),
       inject: [CommonConfig],
     }),
+    ThrottlerModule.forRootAsync({
+      imports: [CommonConfigModule],
+      useFactory: (config: CommonConfig) => [
+        {
+          ttl: seconds(config.ttlRateLimit),
+          limit: config.numberRateLimit,
+        },
+      ],
+      inject: [CommonConfig],
+    }),
     UsersModule,
     LikesPostModule,
     PostsModule,
     BlogsModule,
     CommentsModule,
     AuthModule,
+    SecurityDevicesModule,
   ],
 })
 export class AppModule {

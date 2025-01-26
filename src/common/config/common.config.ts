@@ -39,6 +39,20 @@ export class CommonConfig {
     this.configService.get(ENV_NAMES.INCLUDE_TESTING_MODULE) as string,
   ) as boolean;
 
+  @Min(1, {
+    message: 'Set Env variable TTL_RATE_LIMIT, example: 10 (in seconds)',
+  })
+  ttlRateLimit: number = Number(
+    this.configService.get(ENV_NAMES.TTL_RATE_LIMIT),
+  );
+
+  @Min(1, {
+    message: 'Set Env variable NUMBER_RATE_LIMIT, example: 5 (attempts)',
+  })
+  numberRateLimit: number = Number(
+    this.configService.get(ENV_NAMES.NUMBER_RATE_LIMIT),
+  );
+
   constructor(private readonly configService: ConfigService) {
     configValidationUtility.validateConfig(this);
   }

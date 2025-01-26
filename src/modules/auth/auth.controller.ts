@@ -10,16 +10,24 @@ import {
   Res,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 import { UserCreateDto } from '../users/users.dto';
 import { UsersQueryRepository } from '../users/infrastructure/users.query-repository';
-import { ROUTERS_PATH } from '../../constants';
+import { REFRESH_TOKEN_COOKIE_NAME, ROUTERS_PATH } from '../../constants';
 import { LocalAuthGuard } from '../../common/guards/local-auth.guard';
-import { CurrentUser } from '../../common/decorators/currentUser.decorator';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { AccessTokenGuard } from '../../common/guards/access-token.guard';
 import { CurrentUserViewDto } from '../../common/dto/currentUserView.dto';
-import { Token } from '../users/users.types';
 import { CreateUserCommand } from '../users/application/use-cases/create-user.useCase';
+import { Ip } from '../../common/decorators/ip.decorator';
+import { UserAgent } from '../../common/decorators/user-agent.decorator';
+import { UserRequest } from '../../types';
+import {
+  DeleteSessionByDeviceIdCommand,
+  TExecuteDeleteSessionByDeviceIdResult,
+} from '../security-devices/application/use-cases/delete-session-by-device-id.useCase';
+import { RefreshTokenGuard } from '../../common/guards/refresh-token.guard';
 
 import {
   PasswordRecoveryDto,
@@ -44,9 +52,14 @@ import {
   UpdateUserPasswordByRecoveryCodeCommand,
 } from './application/use-cases/update-user-password-by-recovery-code.useCase';
 import {
-  LoginUserCommand,
-  TExecuteLoginUserResult,
-} from './application/use-cases/login-user.useCase';
+  LoginCommand,
+  TExecuteLoginResult,
+} from './application/use-cases/login.useCase';
+import {
+  RefreshTokenCommand,
+  TExecuteRefreshTokenResult,
+} from './application/use-cases/refresh-token.useCase';
+import { Tokens } from './auth.types';
 
 @Controller(ROUTERS_PATH.AUTH)
 export class AuthController {
@@ -55,23 +68,29 @@ export class AuthController {
     private readonly commandBus: CommandBus,
   ) {}
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(ThrottlerGuard, LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
     @Res({ passthrough: true }) res: Response,
     @CurrentUser('id') userId: string,
-  ): Promise<Pick<Token, 'accessToken'>> {
+    @Ip() ip: string,
+    @UserAgent() userAgent: string,
+  ): Promise<Pick<Tokens, 'accessToken'>> {
     const { accessToken, refreshToken } = await this.commandBus.execute<
-      LoginUserCommand,
-      TExecuteLoginUserResult
-    >(new LoginUserCommand(userId));
+      LoginCommand,
+      TExecuteLoginResult
+    >(new LoginCommand({ userId, ip, deviceName: userAgent }));
 
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
 
     return { accessToken };
   }
 
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registration(@Body() userCreateDto: UserCreateDto): Promise<void> {
@@ -80,7 +99,7 @@ export class AuthController {
     return;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get('me')
   async getCurrentUser(
     @CurrentUser('id') userId: string,
@@ -88,6 +107,7 @@ export class AuthController {
     return this.usersQueryRepository.getCurrentUser(userId);
   }
 
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
   registrationConfirmation(
@@ -99,6 +119,7 @@ export class AuthController {
     >(new RegistrationConfirmationCommand(registrationConfirmationDto));
   }
 
+  @UseGuards(ThrottlerGuard, LocalAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
   registrationEmailResending(
@@ -110,6 +131,7 @@ export class AuthController {
     >(new RegistrationEmailResendingCommand(registrationEmailResendingDto));
   }
 
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('password-recovery')
   async sendPasswordRecoveryEmail(
@@ -121,6 +143,7 @@ export class AuthController {
     >(new SendPasswordRecoveryEmailCommand(passwordRecoveryEmailDto));
   }
 
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('new-password')
   updateUserPasswordByRecoveryCode(
@@ -130,5 +153,43 @@ export class AuthController {
       UpdateUserPasswordByRecoveryCodeCommand,
       TExecuteUpdateUserPasswordByRecoveryCodeResult
     >(new UpdateUserPasswordByRecoveryCodeCommand(passwordRecoveryDto));
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('logout')
+  async logout(@CurrentUser() user: UserRequest): Promise<void> {
+    return this.commandBus.execute<
+      DeleteSessionByDeviceIdCommand,
+      TExecuteDeleteSessionByDeviceIdResult
+    >(new DeleteSessionByDeviceIdCommand(user.deviceId!, user.id));
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh-token')
+  async refreshToken(
+    @Res({ passthrough: true }) res: Response,
+    @CurrentUser() user: UserRequest,
+    @Ip() ip: string,
+    @UserAgent() userAgent: string,
+  ): Promise<Pick<Tokens, 'accessToken'>> {
+    const tokens = await this.commandBus.execute<
+      RefreshTokenCommand,
+      TExecuteRefreshTokenResult
+    >(
+      new RefreshTokenCommand(user.deviceId!, {
+        userId: user.id,
+        ip,
+        deviceName: userAgent,
+      }),
+    );
+
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+
+    return { accessToken: tokens.accessToken };
   }
 }

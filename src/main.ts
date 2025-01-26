@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from './modules/app/app.module';
 import { useAppSettings } from './common/helpers/useAppSettings';
@@ -12,7 +13,8 @@ async function bootstrap() {
   // как бы вручную инжектим в инициализацию модуля нужную зависимость, донастраивая динамический модуль
   const DynamicAppModule = await AppModule.forRoot(commonConfig);
 
-  const app = await NestFactory.create(DynamicAppModule);
+  const app =
+    await NestFactory.create<NestExpressApplication>(DynamicAppModule);
   // Закрываем контекст, если он больше не нужен
   await appContext.close();
 

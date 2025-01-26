@@ -1,15 +1,12 @@
-import {
-  BadRequestException,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { HttpExceptionFilter } from '../exception/filters/http-exception.filter';
 import { BadRequestExceptionFilter } from '../exception/filters/badRequest-exception.filter';
 import { DomainExceptionFilter } from '../exception/filters/domain-exception.filter';
 
-export const useAppSettings = (app: INestApplication) => {
+export const useAppSettings = (app: NestExpressApplication) => {
   app.useGlobalFilters(
     new HttpExceptionFilter(),
     new BadRequestExceptionFilter(),
@@ -36,6 +33,7 @@ export const useAppSettings = (app: INestApplication) => {
     }),
   );
 
+  app.set('trust proxy', 'loopback');
   app.use(cookieParser());
   app.enableCors();
 };

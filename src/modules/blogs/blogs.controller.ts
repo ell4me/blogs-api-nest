@@ -27,8 +27,9 @@ import {
   TExecuteCreatePost,
 } from '../posts/application/use-cases/create-post.useCase';
 import { Public } from '../../common/decorators/public.decorator';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { CurrentUser } from '../../common/decorators/currentUser.decorator';
+import { AccessTokenGuard } from '../../common/guards/access-token.guard';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 import { BlogsQueryRepository } from './infrastructure/blogs.query-repository';
@@ -44,7 +45,6 @@ import {
   CreateBlogCommand,
   TExecuteCreateBlog,
 } from './application/use-cases/create-blog.useCase';
-import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 
 @Controller(ROUTERS_PATH.BLOGS)
 export class BlogsController {
@@ -73,7 +73,7 @@ export class BlogsController {
   }
 
   @Public()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get(':id/posts')
   async getPostsByBlogId(
     @Query() queries: FilteredPostQueries,

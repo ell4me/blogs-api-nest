@@ -7,7 +7,7 @@ import { UserRequest } from '../../types';
 import { UnauthorizedDomainException } from '../exception/domain-exception';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
+export class AccessTokenGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
     super();
   }
