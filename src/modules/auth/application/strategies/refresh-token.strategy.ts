@@ -7,7 +7,10 @@ import { RefreshTokenPayload, UserRequest } from '../../../../types';
 import { AuthConfig } from '../../config/auth.config';
 import { SecurityDevicesRepository } from '../../../security-devices/infrastructure/security-devices.repository';
 import { UnauthorizedDomainException } from '../../../../common/exception/domain-exception';
-import { REFRESH_TOKEN_COOKIE_NAME } from '../../../../constants';
+import {
+  EXPIRATION_TOKEN,
+  REFRESH_TOKEN_COOKIE_NAME,
+} from '../../../../constants';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -22,7 +25,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromExtractors<Request>([
         (req) => req.cookies[REFRESH_TOKEN_COOKIE_NAME],
       ]),
-      ignoreExpiration: false,
+      ignoreExpiration: true,
       secretOrKey: authConfig.jwtRefreshSecret,
     });
   }
@@ -30,11 +33,19 @@ export class RefreshTokenStrategy extends PassportStrategy(
   async validate({
     userId,
     deviceId,
+    exp,
+    iat,
   }: RefreshTokenPayload): Promise<UserRequest> {
     const currentDeviceSession =
       await this.securityDevicesRepository.getDeviceSession(deviceId);
+    const expirationTime = (exp - iat) / 1000;
 
-    if (!currentDeviceSession || currentDeviceSession.expiration < Date.now()) {
+    if (
+      !currentDeviceSession ||
+      iat !== currentDeviceSession.iat ||
+      exp < Date.now() ||
+      expirationTime > EXPIRATION_TOKEN.REFRESH
+    ) {
       throw UnauthorizedDomainException.create();
     }
 

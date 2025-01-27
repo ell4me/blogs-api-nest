@@ -12,7 +12,12 @@ export class TokensService {
     private readonly authConfig: AuthConfig,
   ) {}
 
-  getTokens(userId: string, deviceId: string): Tokens {
+  getTokens(
+    userId: string,
+    deviceId: string,
+    iat: number,
+    exp: number,
+  ): Tokens {
     return {
       accessToken: this.jwtService.sign(
         { userId },
@@ -25,9 +30,10 @@ export class TokensService {
         {
           deviceId,
           userId,
+          iat,
+          exp,
         },
         {
-          expiresIn: EXPIRATION_TOKEN.REFRESH,
           secret: this.authConfig.jwtRefreshSecret,
         },
       ),

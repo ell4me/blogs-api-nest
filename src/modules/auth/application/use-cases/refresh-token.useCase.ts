@@ -48,13 +48,14 @@ export class RefreshTokenUseCase
     }
 
     const currentDate = new Date();
+    const iat = currentDate.getTime();
     const expiration = addSeconds(
       currentDate,
       EXPIRATION_TOKEN.REFRESH,
     ).getTime();
 
     const updateDeviceSession: UpdateDeviceSession = {
-      iat: currentDate.getTime(),
+      iat,
       expiration,
       deviceName,
       ip,
@@ -63,6 +64,6 @@ export class RefreshTokenUseCase
     session.updateSession(updateDeviceSession);
     await this.securityDevicesRepository.save(session);
 
-    return this.tokensService.getTokens(userId, deviceId);
+    return this.tokensService.getTokens(userId, deviceId, iat, expiration);
   }
 }

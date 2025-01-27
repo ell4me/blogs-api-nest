@@ -29,13 +29,14 @@ export class LoginUseCase
   }: LoginCommand) {
     const deviceId = uuidv4();
     const currentDate = new Date();
+    const iat = currentDate.getTime();
     const expiration = addSeconds(
       currentDate,
       EXPIRATION_TOKEN.REFRESH,
     ).getTime();
 
     const deviceSession: SecurityDevicesWithoutMethods = {
-      iat: currentDate.getTime(),
+      iat,
       expiration,
       deviceId,
       userId,
@@ -45,6 +46,6 @@ export class LoginUseCase
 
     await this.securityDevicesRepository.create(deviceSession);
 
-    return this.tokensService.getTokens(userId, deviceId);
+    return this.tokensService.getTokens(userId, deviceId, iat, expiration);
   }
 }

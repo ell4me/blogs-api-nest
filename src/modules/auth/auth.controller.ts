@@ -119,7 +119,7 @@ export class AuthController {
     >(new RegistrationConfirmationCommand(registrationConfirmationDto));
   }
 
-  @UseGuards(ThrottlerGuard, LocalAuthGuard)
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
   registrationEmailResending(
@@ -158,11 +158,18 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('logout')
-  async logout(@CurrentUser() user: UserRequest): Promise<void> {
-    return this.commandBus.execute<
+  async logout(
+    @CurrentUser() user: UserRequest,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
+    await this.commandBus.execute<
       DeleteSessionByDeviceIdCommand,
       TExecuteDeleteSessionByDeviceIdResult
     >(new DeleteSessionByDeviceIdCommand(user.deviceId!, user.id));
+
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, '');
+
+    return;
   }
 
   @UseGuards(RefreshTokenGuard)
