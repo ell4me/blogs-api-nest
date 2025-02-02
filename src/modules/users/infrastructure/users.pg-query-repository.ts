@@ -22,7 +22,7 @@ export class UsersPgQueryRepository {
     const users = await this.dataSource.query(
       `
       SELECT * FROM "Users"
-      WHERE login like $1 or email like $2
+      WHERE login ilike $1 or email ilike $2
       ORDER BY "${sortBy}" ${sortDirection}
       LIMIT $3 OFFSET $4
     `,
@@ -88,7 +88,7 @@ export class UsersPgQueryRepository {
     const result = await this.dataSource.query(
       `
       SELECT count(*) FROM "Users"
-       WHERE login like $1 or email like $2
+       WHERE login ilike $1 or email ilike $2
     `,
       [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`],
     );
