@@ -7,6 +7,7 @@ import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
 import { LikesPostRepository } from '../likes-post/infrastructure/likes-post.repository';
 import { SecurityDevicesRepository } from '../security-devices/infrastructure/security-devices.repository';
+import { DataSource } from 'typeorm';
 
 @Controller(ROUTERS_PATH.TESTING)
 export class TestingController {
@@ -17,6 +18,7 @@ export class TestingController {
     private readonly commentsRepository: CommentsRepository,
     private readonly likesPostRepository: LikesPostRepository,
     private readonly securityDevicesRepository: SecurityDevicesRepository,
+    private readonly dataSource: DataSource,
   ) {}
 
   @Delete('all-data')
@@ -28,5 +30,6 @@ export class TestingController {
     await this.commentsRepository.deleteAll();
     await this.likesPostRepository.deleteAll();
     await this.securityDevicesRepository.deleteAll();
+    await this.dataSource.query(`DELETE FROM "Users"`)
   }
 }

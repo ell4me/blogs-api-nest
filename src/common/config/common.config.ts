@@ -90,12 +90,11 @@ export class CommonConfig {
 
   @ValidateIf(({ nodeEnv }) => nodeEnv === 'production')
   @IsNotEmpty({
-    message: 'Set Env variable PG_URL, example: https://pg',
+    message: 'Set Env variable PG_URL, example: postgres://user:pass@host:port/database?ssl=true',
   })
   pgUrl: string = this.configService.get(ENV_NAMES.PG_URL) as string;
 
   constructor(private readonly configService: ConfigService) {
-    console.log(this, 'this');
     configValidationUtility.validateConfig(this);
   }
 }

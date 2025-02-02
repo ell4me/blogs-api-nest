@@ -27,7 +27,7 @@ import {
 } from './application/use-cases/delete-user-by-id.useCase';
 import { UsersPgQueryRepository } from './infrastructure/users.pg-query-repository';
 
-@Controller(ROUTERS_PATH.USERS)
+@Controller(`sa/${ROUTERS_PATH.USERS}`)
 @UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
