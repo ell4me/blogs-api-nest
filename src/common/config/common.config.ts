@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IsBoolean, IsNotEmpty, Min } from 'class-validator';
+import { IsBoolean, IsIn, IsNotEmpty, Min, ValidateIf } from 'class-validator';
 
 import { ENV_NAMES } from '../../env';
 
 import { configValidationUtility } from './config-validation.utility';
+import { NODE_ENVS } from '../../constants';
+import { TNodeEnvs } from '../../types';
 
 @Injectable()
 export class CommonConfig {
@@ -53,32 +55,47 @@ export class CommonConfig {
     this.configService.get(ENV_NAMES.NUMBER_RATE_LIMIT),
   );
 
+  @ValidateIf(({ nodeEnv }) => nodeEnv === 'development')
   @IsNotEmpty({
     message: 'Set Env variable PG_USER, example: postgres',
   })
   pgUser: string = this.configService.get(ENV_NAMES.PG_USER) as string;
 
+  @ValidateIf(({ nodeEnv }) => nodeEnv === 'development')
   @IsNotEmpty({
     message: 'Set Env variable PG_PASSWORD, example: secret',
   })
   pgPassword: string = this.configService.get(ENV_NAMES.PG_PASSWORD) as string;
 
+  @ValidateIf(({ nodeEnv }) => nodeEnv === 'development')
   @IsNotEmpty({
     message: 'Set Env variable PG_DB, example: db_name',
   })
   pgDb: string = this.configService.get(ENV_NAMES.PG_DB) as string;
 
+  @ValidateIf(({ nodeEnv }) => nodeEnv === 'development')
   @Min(1, { message: 'Set Env variable PG_PORT, example: 5050' })
   pgPort: number = Number(this.configService.get(ENV_NAMES.PG_PORT));
 
+  @ValidateIf(({ nodeEnv }) => nodeEnv === 'development')
   @IsNotEmpty({
     message: 'Set Env variable PG_HOST, example: pg',
   })
   pgHost: string = this.configService.get(ENV_NAMES.PG_HOST) as string;
 
-  pgUrl: string = this.configService.get(ENV_NAMES.PG_URL) as string || '';
+  @IsIn(NODE_ENVS, {
+    message: 'Set Env variable NODE_ENV, example: development',
+  })
+  nodeEnv: TNodeEnvs = this.configService.get(ENV_NAMES.NODE_ENV) as TNodeEnvs;
+
+  @ValidateIf(({ nodeEnv }) => nodeEnv === 'production')
+  @IsNotEmpty({
+    message: 'Set Env variable PG_URL, example: https://pg',
+  })
+  pgUrl: string = this.configService.get(ENV_NAMES.PG_URL) as string;
 
   constructor(private readonly configService: ConfigService) {
+    console.log(this, 'this');
     configValidationUtility.validateConfig(this);
   }
 }

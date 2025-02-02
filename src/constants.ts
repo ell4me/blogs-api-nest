@@ -37,3 +37,5 @@ export enum STATUSES_LIKE {
 }
 
 export const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken';
+
+export const NODE_ENVS = ['production', 'testing', 'development'] as const;

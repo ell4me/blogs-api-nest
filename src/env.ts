@@ -20,4 +20,5 @@ export const ENV_NAMES = {
   PG_PORT: 'PG_PORT',
   PG_HOST: 'PG_HOST',
   PG_URL: 'PG_URL',
+  NODE_ENV: 'NODE_ENV',
 };

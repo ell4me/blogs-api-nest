@@ -38,17 +38,18 @@ import { SecurityDevicesModule } from '../security-devices/security-devices.modu
     TypeOrmModule.forRootAsync({
       imports: [CommonConfigModule],
       useFactory: (config: CommonConfig) => {
-        const ormConfig = config.pgUrl
-          ? {
-              url: config.pgUrl,
-            }
-          : {
-              host: config.pgHost,
-              port: config.pgPort,
-              username: config.pgUser,
-              password: config.pgPassword,
-              database: config.pgDb,
-            };
+        const ormConfig =
+          config.nodeEnv === 'production'
+            ? {
+                url: config.pgUrl,
+              }
+            : {
+                host: config.pgHost,
+                port: config.pgPort,
+                username: config.pgUser,
+                password: config.pgPassword,
+                database: config.pgDb,
+              };
 
         return {
           type: 'postgres',

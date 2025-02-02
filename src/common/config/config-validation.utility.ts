@@ -2,7 +2,7 @@ import { validateSync } from 'class-validator';
 
 export const configValidationUtility = {
   validateConfig: (configInstance: any) => {
-    const errors = validateSync(configInstance);
+    const errors = validateSync(configInstance, { stopAtFirstError: true });
     if (errors.length > 0) {
       const sortedMessages = errors
         .map((error) => {
