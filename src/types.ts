@@ -1,6 +1,7 @@
 import { SortDirection } from 'mongodb';
 import { IsIn, IsInt, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
+
 import { NODE_ENVS } from './constants';
 
 export interface ErrorMessage {
@@ -73,4 +74,4 @@ export interface UserRequest {
   deviceId?: string;
 }
 
-export type TNodeEnvs = typeof NODE_ENVS[number];
+export type TNodeEnvs = (typeof NODE_ENVS)[number];

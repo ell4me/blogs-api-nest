@@ -3,10 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { IsBoolean, IsIn, IsNotEmpty, Min, ValidateIf } from 'class-validator';
 
 import { ENV_NAMES } from '../../env';
-
-import { configValidationUtility } from './config-validation.utility';
 import { NODE_ENVS } from '../../constants';
 import { TNodeEnvs } from '../../types';
+
+import { configValidationUtility } from './config-validation.utility';
 
 @Injectable()
 export class CommonConfig {
@@ -90,7 +90,8 @@ export class CommonConfig {
 
   @ValidateIf(({ nodeEnv }) => nodeEnv === 'production')
   @IsNotEmpty({
-    message: 'Set Env variable PG_URL, example: postgres://user:pass@host:port/database?ssl=true',
+    message:
+      'Set Env variable PG_URL, example: postgres://user:pass@host:port/database?ssl=true',
   })
   pgUrl: string = this.configService.get(ENV_NAMES.PG_URL) as string;
 

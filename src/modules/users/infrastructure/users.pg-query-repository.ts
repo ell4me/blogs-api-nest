@@ -18,20 +18,21 @@ export class UsersPgQueryRepository {
     searchEmailTerm,
   }: FilteredUserQueries): Promise<ItemsPaginationViewDto<UserViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
+    console.log(
+      'fafasfa',
+      `SELECT * FROM "Users"
+      WHERE login like "%${searchLoginTerm}%" or email like "%${searchEmailTerm}%"
+      ORDER BY ${sortBy} ${sortDirection}
+      LIMIT ${pageSize} OFFSET ${offset}`,
+    );
     const users = await this.dataSource.query(
       `
       SELECT * FROM "Users"
       WHERE login like $1 or email like $2
-      ORDER BY $3 ${sortDirection}
-      LIMIT $4 OFFSET $5
+      ORDER BY "${sortBy}" ${sortDirection}
+      LIMIT $3 OFFSET $4
     `,
-      [
-        `%${searchLoginTerm}%`,
-        `%${searchEmailTerm}%`,
-        sortBy,
-        pageSize,
-        offset,
-      ],
+      [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`, pageSize, offset],
     );
 
     const totalCount = await this.getCountUsersByFilter(

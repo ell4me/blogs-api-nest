@@ -1,4 +1,5 @@
 import { Controller, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 import { ROUTERS_PATH } from '../../constants';
 import { UsersRepository } from '../users/infrastructure/users.repository';
@@ -7,7 +8,6 @@ import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
 import { LikesPostRepository } from '../likes-post/infrastructure/likes-post.repository';
 import { SecurityDevicesRepository } from '../security-devices/infrastructure/security-devices.repository';
-import { DataSource } from 'typeorm';
 
 @Controller(ROUTERS_PATH.TESTING)
 export class TestingController {
@@ -30,6 +30,6 @@ export class TestingController {
     await this.commentsRepository.deleteAll();
     await this.likesPostRepository.deleteAll();
     await this.securityDevicesRepository.deleteAll();
-    await this.dataSource.query(`DELETE FROM "Users"`)
+    await this.dataSource.query(`DELETE FROM "Users"`);
   }
 }
