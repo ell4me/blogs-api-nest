@@ -27,8 +27,8 @@ export class RegistrationConfirmationUseCase
 
     if (user.isConfirmed) {
       throw BadRequestDomainException.create(
-        'code',
         VALIDATION_MESSAGES.USER_ALREADY_CONFIRMED,
+        'code',
       );
     }
 
@@ -37,8 +37,8 @@ export class RegistrationConfirmationUseCase
       user.emailConfirmationExpiration < new Date().getTime()
     ) {
       throw BadRequestDomainException.create(
-        'code',
         VALIDATION_MESSAGES.CODE_EXPIRED('Confirmation'),
+        'code',
       );
     }
 

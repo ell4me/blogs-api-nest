@@ -81,8 +81,8 @@ export class UsersPgRepository {
 
     if (!result[0]) {
       throw BadRequestDomainException.create(
-        'code',
         VALIDATION_MESSAGES.CODE_IS_NOT_CORRECT('Confirmation'),
+        'code',
       );
     }
 

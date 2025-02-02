@@ -34,15 +34,15 @@ export class RegistrationEmailResendingUseCase
 
     if (!user) {
       throw BadRequestDomainException.create(
-        'email',
         VALIDATION_MESSAGES.USER_IS_NOT_FOUND,
+        'email',
       );
     }
 
     if (user.isConfirmed) {
       throw BadRequestDomainException.create(
-        'email',
         VALIDATION_MESSAGES.USER_ALREADY_CONFIRMED,
+        'email',
       );
     }
 

@@ -83,8 +83,8 @@ export class UsersRepository {
 
     if (!user) {
       throw BadRequestDomainException.create(
-        'code',
         VALIDATION_MESSAGES.CODE_IS_NOT_CORRECT('Confirmation'),
+        'code',
       );
     }
 
@@ -104,8 +104,8 @@ export class UsersRepository {
 
     if (!user) {
       throw BadRequestDomainException.create(
-        'recoveryCode',
         VALIDATION_MESSAGES.CODE_IS_NOT_CORRECT('Recovery'),
+        'recoveryCode',
       );
     }
 

@@ -34,8 +34,8 @@ export class UpdateUserPasswordByRecoveryCodeUseCase
       user.passwordRecovery.expiration < new Date().getTime()
     ) {
       throw BadRequestDomainException.create(
-        'recoveryCode',
         VALIDATION_MESSAGES.CODE_EXPIRED('Recovery'),
+        'recoveryCode',
       );
     }
 
