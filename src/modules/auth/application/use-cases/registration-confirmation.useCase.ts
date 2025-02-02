@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { RegistrationConfirmationDto } from '../../auth.dto';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
+import { UsersPgRepository } from '../../../users/infrastructure/users.pg-repository';
 
 export type TExecuteRegistrationConfirmationResult = void;
 
@@ -17,7 +17,7 @@ export class RegistrationConfirmationCommand {
 export class RegistrationConfirmationUseCase
   implements ICommandHandler<RegistrationConfirmationCommand>
 {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersPgRepository) {}
 
   async execute({
     registrationConfirmationDto: { code },
@@ -25,14 +25,17 @@ export class RegistrationConfirmationUseCase
     const user =
       await this.usersRepository.findByConfirmationCodeOrBadRequestFail(code);
 
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.isConfirmed) {
       throw BadRequestDomainException.create(
         'code',
         VALIDATION_MESSAGES.USER_ALREADY_CONFIRMED,
       );
     }
 
-    if (user.emailConfirmation.expiration < new Date().getTime()) {
+    if (
+      !user.emailConfirmationExpiration ||
+      user.emailConfirmationExpiration < new Date().getTime()
+    ) {
       throw BadRequestDomainException.create(
         'code',
         VALIDATION_MESSAGES.CODE_EXPIRED('Confirmation'),

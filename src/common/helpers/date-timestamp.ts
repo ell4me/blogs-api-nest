@@ -1,6 +1,8 @@
 export type TEntityWithoutDate<T> = Omit<T, keyof DateTimestamp>;
 
 export class DateTimestamp {
-  createdAt: string;
-  updatedAt: string;
+  constructor(
+    public createdAt: string,
+    public updatedAt: string,
+  ) {}
 }

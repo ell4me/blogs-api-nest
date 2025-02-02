@@ -44,7 +44,12 @@ export class UsersPgQueryRepository {
       pagesCount: Math.ceil(totalCount / pageSize),
       pageSize: pageSize,
       totalCount,
-      items: users,
+      items: users.map((user) => ({
+        id: user.id,
+        login: user.login,
+        email: user.email,
+        createdAt: user.createdAt,
+      })),
     };
   }
 

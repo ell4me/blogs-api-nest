@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { RegistrationEmailResendingDto } from '../../auth.dto';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { EmailAdapter } from '../../../../common/adapters/email/email.adapter';
 import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
+import { UsersPgRepository } from '../../../users/infrastructure/users.pg-repository';
 
 export type TExecuteRegistrationEmailResendingResult = void;
 
@@ -23,7 +23,7 @@ export class RegistrationEmailResendingUseCase
     >
 {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: UsersPgRepository,
     private readonly emailAdapter: EmailAdapter,
   ) {}
 
@@ -39,7 +39,7 @@ export class RegistrationEmailResendingUseCase
       );
     }
 
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.isConfirmed) {
       throw BadRequestDomainException.create(
         'email',
         VALIDATION_MESSAGES.USER_ALREADY_CONFIRMED,
@@ -50,7 +50,7 @@ export class RegistrationEmailResendingUseCase
     await this.usersRepository.save(user);
 
     this.emailAdapter
-      .sendEmailConfirmation(user.email, user.emailConfirmation.code)
+      .sendEmailConfirmation(user.email, user.emailConfirmationCode)
       .catch(() => console.error('Send email failed'));
   }
 }

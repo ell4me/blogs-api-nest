@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 import { UserCreateDto } from '../users.dto';
-import { NotFoundDomainException } from '../../../common/exception/domain-exception';
+import {
+  BadRequestDomainException,
+  NotFoundDomainException,
+} from '../../../common/exception/domain-exception';
+import { VALIDATION_MESSAGES } from '../../../constants';
 
 import { UserEntity } from './user.entity';
 
@@ -25,7 +29,7 @@ export class UsersPgRepository {
       [login, email],
     );
 
-    return result[0];
+    return UserEntity.getInstance(result[0]);
   }
 
   async create(userCreateDto: UserCreateDto, emailConfirmation?: boolean) {
@@ -65,5 +69,49 @@ export class UsersPgRepository {
     }
 
     return true;
+  }
+
+  async findByConfirmationCodeOrBadRequestFail(
+    code: string,
+  ): Promise<UserEntity> {
+    const result = await this.dataSource.query(
+      `SELECT * FROM "Users" WHERE "emailConfirmationCode"=$1`,
+      [code],
+    );
+
+    if (!result[0]) {
+      throw BadRequestDomainException.create(
+        'code',
+        VALIDATION_MESSAGES.CODE_IS_NOT_CORRECT('Confirmation'),
+      );
+    }
+
+    return UserEntity.getInstance(result[0]);
+  }
+
+  async save(user: UserEntity): Promise<UserEntity> {
+    await this.dataSource.query(
+      `
+      UPDATE "Users" SET password=$1, 
+      "emailConfirmationCode"=$2,
+       "emailConfirmationExpiration"=$3, 
+       "passwordRecoveryExpiration"=$4,
+        "passwordRecoveryCode"=$5, 
+        "isConfirmed"=$6,
+        "updatedAt"=DEFAULT
+       WHERE id=$7
+    `,
+      [
+        user.password,
+        user.emailConfirmationCode,
+        user.emailConfirmationExpiration,
+        user.passwordRecoveryExpiration,
+        user.passwordRecoveryCode,
+        user.isConfirmed,
+        user.id,
+      ],
+    );
+
+    return user;
   }
 }

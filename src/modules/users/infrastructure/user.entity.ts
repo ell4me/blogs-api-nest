@@ -8,21 +8,84 @@ import {
   TEntityWithoutDate,
 } from '../../../common/helpers/date-timestamp';
 
+interface UserEntityInstanceMethods {
+  updateEmailConfirmation: (newConfirmationCode?: boolean) => void;
+  updatePasswordRecovery: (newPasswordRecovery?: boolean) => void;
+  updatePassword: (newPassword: string) => void;
+}
+
+type UserEntityWithoutMethods = Omit<
+  UserEntity,
+  keyof UserEntityInstanceMethods
+>;
+
 export class UserEntity extends DateTimestamp {
-  id: string;
-  login: string;
-  email: string;
-  password: string;
-  isConfirmed: boolean;
-  passwordRecoveryCode: string | null;
-  passwordRecoveryExpiration: number | null;
-  emailConfirmationExpiration: number | null;
-  emailConfirmationCode: string | null;
+  private constructor(
+    public id: string,
+    public login: string,
+    public email: string,
+    public password: string,
+    public isConfirmed: boolean,
+    public passwordRecoveryCode: string | null,
+    public passwordRecoveryExpiration: number | null,
+    public emailConfirmationExpiration: number | null,
+    public emailConfirmationCode: string | null,
+    public createdAt: string,
+    public updatedAt: string,
+  ) {
+    super(createdAt, updatedAt);
+  }
+
+  updateEmailConfirmation(newConfirmationCode?: boolean) {
+    if (newConfirmationCode) {
+      this.emailConfirmationCode = uuidv4();
+      this.emailConfirmationExpiration = add(new Date(), {
+        hours: 1,
+      }).getTime();
+      this.isConfirmed = false;
+      return;
+    }
+
+    this.isConfirmed = true;
+    this.emailConfirmationCode = null;
+    this.emailConfirmationExpiration = null;
+  }
+
+  updatePasswordRecovery(newPasswordRecovery?: boolean) {
+    if (newPasswordRecovery) {
+      this.passwordRecoveryCode = uuidv4();
+      this.passwordRecoveryExpiration = add(new Date(), { hours: 1 }).getTime();
+      return;
+    }
+
+    this.passwordRecoveryCode = null;
+    this.passwordRecoveryExpiration = null;
+  }
+
+  async updatePassword(newPassword: string) {
+    this.password = await hash(newPassword, 10);
+  }
+
+  static getInstance(user: UserEntity) {
+    return new this(
+      user.id,
+      user.login,
+      user.email,
+      user.password,
+      user.isConfirmed,
+      user.passwordRecoveryCode,
+      user.passwordRecoveryExpiration,
+      user.emailConfirmationExpiration,
+      user.emailConfirmationCode,
+      user.createdAt,
+      user.updatedAt,
+    );
+  }
 
   static async createInstance(
     { login, password, email }: UserCreateDto,
     emailConfirmation?: boolean,
-  ): Promise<TEntityWithoutDate<UserEntity>> {
+  ): Promise<TEntityWithoutDate<UserEntityWithoutMethods>> {
     const id = new Date().getTime().toString();
     const passwordHash = await hash(password, 10);
 

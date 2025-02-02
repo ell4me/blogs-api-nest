@@ -108,7 +108,7 @@ export class AuthController {
     return this.usersQueryRepository.getCurrentUser(userId);
   }
 
-  @UseGuards(ThrottlerGuard)
+  // @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
   registrationConfirmation(
@@ -120,7 +120,7 @@ export class AuthController {
     >(new RegistrationConfirmationCommand(registrationConfirmationDto));
   }
 
-  @UseGuards(ThrottlerGuard)
+  // @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
   registrationEmailResending(
