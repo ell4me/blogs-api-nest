@@ -20,7 +20,7 @@ export class UsersPgRepository {
   }: Partial<{
     email: string;
     login: string;
-  }>): Promise<UserEntity> {
+  }>): Promise<UserEntity | null> {
     const result = await this.dataSource.query(
       `
         SELECT * FROM "Users" 
@@ -29,7 +29,7 @@ export class UsersPgRepository {
       [login, email],
     );
 
-    return UserEntity.getInstance(result[0]);
+    return result[0] ? UserEntity.getInstance(result[0]) : result[0];
   }
 
   async create(userCreateDto: UserCreateDto, emailConfirmation?: boolean) {
