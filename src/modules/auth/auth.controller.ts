@@ -68,7 +68,8 @@ export class AuthController {
     private readonly commandBus: CommandBus,
   ) {}
 
-  @UseGuards(ThrottlerGuard, LocalAuthGuard)
+  // ThrottlerGuard
+  @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
@@ -90,7 +91,7 @@ export class AuthController {
     return { accessToken };
   }
 
-  @UseGuards(ThrottlerGuard)
+  // @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registration(@Body() userCreateDto: UserCreateDto): Promise<void> {

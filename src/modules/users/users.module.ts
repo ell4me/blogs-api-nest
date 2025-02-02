@@ -9,6 +9,8 @@ import { UsersRepository } from './infrastructure/users.repository';
 import { UsersQueryRepository } from './infrastructure/users.query-repository';
 import { CreateUserUseCase } from './application/use-cases/create-user.useCase';
 import { DeleteUserByIdUseCase } from './application/use-cases/delete-user-by-id.useCase';
+import { UsersPgRepository } from './infrastructure/users.pg-repository';
+import { UsersPgQueryRepository } from './infrastructure/users.pg-query-repository';
 
 const useCases = [CreateUserUseCase, DeleteUserByIdUseCase];
 
@@ -18,7 +20,19 @@ const useCases = [CreateUserUseCase, DeleteUserByIdUseCase];
     EmailAdapterModule,
   ],
   controllers: [UsersController],
-  providers: [UsersRepository, UsersQueryRepository, ...useCases],
-  exports: [UsersRepository, UsersQueryRepository, CreateUserUseCase],
+  providers: [
+    UsersRepository,
+    UsersQueryRepository,
+    UsersPgRepository,
+    UsersPgQueryRepository,
+    ...useCases,
+  ],
+  exports: [
+    UsersRepository,
+    UsersQueryRepository,
+    UsersPgRepository,
+    UsersPgQueryRepository,
+    CreateUserUseCase,
+  ],
 })
 export class UsersModule {}

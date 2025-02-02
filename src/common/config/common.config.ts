@@ -53,6 +53,31 @@ export class CommonConfig {
     this.configService.get(ENV_NAMES.NUMBER_RATE_LIMIT),
   );
 
+  @IsNotEmpty({
+    message: 'Set Env variable PG_USER, example: postgres',
+  })
+  pgUser: string = this.configService.get(ENV_NAMES.PG_USER) as string;
+
+  @IsNotEmpty({
+    message: 'Set Env variable PG_PASSWORD, example: secret',
+  })
+  pgPassword: string = this.configService.get(ENV_NAMES.PG_PASSWORD) as string;
+
+  @IsNotEmpty({
+    message: 'Set Env variable PG_DB, example: db_name',
+  })
+  pgDb: string = this.configService.get(ENV_NAMES.PG_DB) as string;
+
+  @Min(1, { message: 'Set Env variable PG_PORT, example: 5050' })
+  pgPort: number = Number(this.configService.get(ENV_NAMES.PG_PORT));
+
+  @IsNotEmpty({
+    message: 'Set Env variable PG_HOST, example: pg',
+  })
+  pgHost: string = this.configService.get(ENV_NAMES.PG_HOST) as string;
+
+  pgUrl: string = this.configService.get(ENV_NAMES.PG_URL) as string || '';
+
   constructor(private readonly configService: ConfigService) {
     configValidationUtility.validateConfig(this);
   }

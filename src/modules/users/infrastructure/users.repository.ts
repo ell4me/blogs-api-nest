@@ -34,7 +34,7 @@ export class UsersRepository {
     const result = await this.UsersModel.deleteOne({ id }).exec();
 
     if (!result.deletedCount) {
-      throw NotFoundDomainException.create('create');
+      throw NotFoundDomainException.create();
     }
 
     return true;

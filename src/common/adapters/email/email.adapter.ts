@@ -20,7 +20,7 @@ export class EmailAdapter {
 
   sendEmailConfirmation(
     emailTo: string,
-    emailConfirmationCode: string,
+    emailConfirmationCode: string | null,
   ): Promise<void> {
     const mailOptions: Mail.Options = {
       from: {

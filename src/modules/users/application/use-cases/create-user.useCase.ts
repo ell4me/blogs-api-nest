@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { UserCreateDto } from '../../users.dto';
-import { UserDocument } from '../../infrastructure/users.model';
-import { UsersRepository } from '../../infrastructure/users.repository';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { EmailAdapter } from '../../../../common/adapters/email/email.adapter';
 import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
+import { UsersPgRepository } from '../../infrastructure/users.pg-repository';
+import { UserEntity } from '../../infrastructure/user.entity';
 
 export type TExecuteCreateUserResult = { id: string };
 
@@ -21,7 +21,7 @@ export class CreateUserUseCase
   implements ICommandHandler<CreateUserCommand, TExecuteCreateUserResult>
 {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: UsersPgRepository,
     private readonly emailAdapter: EmailAdapter,
   ) {}
 
@@ -49,7 +49,7 @@ export class CreateUserUseCase
       this.emailAdapter
         .sendEmailConfirmation(
           createdUser.email,
-          createdUser.emailConfirmation.code,
+          createdUser.emailConfirmationCode,
         )
         .catch(() => console.log('Send email failed'));
     }
@@ -58,7 +58,7 @@ export class CreateUserUseCase
   }
 
   private throwErrorDuplicateEmailOrLogin(
-    user: UserDocument,
+    user: UserEntity,
     currentEmail: string,
   ) {
     if (currentEmail === user.email) {

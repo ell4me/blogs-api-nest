@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
   Param,
   Post,
   Query,
@@ -17,7 +16,6 @@ import { FilteredUserQueries, ItemsPaginationViewDto } from '../../types';
 import { ROUTERS_PATH } from '../../constants';
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 
-import { UsersQueryRepository } from './infrastructure/users.query-repository';
 import { UserCreateDto, UserViewDto } from './users.dto';
 import {
   CreateUserCommand,
@@ -27,13 +25,13 @@ import {
   DeleteUserByIdCommand,
   TExecuteDeleteUserByIdResult,
 } from './application/use-cases/delete-user-by-id.useCase';
+import { UsersPgQueryRepository } from './infrastructure/users.pg-query-repository';
 
 @Controller(ROUTERS_PATH.USERS)
 @UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
-    @Inject(UsersQueryRepository)
-    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly usersQueryRepository: UsersPgQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 

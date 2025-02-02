@@ -15,7 +15,7 @@ export class PaginationQueries {
   @IsIn(['createdAt', 'updatedAt'])
   sortBy: string = 'createdAt';
 
-  @IsIn(['asc', 'desc', 'ascending', 'descending', 1, -1] as SortDirection[])
+  @IsIn(['asc', 'desc'] as SortDirection[])
   sortDirection: SortDirection = 'desc';
 
   @IsInt()

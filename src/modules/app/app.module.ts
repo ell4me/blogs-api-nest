@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { seconds, ThrottlerModule } from '@nestjs/throttler';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UsersModule } from '../users/users.module';
 import { PostsModule } from '../posts/posts.module';
@@ -32,6 +33,29 @@ import { SecurityDevicesModule } from '../security-devices/security-devices.modu
         },
         dbName: config.dbName,
       }),
+      inject: [CommonConfig],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [CommonConfigModule],
+      useFactory: (config: CommonConfig) => {
+        const ormConfig = config.pgUrl
+          ? {
+              url: config.pgUrl,
+            }
+          : {
+              host: config.pgHost,
+              port: config.pgPort,
+              username: config.pgUser,
+              password: config.pgPassword,
+              database: config.pgDb,
+            };
+
+        return {
+          type: 'postgres',
+          synchronize: false,
+          ...ormConfig,
+        };
+      },
       inject: [CommonConfig],
     }),
     ThrottlerModule.forRootAsync({
