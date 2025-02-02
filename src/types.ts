@@ -14,7 +14,7 @@ export interface ValidationErrorViewDto {
 }
 
 export class PaginationQueries {
-  @IsIn(['createdAt', 'updatedAt'])
+  @IsIn(['createdAt', 'updatedAt', 'login'])
   sortBy: string = 'createdAt';
 
   @IsIn(['asc', 'desc'] as SortDirection[])

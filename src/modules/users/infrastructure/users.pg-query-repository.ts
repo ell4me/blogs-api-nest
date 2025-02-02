@@ -18,13 +18,7 @@ export class UsersPgQueryRepository {
     searchEmailTerm,
   }: FilteredUserQueries): Promise<ItemsPaginationViewDto<UserViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
-    console.log(
-      'fafasfa',
-      `SELECT * FROM "Users"
-      WHERE login like "%${searchLoginTerm}%" or email like "%${searchEmailTerm}%"
-      ORDER BY ${sortBy} ${sortDirection}
-      LIMIT ${pageSize} OFFSET ${offset}`,
-    );
+
     const users = await this.dataSource.query(
       `
       SELECT * FROM "Users"
