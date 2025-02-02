@@ -51,7 +51,13 @@ export class CreateUserUseCase
           createdUser.email,
           createdUser.emailConfirmationCode,
         )
-        .catch(() => console.log('Send email failed'));
+        .catch(() => {
+          this.emailAdapter.sendEmailConfirmation(
+            createdUser.email,
+            createdUser.emailConfirmationCode,
+          );
+          console.error('Send email failed');
+        });
     }
 
     return { id: createdUser.id };

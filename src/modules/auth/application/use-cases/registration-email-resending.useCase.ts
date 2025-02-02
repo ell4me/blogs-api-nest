@@ -51,6 +51,12 @@ export class RegistrationEmailResendingUseCase
 
     this.emailAdapter
       .sendEmailConfirmation(user.email, user.emailConfirmationCode)
-      .catch(() => console.error('Send email failed'));
+      .catch(() => {
+        this.emailAdapter.sendEmailConfirmation(
+          user.email,
+          user.emailConfirmationCode,
+        );
+        console.error('Send email failed');
+      });
   }
 }
