@@ -8,7 +8,7 @@ export const ROUTERS_PATH = {
   BLOGS: 'blogs',
   POSTS: 'posts',
   TESTING: 'testing',
-  USERS: 'users',
+  USERS: 'sa/users',
   AUTH: 'auth',
   COMMENTS: 'comments',
   SECURITY_DEVICES: 'security/devices',
