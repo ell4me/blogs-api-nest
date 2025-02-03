@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { SecurityDevicesRepository } from '../../infrastructure/security-devices.repository';
 import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../../common/exception/domain-exception';
+import { SecurityDevicesPgRepository } from '../../infrastructure/security-devices.pg-repository';
 
 export type TExecuteDeleteSessionByDeviceIdResult = void;
 
@@ -24,7 +24,7 @@ export class DeleteSessionByDeviceIdUseCase
     >
 {
   constructor(
-    private readonly securityDevicesRepository: SecurityDevicesRepository,
+    private readonly securityDevicesRepository: SecurityDevicesPgRepository,
   ) {}
 
   async execute({ deviceId, userId }: DeleteSessionByDeviceIdCommand) {

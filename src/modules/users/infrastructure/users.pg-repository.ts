@@ -29,14 +29,11 @@ export class UsersPgRepository {
       [login, email],
     );
 
-    return result[0] ? UserEntity.getInstance(result[0]) : result[0];
+    return result[0] ? UserEntity.createInstance(result[0]) : null;
   }
 
   async create(userCreateDto: UserCreateDto, emailConfirmation?: boolean) {
-    const user = await UserEntity.createInstance(
-      userCreateDto,
-      emailConfirmation,
-    );
+    const user = await UserEntity.createPojo(userCreateDto, emailConfirmation);
 
     await this.dataSource.query(
       `
@@ -86,7 +83,7 @@ export class UsersPgRepository {
       );
     }
 
-    return UserEntity.getInstance(result[0]);
+    return UserEntity.createInstance(result[0]);
   }
 
   async save(user: UserEntity): Promise<UserEntity> {
@@ -113,5 +110,30 @@ export class UsersPgRepository {
     );
 
     return user;
+  }
+
+  async findByPasswordRecoveryCodeOrBadRequestFail(
+    code: string,
+  ): Promise<UserEntity> {
+    const result = await this.dataSource.query(
+      `
+        SELECT * FROM "Users" 
+        WHERE "passwordRecoveryCode"=$1
+    `,
+      [code],
+    );
+
+    if (!result[0]) {
+      throw BadRequestDomainException.create(
+        VALIDATION_MESSAGES.CODE_IS_NOT_CORRECT('Recovery'),
+        'recoveryCode',
+      );
+    }
+
+    return UserEntity.createInstance(result[0]);
+  }
+
+  deleteAll() {
+    return this.dataSource.query(`DELETE FROM "Users"`);
   }
 }

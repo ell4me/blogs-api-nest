@@ -2,8 +2,6 @@ import { DeleteResult } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
-import { UpdateDeviceSession } from '../security-devices.types';
-
 import {
   SecurityDevices,
   SecurityDevicesDocument,
@@ -33,18 +31,6 @@ export class SecurityDevicesRepository {
 
   save(session: SecurityDevicesDocument): Promise<SecurityDevicesDocument> {
     return session.save();
-  }
-
-  async updateCurrent(
-    deviceId: string,
-    updatedSession: UpdateDeviceSession,
-  ): Promise<boolean> {
-    const result = await this.SecurityDevicesModel.findOneAndUpdate(
-      { deviceId },
-      updatedSession,
-    );
-
-    return !!result;
   }
 
   async deleteByDeviceId(deviceId: string): Promise<boolean> {

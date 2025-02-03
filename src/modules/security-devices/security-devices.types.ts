@@ -7,7 +7,7 @@ export interface UpdateDeviceSession {
 
 export interface SecurityDevicesCreate {
   userId: string;
-  deviceName: string;
+  deviceName?: string;
   ip: string;
 }
 

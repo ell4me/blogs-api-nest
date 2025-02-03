@@ -1,6 +1,6 @@
 // In seconds
 export const EXPIRATION_TOKEN = {
-  ACCESS: 1000,
+  ACCESS: 10,
   REFRESH: 20,
 };
 

@@ -10,6 +10,8 @@ import { SecurityDevicesQueryRepository } from './infrastructure/security-device
 import { SecurityDevicesRepository } from './infrastructure/security-devices.repository';
 import { DeleteSessionByDeviceIdUseCase } from './application/use-cases/delete-session-by-device-id.useCase';
 import { DeleteAllSessionsExceptCurrentUseCase } from './application/use-cases/delete-all-sessions-except-current.useCase';
+import { SecurityDevicesPgQueryRepository } from './infrastructure/security-devices.pg-query-repository';
+import { SecurityDevicesPgRepository } from './infrastructure/security-devices.pg-repository';
 
 const useCases = [
   DeleteSessionByDeviceIdUseCase,
@@ -26,8 +28,14 @@ const useCases = [
   providers: [
     SecurityDevicesRepository,
     SecurityDevicesQueryRepository,
+    SecurityDevicesPgRepository,
+    SecurityDevicesPgQueryRepository,
     ...useCases,
   ],
-  exports: [SecurityDevicesRepository, DeleteSessionByDeviceIdUseCase],
+  exports: [
+    SecurityDevicesRepository,
+    SecurityDevicesPgRepository,
+    DeleteSessionByDeviceIdUseCase,
+  ],
 })
 export class SecurityDevicesModule {}

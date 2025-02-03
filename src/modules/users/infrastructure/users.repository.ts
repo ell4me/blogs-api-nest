@@ -30,16 +30,6 @@ export class UsersRepository {
     return await user.save();
   }
 
-  async deleteOrNotFoundFail(id: string): Promise<boolean> {
-    const result = await this.UsersModel.deleteOne({ id }).exec();
-
-    if (!result.deletedCount) {
-      throw NotFoundDomainException.create();
-    }
-
-    return true;
-  }
-
   deleteAll(): Promise<DeleteResult> {
     return this.UsersModel.deleteMany().exec();
   }

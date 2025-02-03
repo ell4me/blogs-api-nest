@@ -5,12 +5,12 @@ import { Injectable } from '@nestjs/common';
 
 import { RefreshTokenPayload, UserRequest } from '../../../../types';
 import { AuthConfig } from '../../config/auth.config';
-import { SecurityDevicesRepository } from '../../../security-devices/infrastructure/security-devices.repository';
 import { UnauthorizedDomainException } from '../../../../common/exception/domain-exception';
 import {
   EXPIRATION_TOKEN,
   REFRESH_TOKEN_COOKIE_NAME,
 } from '../../../../constants';
+import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/security-devices.pg-repository';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -19,7 +19,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
 ) {
   constructor(
     private readonly authConfig: AuthConfig,
-    private readonly securityDevicesRepository: SecurityDevicesRepository,
+    private readonly securityDevicesRepository: SecurityDevicesPgRepository,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors<Request>([

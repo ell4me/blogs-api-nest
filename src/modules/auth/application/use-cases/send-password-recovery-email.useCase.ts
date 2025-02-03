@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { PasswordRecoveryEmailDto } from '../../auth.dto';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { EmailAdapter } from '../../../../common/adapters/email/email.adapter';
+import { UsersPgRepository } from '../../../users/infrastructure/users.pg-repository';
 
 export type TExecuteSendPasswordRecoveryEmailResult = void;
 
@@ -19,7 +19,7 @@ export class SendPasswordRecoveryEmailUseCase
     >
 {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: UsersPgRepository,
     private readonly emailAdapter: EmailAdapter,
   ) {}
 
@@ -36,8 +36,14 @@ export class SendPasswordRecoveryEmailUseCase
     await this.usersRepository.save(user);
 
     this.emailAdapter
-      .sendEmailRecoveryPassword(email, user.passwordRecovery!.code)
-      .catch(() => console.log('Send email failed'));
+      .sendEmailRecoveryPassword(email, user.passwordRecoveryCode!)
+      .catch(() => {
+        this.emailAdapter.sendEmailRecoveryPassword(
+          email,
+          user.passwordRecoveryCode!,
+        );
+        console.log('Send email failed');
+      });
 
     return;
   }

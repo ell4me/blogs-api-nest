@@ -66,7 +66,7 @@ export class UserEntity extends DateTimestamp {
     this.password = await hash(newPassword, 10);
   }
 
-  static getInstance(user: UserEntity) {
+  static createInstance(user: UserEntity): UserEntity {
     return new this(
       user.id,
       user.login,
@@ -82,7 +82,7 @@ export class UserEntity extends DateTimestamp {
     );
   }
 
-  static async createInstance(
+  static async createPojo(
     { login, password, email }: UserCreateDto,
     emailConfirmation?: boolean,
   ): Promise<TEntityWithoutDate<UserEntityWithoutMethods>> {

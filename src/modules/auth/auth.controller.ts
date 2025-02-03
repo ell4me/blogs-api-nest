@@ -13,7 +13,6 @@ import { CommandBus } from '@nestjs/cqrs';
 import { ThrottlerGuard } from '@nestjs/throttler';
 
 import { UserCreateDto } from '../users/users.dto';
-import { UsersQueryRepository } from '../users/infrastructure/users.query-repository';
 import { REFRESH_TOKEN_COOKIE_NAME, ROUTERS_PATH } from '../../constants';
 import { LocalAuthGuard } from '../../common/guards/local-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -28,6 +27,7 @@ import {
   TExecuteDeleteSessionByDeviceIdResult,
 } from '../security-devices/application/use-cases/delete-session-by-device-id.useCase';
 import { RefreshTokenGuard } from '../../common/guards/refresh-token.guard';
+import { UsersPgQueryRepository } from '../users/infrastructure/users.pg-query-repository';
 
 import {
   PasswordRecoveryDto,
@@ -64,12 +64,11 @@ import { Tokens } from './auth.types';
 @Controller(ROUTERS_PATH.AUTH)
 export class AuthController {
   constructor(
-    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly usersQueryRepository: UsersPgQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
-  // ThrottlerGuard
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(ThrottlerGuard, LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
@@ -91,7 +90,7 @@ export class AuthController {
     return { accessToken };
   }
 
-  // @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registration(@Body() userCreateDto: UserCreateDto): Promise<void> {
@@ -108,7 +107,7 @@ export class AuthController {
     return this.usersQueryRepository.getCurrentUser(userId);
   }
 
-  // @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
   registrationConfirmation(
@@ -120,7 +119,7 @@ export class AuthController {
     >(new RegistrationConfirmationCommand(registrationConfirmationDto));
   }
 
-  // @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
   registrationEmailResending(

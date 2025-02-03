@@ -1,18 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { addSeconds } from 'date-fns/addSeconds';
 
-import {
-  SecurityDevicesUpdate,
-  UpdateDeviceSession,
-} from '../../../security-devices/security-devices.types';
+import { SecurityDevicesUpdate } from '../../../security-devices/security-devices.types';
 import { EXPIRATION_TOKEN } from '../../../../constants';
-import { SecurityDevicesRepository } from '../../../security-devices/infrastructure/security-devices.repository';
 import {
   ForbiddenDomainException,
   UnauthorizedDomainException,
 } from '../../../../common/exception/domain-exception';
 import { Tokens } from '../../auth.types';
 import { TokensService } from '../tokens.service';
+import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/security-devices.pg-repository';
 
 export type TExecuteRefreshTokenResult = Tokens;
 
@@ -28,7 +25,7 @@ export class RefreshTokenUseCase
   implements ICommandHandler<RefreshTokenCommand, TExecuteRefreshTokenResult>
 {
   constructor(
-    private readonly securityDevicesRepository: SecurityDevicesRepository,
+    private readonly securityDevicesRepository: SecurityDevicesPgRepository,
     private readonly tokensService: TokensService,
   ) {}
 
@@ -54,14 +51,12 @@ export class RefreshTokenUseCase
       EXPIRATION_TOKEN.REFRESH,
     ).getTime();
 
-    const updateDeviceSession: UpdateDeviceSession = {
+    session.updateSession({
       iat,
       expiration,
       deviceName,
       ip,
-    };
-
-    session.updateSession(updateDeviceSession);
+    });
     await this.securityDevicesRepository.save(session);
 
     return this.tokensService.getTokens(userId, deviceId, iat, expiration);
