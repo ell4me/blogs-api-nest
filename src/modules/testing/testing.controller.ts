@@ -33,7 +33,7 @@ export class TestingController {
     await this.likesPostRepository.deleteAll();
     await this.securityDevicesRepository.deleteAll();
 
-    await this.usersPgRepository.deleteAll();
     await this.securityDevicesPgRepository.deleteAll();
+    await this.usersPgRepository.deleteAll();
   }
 }

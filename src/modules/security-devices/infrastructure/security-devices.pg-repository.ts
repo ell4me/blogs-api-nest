@@ -12,12 +12,17 @@ export class SecurityDevicesPgRepository {
   async getDeviceSession(
     deviceId: string,
   ): Promise<SecurityDevicesEntity | null> {
-    const result = await this.dataSource.query(
-      `SELECT * FROM "SecurityDevices" WHERE "deviceId"=$1`,
-      [deviceId],
-    );
+    try {
+      const result = await this.dataSource.query(
+        `SELECT * FROM "SecurityDevices" WHERE "deviceId"=$1`,
+        [deviceId],
+      );
 
-    return result[0] ? SecurityDevicesEntity.createInstance(result[0]) : null;
+      return result[0] ? SecurityDevicesEntity.createInstance(result[0]) : null;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      return null;
+    }
   }
 
   async create(
