@@ -73,6 +73,6 @@ export class PostsPgRepository {
   }
 
   deleteAll(): Promise<any> {
-    return this.dataSource.query(`DELETE FROM "Posts";'`);
+    return this.dataSource.query(`DELETE FROM "Posts"`);
   }
 }
