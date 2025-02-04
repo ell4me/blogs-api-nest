@@ -3,8 +3,6 @@ import { DataSource } from 'typeorm';
 
 import { SecurityDevicesViewDto } from '../security-devices.dto';
 
-import { SecurityDevicesEntity } from './security-devices.entity';
-
 @Injectable()
 export class SecurityDevicesPgQueryRepository {
   constructor(private readonly dataSource: DataSource) {}
@@ -12,7 +10,7 @@ export class SecurityDevicesPgQueryRepository {
   async getActiveDeviceSessions(
     userId: string,
   ): Promise<SecurityDevicesViewDto[]> {
-    const sessions: SecurityDevicesEntity[] = await this.dataSource.query(
+    const sessions = await this.dataSource.query(
       `
       SELECT * FROM "SecurityDevices" WHERE "userId"=$1 AND expiration > $2
     `,

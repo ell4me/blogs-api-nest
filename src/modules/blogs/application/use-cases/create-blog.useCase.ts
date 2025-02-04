@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { BlogsRepository } from '../../infrastructure/blogs.repository';
 import { BlogCreateDto } from '../../blogs.dto';
 import { BlogCreate } from '../../blogs.types';
+import { BlogsPgRepository } from '../../infrastructure/blogs.pg-repository';
 
 export type TExecuteCreateBlog = { id: string };
 
@@ -14,7 +14,7 @@ export class CreateBlogCommand {
 export class CreateBlogUseCase
   implements ICommandHandler<CreateBlogCommand, TExecuteCreateBlog>
 {
-  constructor(private readonly blogsRepository: BlogsRepository) {}
+  constructor(private readonly blogsRepository: BlogsPgRepository) {}
 
   async execute({
     blogCreateDto: { name, websiteUrl, description },

@@ -66,7 +66,7 @@ export class UserEntity extends DateTimestamp {
     this.password = await hash(newPassword, 10);
   }
 
-  static createInstance(user: UserEntity): UserEntity {
+  static createInstance(user: UserEntityWithoutMethods): UserEntity {
     return new this(
       user.id,
       user.login,

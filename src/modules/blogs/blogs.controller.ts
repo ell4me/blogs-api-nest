@@ -19,7 +19,6 @@ import {
   FilteredPostQueries,
   ItemsPaginationViewDto,
 } from '../../types';
-import { PostsQueryRepository } from '../posts/infrastructure/posts.query-repository';
 import { PostCreateDto, PostViewDto } from '../posts/posts.dto';
 import { ROUTERS_PATH } from '../../constants';
 import {
@@ -30,9 +29,9 @@ import { Public } from '../../common/decorators/public.decorator';
 import { AccessTokenGuard } from '../../common/guards/access-token.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
+import { PostsPgQueryRepository } from '../posts/infrastructure/posts.pg-query-repository';
 
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
-import { BlogsQueryRepository } from './infrastructure/blogs.query-repository';
 import {
   DeleteBlogCommand,
   TExecuteDeleteBlog,
@@ -45,12 +44,13 @@ import {
   CreateBlogCommand,
   TExecuteCreateBlog,
 } from './application/use-cases/create-blog.useCase';
+import { BlogsPgQueryRepository } from './infrastructure/blogs.pg-query-repository';
 
 @Controller(ROUTERS_PATH.BLOGS)
 export class BlogsController {
   constructor(
-    private readonly blogsQueryRepository: BlogsQueryRepository,
-    private readonly postsQueryRepository: PostsQueryRepository,
+    private readonly blogsQueryRepository: BlogsPgQueryRepository,
+    private readonly postsQueryRepository: PostsPgQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -120,13 +120,10 @@ export class BlogsController {
       CreatePostCommand,
       TExecuteCreatePost
     >(
-      new CreatePostCommand(
-        {
-          ...postCreateDto,
-          blogId,
-        },
-        blog.name,
-      ),
+      new CreatePostCommand({
+        ...postCreateDto,
+        blogId,
+      }),
     );
 
     return await this.postsQueryRepository.getPostById(id);
@@ -139,6 +136,12 @@ export class BlogsController {
     @Body() blogUpdateDto: BlogUpdateDto,
     @Param('id') id: string,
   ): Promise<boolean> {
+    const blog = await this.blogsQueryRepository.getById(id);
+
+    if (!blog) {
+      throw new NotFoundException();
+    }
+
     return this.commandBus.execute<UpdateBlogCommand, TExecuteUpdateBlog>(
       new UpdateBlogCommand(id, blogUpdateDto),
     );
@@ -148,6 +151,12 @@ export class BlogsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlogById(@Param('id') id: string): Promise<boolean> {
+    const blog = await this.blogsQueryRepository.getById(id);
+
+    if (!blog) {
+      throw new NotFoundException();
+    }
+
     return this.commandBus.execute<DeleteBlogCommand, TExecuteDeleteBlog>(
       new DeleteBlogCommand(id),
     );

@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 
 import { SecurityDevicesCreate } from '../security-devices.types';
 
-import { SecurityDevicesEntity } from './security-devices.entity';
+import { SecurityDeviceEntity } from './security-devices.entity';
 
 @Injectable()
 export class SecurityDevicesPgRepository {
@@ -11,14 +11,14 @@ export class SecurityDevicesPgRepository {
 
   async getDeviceSession(
     deviceId: string,
-  ): Promise<SecurityDevicesEntity | null> {
+  ): Promise<SecurityDeviceEntity | null> {
     try {
       const result = await this.dataSource.query(
         `SELECT * FROM "SecurityDevices" WHERE "deviceId"=$1`,
         [deviceId],
       );
 
-      return result[0] ? SecurityDevicesEntity.createInstance(result[0]) : null;
+      return result[0] ? SecurityDeviceEntity.createInstance(result[0]) : null;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       return null;
@@ -27,8 +27,8 @@ export class SecurityDevicesPgRepository {
 
   async create(
     securityDevicesCreate: SecurityDevicesCreate,
-  ): Promise<SecurityDevicesEntity> {
-    const session = SecurityDevicesEntity.createPojo(securityDevicesCreate);
+  ): Promise<SecurityDeviceEntity> {
+    const session = SecurityDeviceEntity.createPojo(securityDevicesCreate);
 
     await this.dataSource.query(
       `
@@ -46,10 +46,10 @@ export class SecurityDevicesPgRepository {
       ],
     );
 
-    return SecurityDevicesEntity.createInstance(session);
+    return SecurityDeviceEntity.createInstance(session);
   }
 
-  async save(session: SecurityDevicesEntity): Promise<SecurityDevicesEntity> {
+  async save(session: SecurityDeviceEntity): Promise<SecurityDeviceEntity> {
     await this.dataSource.query(
       `
       UPDATE "SecurityDevices" SET 

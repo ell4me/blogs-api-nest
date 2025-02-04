@@ -1,15 +1,14 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { PostsRepository } from '../../../posts/infrastructure/posts.repository';
-import { BlogsRepository } from '../../infrastructure/blogs.repository';
 import { BlogUpdateDto } from '../../blogs.dto';
+import { BlogsPgRepository } from '../../infrastructure/blogs.pg-repository';
 
 export type TExecuteUpdateBlog = boolean;
 
 export class UpdateBlogCommand {
   constructor(
     public id: string,
-    public updatedBlog: BlogUpdateDto,
+    public blogUpdateDto: BlogUpdateDto,
   ) {}
 }
 
@@ -17,23 +16,13 @@ export class UpdateBlogCommand {
 export class UpdateBlogUseCase
   implements ICommandHandler<UpdateBlogCommand, TExecuteUpdateBlog>
 {
-  constructor(
-    private readonly postsRepository: PostsRepository,
-    private readonly blogsRepository: BlogsRepository,
-  ) {}
+  constructor(private readonly blogsRepository: BlogsPgRepository) {}
 
   async execute({
     id,
-    updatedBlog,
+    blogUpdateDto,
   }: UpdateBlogCommand): Promise<TExecuteUpdateBlog> {
-    const blog = await this.blogsRepository.updateOrNotFoundFail(
-      id,
-      updatedBlog,
-    );
-
-    if (blog.name !== updatedBlog.name) {
-      await this.postsRepository.updateByBlogId(id, updatedBlog.name);
-    }
+    await this.blogsRepository.updateOrNotFoundFail(id, blogUpdateDto);
 
     return true;
   }

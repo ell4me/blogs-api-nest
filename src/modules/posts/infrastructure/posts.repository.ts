@@ -47,15 +47,6 @@ export class PostsRepository {
     return this.PostsModel.deleteMany().exec();
   }
 
-  async updateByBlogId(blogId: string, blogName: string): Promise<boolean> {
-    const result = await this.PostsModel.updateMany(
-      { blogId },
-      { blogName },
-    ).exec();
-
-    return !!result;
-  }
-
   async create(
     newPost: PostCreateByBlogIdDto,
     blogName: string,

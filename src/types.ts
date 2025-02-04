@@ -32,11 +32,17 @@ export class PaginationQueries {
 }
 
 export class FilteredBlogQueries extends PaginationQueries {
+  @IsIn(['createdAt', 'updatedAt', 'name'])
+  sortBy: string = 'createdAt';
+
   @IsString()
   searchNameTerm: string = '';
 }
 
 export class FilteredPostQueries extends PaginationQueries {
+  @IsIn(['createdAt', 'updatedAt', 'title'])
+  sortBy: string = 'createdAt';
+
   @IsString()
   searchNameTerm: string = '';
 }

@@ -10,6 +10,8 @@ import { Blog, BlogsSchema } from './infrastructure/blogs.model';
 import { DeleteBlogUseCase } from './application/use-cases/delete-blog.useCase';
 import { UpdateBlogUseCase } from './application/use-cases/update-blog.useCase';
 import { CreateBlogUseCase } from './application/use-cases/create-blog.useCase';
+import { BlogsPgQueryRepository } from './infrastructure/blogs.pg-query-repository';
+import { BlogsPgRepository } from './infrastructure/blogs.pg-repository';
 
 const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
 
@@ -19,7 +21,18 @@ const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
     forwardRef(() => PostsModule),
   ],
   controllers: [BlogsController],
-  providers: [BlogsQueryRepository, BlogsRepository, ...useCases],
-  exports: [BlogsQueryRepository, BlogsRepository],
+  providers: [
+    BlogsQueryRepository,
+    BlogsRepository,
+    BlogsPgQueryRepository,
+    BlogsPgRepository,
+    ...useCases,
+  ],
+  exports: [
+    BlogsQueryRepository,
+    BlogsRepository,
+    BlogsPgQueryRepository,
+    BlogsPgRepository,
+  ],
 })
 export class BlogsModule {}

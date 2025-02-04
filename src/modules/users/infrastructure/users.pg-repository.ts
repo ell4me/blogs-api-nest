@@ -8,7 +8,7 @@ import {
 } from '../../../common/exception/domain-exception';
 import { VALIDATION_MESSAGES } from '../../../constants';
 
-import { UserEntity } from './user.entity';
+import { UserEntity } from './users.entity';
 
 @Injectable()
 export class UsersPgRepository {

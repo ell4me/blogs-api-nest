@@ -21,7 +21,6 @@ import {
   PaginationQueries,
 } from '../../types';
 import { ROUTERS_PATH, VALIDATION_MESSAGES } from '../../constants';
-import { BlogsQueryRepository } from '../blogs/infrastructure/blogs.query-repository';
 import { CommentsQueryRepository } from '../comments/infrastructure/comments.query-repository';
 import { getErrorMessage } from '../../common/helpers/getErrorMessage';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -35,8 +34,8 @@ import {
   UpdateLikeStatusPostCommand,
 } from '../likes-post/application/use-cases/update-like-status-post.useCase';
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
+import { BlogsPgQueryRepository } from '../blogs/infrastructure/blogs.pg-query-repository';
 
-import { PostsQueryRepository } from './infrastructure/posts.query-repository';
 import { PostCreateByBlogIdDto, PostUpdateDto, PostViewDto } from './posts.dto';
 import {
   TExecuteUpdatePostById,
@@ -50,12 +49,13 @@ import {
   DeletePostCommand,
   TExecuteDeletePost,
 } from './application/use-cases/delete-post.useCase';
+import { PostsPgQueryRepository } from './infrastructure/posts.pg-query-repository';
 
 @Controller(ROUTERS_PATH.POSTS)
 export class PostsController {
   constructor(
-    private readonly postsQueryRepository: PostsQueryRepository,
-    private readonly blogsQueryRepository: BlogsQueryRepository,
+    private readonly postsQueryRepository: PostsPgQueryRepository,
+    private readonly blogsQueryRepository: BlogsPgQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
@@ -102,7 +102,7 @@ export class PostsController {
     const { id } = await this.commandBus.execute<
       CreatePostCommand,
       TExecuteCreatePost
-    >(new CreatePostCommand(newPost, blog.name));
+    >(new CreatePostCommand(newPost));
 
     return await this.postsQueryRepository.getPostById(id);
   }

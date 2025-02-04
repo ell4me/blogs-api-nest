@@ -12,11 +12,11 @@ interface SecurityDevicesEntityInstanceMethods {
 }
 
 type SecurityDevicesEntityWithoutMethods = Omit<
-  SecurityDevicesEntity,
+  SecurityDeviceEntity,
   keyof SecurityDevicesEntityInstanceMethods
 >;
 
-export class SecurityDevicesEntity {
+export class SecurityDeviceEntity {
   private constructor(
     public iat: number,
     public expiration: number,
@@ -35,7 +35,7 @@ export class SecurityDevicesEntity {
 
   static createInstance(
     securityDevices: SecurityDevicesEntityWithoutMethods,
-  ): SecurityDevicesEntity {
+  ): SecurityDeviceEntity {
     return new this(
       Number(securityDevices.iat),
       Number(securityDevices.expiration),

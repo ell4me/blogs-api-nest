@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { PostUpdateDto } from '../../posts.dto';
-import { PostsRepository } from '../../infrastructure/posts.repository';
+import { PostsPgRepository } from '../../infrastructure/posts.pg-repository';
 
 export type TExecuteUpdatePostById = boolean;
 
@@ -16,7 +16,7 @@ export class UpdatePostByIdCommand {
 export class UpdatePostUseCase
   implements ICommandHandler<UpdatePostByIdCommand, TExecuteUpdatePostById>
 {
-  constructor(private readonly postsRepository: PostsRepository) {}
+  constructor(private readonly postsRepository: PostsPgRepository) {}
 
   async execute({
     id,

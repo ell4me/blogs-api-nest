@@ -5,7 +5,7 @@ import { VALIDATION_MESSAGES } from '../../../../constants';
 import { EmailAdapter } from '../../../../common/adapters/email/email.adapter';
 import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
 import { UsersPgRepository } from '../../infrastructure/users.pg-repository';
-import { UserEntity } from '../../infrastructure/user.entity';
+import { UserEntity } from '../../infrastructure/users.entity';
 
 export type TExecuteCreateUserResult = { id: string };
 

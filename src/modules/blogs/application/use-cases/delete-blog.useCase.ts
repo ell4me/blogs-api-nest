@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { PostsRepository } from '../../../posts/infrastructure/posts.repository';
-import { BlogsRepository } from '../../infrastructure/blogs.repository';
+import { BlogsPgRepository } from '../../infrastructure/blogs.pg-repository';
+import { PostsPgRepository } from '../../../posts/infrastructure/posts.pg-repository';
 
 export type TExecuteDeleteBlog = boolean;
 
@@ -14,17 +14,14 @@ export class DeleteBlogUseCase
   implements ICommandHandler<DeleteBlogCommand, TExecuteDeleteBlog>
 {
   constructor(
-    private readonly postsRepository: PostsRepository,
-    private readonly blogsRepository: BlogsRepository,
+    private readonly postsRepository: PostsPgRepository,
+    private readonly blogsRepository: BlogsPgRepository,
   ) {}
 
   async execute({ id }: DeleteBlogCommand): Promise<TExecuteDeleteBlog> {
-    const isDeleted = await this.blogsRepository.deleteOrNotFoundFail(id);
+    await this.postsRepository.deleteAllByBlogId(id);
+    await this.blogsRepository.deleteOrNotFoundFail(id);
 
-    if (isDeleted) {
-      await this.postsRepository.deleteAllByBlogId(id);
-    }
-
-    return isDeleted;
+    return true;
   }
 }

@@ -12,6 +12,8 @@ import { PostsRepository } from './infrastructure/posts.repository';
 import { UpdatePostUseCase } from './application/use-cases/update-post.useCase';
 import { CreatePostUseCase } from './application/use-cases/create-post.useCase';
 import { DeletePostUseCase } from './application/use-cases/delete-post.useCase';
+import { PostsPgQueryRepository } from './infrastructure/posts.pg-query-repository';
+import { PostsPgRepository } from './infrastructure/posts.pg-repository';
 
 const useCases = [UpdatePostUseCase, CreatePostUseCase, DeletePostUseCase];
 
@@ -23,7 +25,19 @@ const useCases = [UpdatePostUseCase, CreatePostUseCase, DeletePostUseCase];
     LikesPostModule,
   ],
   controllers: [PostsController],
-  providers: [PostsQueryRepository, PostsRepository, ...useCases],
-  exports: [PostsQueryRepository, PostsRepository, CreatePostUseCase],
+  providers: [
+    PostsQueryRepository,
+    PostsRepository,
+    PostsPgQueryRepository,
+    PostsPgRepository,
+    ...useCases,
+  ],
+  exports: [
+    PostsQueryRepository,
+    PostsRepository,
+    PostsPgQueryRepository,
+    PostsPgRepository,
+    CreatePostUseCase,
+  ],
 })
 export class PostsModule {}
