@@ -20,7 +20,7 @@ export class PostsPgRepository {
       throw NotFoundDomainException.create();
     }
 
-    return result[0];
+    return PostEntity.createInstance(result[0]);
   }
 
   async deleteAllByBlogId(blogId: string): Promise<void> {

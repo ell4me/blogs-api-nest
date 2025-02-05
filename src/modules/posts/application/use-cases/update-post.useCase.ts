@@ -7,7 +7,7 @@ export type TExecuteUpdatePostById = void;
 
 export class UpdatePostByIdCommand {
   constructor(
-    public id: string,
+    public postId: string,
     public blogId: string,
     public postUpdateDto: PostUpdateDto,
   ) {}
@@ -20,11 +20,11 @@ export class UpdatePostUseCase
   constructor(private readonly postsRepository: PostsPgRepository) {}
 
   async execute({
-    id,
+    postId,
     blogId,
     postUpdateDto,
   }: UpdatePostByIdCommand): Promise<TExecuteUpdatePostById> {
-    const post = await this.postsRepository.findOrNotFoundFail(id);
+    const post = await this.postsRepository.findOrNotFoundFail(postId);
     post.updatePost(postUpdateDto, blogId);
     await this.postsRepository.save(post);
 

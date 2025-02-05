@@ -178,9 +178,8 @@ export class BlogsController {
     @Param('postId') postId: string,
   ): Promise<void> {
     const blog = await this.blogsQueryRepository.getById(blogId);
-    const post = await this.postsQueryRepository.getById(postId);
 
-    if (!blog || !post) {
+    if (!blog) {
       throw new NotFoundException();
     }
 
@@ -197,9 +196,8 @@ export class BlogsController {
     @Param('postId') postId: string,
   ): Promise<void> {
     const blog = await this.blogsQueryRepository.getById(blogId);
-    const post = await this.postsQueryRepository.getById(postId);
 
-    if (!blog || !post) {
+    if (!blog) {
       throw new NotFoundException();
     }
 
