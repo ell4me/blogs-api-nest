@@ -5,7 +5,10 @@ import { PostsPgRepository } from '../../infrastructure/posts.pg-repository';
 export type TExecuteDeletePost = void;
 
 export class DeletePostCommand {
-  constructor(public id: string) {}
+  constructor(
+    public postId: string,
+    public blogId: string,
+  ) {}
 }
 
 @CommandHandler(DeletePostCommand)
@@ -14,7 +17,10 @@ export class DeletePostUseCase
 {
   constructor(private readonly postsRepository: PostsPgRepository) {}
 
-  async execute({ id }: DeletePostCommand): Promise<TExecuteDeletePost> {
-    return this.postsRepository.deleteOrNotFoundFail(id);
+  async execute({
+    postId,
+    blogId,
+  }: DeletePostCommand): Promise<TExecuteDeletePost> {
+    return this.postsRepository.deleteOrNotFoundFail(postId, blogId);
   }
 }

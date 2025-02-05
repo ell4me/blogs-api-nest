@@ -10,10 +10,13 @@ import { PostEntity } from './posts.entity';
 export class PostsPgRepository {
   constructor(private readonly dataSource: DataSource) {}
 
-  async findOrNotFoundFail(id: string): Promise<PostEntity> {
+  async findOrNotFoundFail(
+    postId: string,
+    blogId?: string,
+  ): Promise<PostEntity> {
     const result = await this.dataSource.query(
-      `SELECT * FROM "Posts" WHERE "id"=$1`,
-      [id],
+      `SELECT * FROM "Posts" WHERE "id"=$1 AND "blogId"=$2`,
+      [postId, blogId],
     );
 
     if (!result[0]) {
@@ -36,20 +39,19 @@ export class PostsPgRepository {
       UPDATE "Posts" SET "title"=$1, 
        "shortDescription"=$2,
        "content"=$3, 
-       "blogId"=$4,
        "updatedAt"=DEFAULT
-      WHERE id=$7
+      WHERE id=$4
     `,
-      [post.title, post.shortDescription, post.content, post.blogId],
+      [post.title, post.shortDescription, post.content, post.id],
     );
 
     return post;
   }
 
-  async deleteOrNotFoundFail(id: string): Promise<void> {
+  async deleteOrNotFoundFail(postId: string, blogId?: string): Promise<void> {
     const result = await this.dataSource.query(
-      `DELETE FROM "Posts" WHERE "id"=$1`,
-      [id],
+      `DELETE FROM "Posts" WHERE "id"=$1 AND "blogId"=$2`,
+      [postId, blogId],
     );
 
     if (!result[1]) {

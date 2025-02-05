@@ -24,8 +24,8 @@ export class UpdatePostUseCase
     blogId,
     postUpdateDto,
   }: UpdatePostByIdCommand): Promise<TExecuteUpdatePostById> {
-    const post = await this.postsRepository.findOrNotFoundFail(postId);
-    post.updatePost(postUpdateDto, blogId);
+    const post = await this.postsRepository.findOrNotFoundFail(postId, blogId);
+    post.updatePost(postUpdateDto);
     await this.postsRepository.save(post);
 
     return;

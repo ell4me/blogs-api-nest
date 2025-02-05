@@ -177,12 +177,6 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
   ): Promise<void> {
-    const blog = await this.blogsQueryRepository.getById(blogId);
-
-    if (!blog) {
-      throw new NotFoundException();
-    }
-
     return this.commandBus.execute<
       UpdatePostByIdCommand,
       TExecuteUpdatePostById
@@ -195,14 +189,8 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
   ): Promise<void> {
-    const blog = await this.blogsQueryRepository.getById(blogId);
-
-    if (!blog) {
-      throw new NotFoundException();
-    }
-
     return this.commandBus.execute<DeletePostCommand, TExecuteDeletePost>(
-      new DeletePostCommand(postId),
+      new DeletePostCommand(postId, blogId),
     );
   }
 }
