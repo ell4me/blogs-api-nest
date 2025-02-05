@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostUpdateDto } from '../../posts.dto';
 import { PostsPgRepository } from '../../infrastructure/posts.pg-repository';
 
-export type TExecuteUpdatePostById = boolean;
+export type TExecuteUpdatePostById = void;
 
 export class UpdatePostByIdCommand {
   constructor(
@@ -26,6 +26,6 @@ export class UpdatePostUseCase
     post.updatePost(updatedPost);
     await this.postsRepository.save(post);
 
-    return true;
+    return;
   }
 }

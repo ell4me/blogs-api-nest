@@ -37,7 +37,7 @@ const useCases = [UpdatePostUseCase, CreatePostUseCase, DeletePostUseCase];
     PostsRepository,
     PostsPgQueryRepository,
     PostsPgRepository,
-    CreatePostUseCase,
+    ...useCases,
   ],
 })
 export class PostsModule {}

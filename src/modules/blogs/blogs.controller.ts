@@ -19,7 +19,7 @@ import {
   FilteredPostQueries,
   ItemsPaginationViewDto,
 } from '../../types';
-import { PostCreateDto, PostViewDto } from '../posts/posts.dto';
+import { PostCreateDto, PostUpdateDto, PostViewDto } from '../posts/posts.dto';
 import { ROUTERS_PATH } from '../../constants';
 import {
   CreatePostCommand,
@@ -30,6 +30,14 @@ import { AccessTokenGuard } from '../../common/guards/access-token.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 import { PostsPgQueryRepository } from '../posts/infrastructure/posts.pg-query-repository';
+import {
+  TExecuteUpdatePostById,
+  UpdatePostByIdCommand,
+} from '../posts/application/use-cases/update-post.useCase';
+import {
+  DeletePostCommand,
+  TExecuteDeletePost,
+} from '../posts/application/use-cases/delete-post.useCase';
 
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 import {
@@ -46,7 +54,8 @@ import {
 } from './application/use-cases/create-blog.useCase';
 import { BlogsPgQueryRepository } from './infrastructure/blogs.pg-query-repository';
 
-@Controller(ROUTERS_PATH.BLOGS)
+@UseGuards(BasicAuthGuard)
+@Controller()
 export class BlogsController {
   constructor(
     private readonly blogsQueryRepository: BlogsPgQueryRepository,
@@ -54,14 +63,14 @@ export class BlogsController {
     private readonly commandBus: CommandBus,
   ) {}
 
-  @Get()
+  @Get([ROUTERS_PATH.BLOGS, ROUTERS_PATH.SA_BLOGS])
   async getAllBlogs(
     @Query() queries: FilteredBlogQueries,
   ): Promise<ItemsPaginationViewDto<BlogViewDto>> {
     return await this.blogsQueryRepository.getAll(queries);
   }
 
-  @Get(':id')
+  @Get(`${ROUTERS_PATH.BLOGS}/:id`)
   async getBlogById(@Param('id') id: string): Promise<BlogViewDto> {
     const blog = await this.blogsQueryRepository.getById(id);
 
@@ -74,7 +83,10 @@ export class BlogsController {
 
   @Public()
   @UseGuards(AccessTokenGuard)
-  @Get(':id/posts')
+  @Get([
+    `${ROUTERS_PATH.BLOGS}/:id/posts`,
+    `${ROUTERS_PATH.SA_BLOGS}/:id/posts`,
+  ])
   async getPostsByBlogId(
     @Query() queries: FilteredPostQueries,
     @CurrentUser('id') userId: string,
@@ -86,13 +98,12 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
-    return await this.postsQueryRepository.getAllPosts(queries, userId, {
+    return await this.postsQueryRepository.getAll(queries, userId, {
       blogId: id,
     });
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Post()
+  @Post(ROUTERS_PATH.SA_BLOGS)
   async createBlog(
     @Body() blogCreateDto: BlogCreateDto,
   ): Promise<BlogViewDto | null> {
@@ -104,8 +115,7 @@ export class BlogsController {
     return await this.blogsQueryRepository.getById(id);
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Post(':blogId/posts')
+  @Post(`${ROUTERS_PATH.SA_BLOGS}/:blogId/posts`)
   async createPostByBlogId(
     @Body() postCreateDto: PostCreateDto,
     @Param('blogId') blogId: string,
@@ -126,11 +136,10 @@ export class BlogsController {
       }),
     );
 
-    return await this.postsQueryRepository.getPostById(id);
+    return await this.postsQueryRepository.getById(id);
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Put(':id')
+  @Put(`${ROUTERS_PATH.SA_BLOGS}/:id`)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlogById(
     @Body() blogUpdateDto: BlogUpdateDto,
@@ -147,8 +156,7 @@ export class BlogsController {
     );
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Delete(':id')
+  @Delete(`${ROUTERS_PATH.SA_BLOGS}/:id`)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlogById(@Param('id') id: string): Promise<boolean> {
     const blog = await this.blogsQueryRepository.getById(id);
@@ -159,6 +167,44 @@ export class BlogsController {
 
     return this.commandBus.execute<DeleteBlogCommand, TExecuteDeleteBlog>(
       new DeleteBlogCommand(id),
+    );
+  }
+
+  @Put(`${ROUTERS_PATH.SA_BLOGS}/:blogId/posts/:postId`)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updatePostByBlogId(
+    @Body() postUpdateDto: PostUpdateDto,
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
+  ): Promise<void> {
+    const blog = await this.blogsQueryRepository.getById(blogId);
+    const post = await this.postsQueryRepository.getById(postId);
+
+    if (!blog || !post) {
+      throw new NotFoundException();
+    }
+
+    return this.commandBus.execute<
+      UpdatePostByIdCommand,
+      TExecuteUpdatePostById
+    >(new UpdatePostByIdCommand(postId, postUpdateDto));
+  }
+
+  @Delete(`${ROUTERS_PATH.SA_BLOGS}/:blogId/posts/:postId`)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deletePostByBlogId(
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
+  ): Promise<void> {
+    const blog = await this.blogsQueryRepository.getById(blogId);
+    const post = await this.postsQueryRepository.getById(postId);
+
+    if (!blog || !post) {
+      throw new NotFoundException();
+    }
+
+    return this.commandBus.execute<DeletePostCommand, TExecuteDeletePost>(
+      new DeletePostCommand(postId),
     );
   }
 }

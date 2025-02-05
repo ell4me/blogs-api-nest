@@ -9,7 +9,7 @@ import { STATUSES_LIKE } from '../../../constants';
 export class PostsPgQueryRepository {
   constructor(private readonly dataSource: DataSource) {}
 
-  async getAllPosts(
+  async getAll(
     {
       pageSize,
       pageNumber,
@@ -40,7 +40,7 @@ export class PostsPgQueryRepository {
     //   userId,
     // );
 
-    const postsCountByFilter = await this.getCountPosts(additionalFilter);
+    const postsCountByFilter = await this.getCount(additionalFilter);
 
     return {
       page: pageNumber,
@@ -59,7 +59,7 @@ export class PostsPgQueryRepository {
     };
   }
 
-  async getPostById(
+  async getById(
     postId: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     userId?: string,
@@ -92,7 +92,7 @@ export class PostsPgQueryRepository {
     };
   }
 
-  async getCountPosts(filter?: { blogId?: string }): Promise<number> {
+  async getCount(filter?: { blogId?: string }): Promise<number> {
     const result = await this.dataSource.query(
       `SELECT count(*) FROM "Posts"
       WHERE "blogId"=$1`,

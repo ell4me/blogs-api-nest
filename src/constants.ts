@@ -5,7 +5,8 @@ export const EXPIRATION_TOKEN = {
 };
 
 export const ROUTERS_PATH = {
-  BLOGS: 'sa/blogs',
+  SA_BLOGS: 'sa/blogs',
+  BLOGS: 'blogs',
   POSTS: 'posts',
   TESTING: 'testing',
   USERS: 'sa/users',

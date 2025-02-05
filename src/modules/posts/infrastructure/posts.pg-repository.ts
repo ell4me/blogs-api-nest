@@ -46,7 +46,7 @@ export class PostsPgRepository {
     return post;
   }
 
-  async deleteOrNotFoundFail(id: string): Promise<boolean> {
+  async deleteOrNotFoundFail(id: string): Promise<void> {
     const result = await this.dataSource.query(
       `DELETE FROM "Posts" WHERE "id"=$1`,
       [id],
@@ -56,7 +56,7 @@ export class PostsPgRepository {
       throw NotFoundDomainException.create();
     }
 
-    return true;
+    return;
   }
 
   async create(newPost: PostCreateByBlogIdDto) {

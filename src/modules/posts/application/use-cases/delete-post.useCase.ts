@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { PostsPgRepository } from '../../infrastructure/posts.pg-repository';
 
-export type TExecuteDeletePost = boolean;
+export type TExecuteDeletePost = void;
 
 export class DeletePostCommand {
   constructor(public id: string) {}

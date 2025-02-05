@@ -67,7 +67,7 @@ export class PostsController {
     @Query() queries: FilteredPostQueries,
     @CurrentUser('id') userId: string,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
-    return this.postsQueryRepository.getAllPosts(queries, userId);
+    return this.postsQueryRepository.getAll(queries, userId);
   }
 
   @Public()
@@ -77,7 +77,7 @@ export class PostsController {
     @Param('id') id: string,
     @CurrentUser('id') userId: string,
   ) {
-    const post = await this.postsQueryRepository.getPostById(id, userId);
+    const post = await this.postsQueryRepository.getById(id, userId);
 
     if (!post) {
       throw new NotFoundException();
@@ -104,7 +104,7 @@ export class PostsController {
       TExecuteCreatePost
     >(new CreatePostCommand(newPost));
 
-    return await this.postsQueryRepository.getPostById(id);
+    return await this.postsQueryRepository.getById(id);
   }
 
   @UseGuards(BasicAuthGuard)
@@ -113,7 +113,7 @@ export class PostsController {
   async updatePostById(
     @Param('id') id: string,
     @Body() postUpdateDto: PostUpdateDto,
-  ): Promise<boolean> {
+  ): Promise<void> {
     const blog = await this.blogsQueryRepository.getById(postUpdateDto.blogId);
 
     if (!blog) {
@@ -131,7 +131,7 @@ export class PostsController {
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deletePostById(@Param('id') id: string): Promise<boolean> {
+  deletePostById(@Param('id') id: string): Promise<void> {
     return this.commandBus.execute<DeletePostCommand, TExecuteDeletePost>(
       new DeletePostCommand(id),
     );
@@ -145,7 +145,7 @@ export class PostsController {
     @CurrentUser('id') userId: string,
     @Param('postId') postId: string,
   ) {
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getById(postId);
     if (!post) {
       throw new NotFoundException();
     }
@@ -164,7 +164,7 @@ export class PostsController {
     @CurrentUser('id') userId: string,
     @Param('postId') postId: string,
   ): Promise<CommentViewDto> {
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getById(postId);
     if (!post) {
       throw new NotFoundException();
     }
@@ -189,7 +189,7 @@ export class PostsController {
     @CurrentUser('id') userId: string,
     @Param('postId') postId: string,
   ): Promise<void> {
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getById(postId);
 
     if (!post) {
       throw new NotFoundException();
