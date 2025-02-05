@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { PostsModule } from '../posts/posts.module';
@@ -18,7 +18,7 @@ const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogsSchema }]),
-    forwardRef(() => PostsModule),
+    PostsModule,
   ],
   controllers: [BlogsController],
   providers: [
@@ -28,11 +28,6 @@ const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
     BlogsPgRepository,
     ...useCases,
   ],
-  exports: [
-    BlogsQueryRepository,
-    BlogsRepository,
-    BlogsPgQueryRepository,
-    BlogsPgRepository,
-  ],
+  exports: [BlogsRepository, BlogsPgRepository],
 })
 export class BlogsModule {}

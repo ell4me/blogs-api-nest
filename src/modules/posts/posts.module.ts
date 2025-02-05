@@ -1,7 +1,6 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { BlogsModule } from '../blogs/blogs.module';
 import { CommentsModule } from '../comments/comments.module';
 import { LikesPostModule } from '../likes-post/likes-post.module';
 
@@ -20,7 +19,6 @@ const useCases = [UpdatePostUseCase, CreatePostUseCase, DeletePostUseCase];
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Post.name, schema: PostsSchema }]),
-    forwardRef(() => BlogsModule),
     CommentsModule,
     LikesPostModule,
   ],

@@ -1,8 +1,6 @@
 import {
-  BadRequestException,
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -20,9 +18,8 @@ import {
   ItemsPaginationViewDto,
   PaginationQueries,
 } from '../../types';
-import { ROUTERS_PATH, VALIDATION_MESSAGES } from '../../constants';
+import { ROUTERS_PATH } from '../../constants';
 import { CommentsQueryRepository } from '../comments/infrastructure/comments.query-repository';
-import { getErrorMessage } from '../../common/helpers/getErrorMessage';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CommentCreateDto, CommentViewDto } from '../comments/comments.dto';
 import { AccessTokenGuard } from '../../common/guards/access-token.guard';
@@ -33,25 +30,14 @@ import {
   TExecuteUpdateLikeStatusPost,
   UpdateLikeStatusPostCommand,
 } from '../likes-post/application/use-cases/update-like-status-post.useCase';
-import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
-import { BlogsPgQueryRepository } from '../blogs/infrastructure/blogs.pg-query-repository';
 
-import { PostCreateByBlogIdDto, PostViewDto } from './posts.dto';
-import {
-  CreatePostCommand,
-  TExecuteCreatePost,
-} from './application/use-cases/create-post.useCase';
-import {
-  DeletePostCommand,
-  TExecuteDeletePost,
-} from './application/use-cases/delete-post.useCase';
+import { PostViewDto } from './posts.dto';
 import { PostsPgQueryRepository } from './infrastructure/posts.pg-query-repository';
 
 @Controller(ROUTERS_PATH.POSTS)
 export class PostsController {
   constructor(
     private readonly postsQueryRepository: PostsPgQueryRepository,
-    private readonly blogsQueryRepository: BlogsPgQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
@@ -80,36 +66,6 @@ export class PostsController {
     }
 
     return post;
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createPost(
-    @Body() newPost: PostCreateByBlogIdDto,
-  ): Promise<PostViewDto | null> {
-    const blog = await this.blogsQueryRepository.getById(newPost.blogId);
-
-    if (!blog) {
-      throw new BadRequestException(
-        getErrorMessage('blogId', VALIDATION_MESSAGES.BLOG_IS_NOT_EXIST),
-      );
-    }
-
-    const { id } = await this.commandBus.execute<
-      CreatePostCommand,
-      TExecuteCreatePost
-    >(new CreatePostCommand(newPost));
-
-    return await this.postsQueryRepository.getById(id);
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  deletePostById(@Param('id') id: string): Promise<void> {
-    return this.commandBus.execute<DeletePostCommand, TExecuteDeletePost>(
-      new DeletePostCommand(id),
-    );
   }
 
   @Public()
