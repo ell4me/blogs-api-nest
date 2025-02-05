@@ -28,7 +28,10 @@ export class PostEntity extends DateTimestamp {
     super(createdAt, updatedAt);
   }
 
-  updatePost({ blogId, content, shortDescription, title }: PostUpdateDto) {
+  updatePost(
+    { content, shortDescription, title }: PostUpdateDto,
+    blogId: string,
+  ) {
     this.blogId = blogId;
     this.content = content;
     this.title = title;

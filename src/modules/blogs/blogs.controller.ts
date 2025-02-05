@@ -187,7 +187,7 @@ export class BlogsController {
     return this.commandBus.execute<
       UpdatePostByIdCommand,
       TExecuteUpdatePostById
-    >(new UpdatePostByIdCommand(postId, postUpdateDto));
+    >(new UpdatePostByIdCommand(postId, blogId, postUpdateDto));
   }
 
   @Delete(`${ROUTERS_PATH.SA_BLOGS}/:blogId/posts/:postId`)

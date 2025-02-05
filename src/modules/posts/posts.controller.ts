@@ -36,11 +36,7 @@ import {
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
 import { BlogsPgQueryRepository } from '../blogs/infrastructure/blogs.pg-query-repository';
 
-import { PostCreateByBlogIdDto, PostUpdateDto, PostViewDto } from './posts.dto';
-import {
-  TExecuteUpdatePostById,
-  UpdatePostByIdCommand,
-} from './application/use-cases/update-post.useCase';
+import { PostCreateByBlogIdDto, PostViewDto } from './posts.dto';
 import {
   CreatePostCommand,
   TExecuteCreatePost,
@@ -105,27 +101,6 @@ export class PostsController {
     >(new CreatePostCommand(newPost));
 
     return await this.postsQueryRepository.getById(id);
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Put(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePostById(
-    @Param('id') id: string,
-    @Body() postUpdateDto: PostUpdateDto,
-  ): Promise<void> {
-    const blog = await this.blogsQueryRepository.getById(postUpdateDto.blogId);
-
-    if (!blog) {
-      throw new BadRequestException(
-        getErrorMessage('blogId', VALIDATION_MESSAGES.BLOG_IS_NOT_EXIST),
-      );
-    }
-
-    return this.commandBus.execute<
-      UpdatePostByIdCommand,
-      TExecuteUpdatePostById
-    >(new UpdatePostByIdCommand(id, postUpdateDto));
   }
 
   @UseGuards(BasicAuthGuard)

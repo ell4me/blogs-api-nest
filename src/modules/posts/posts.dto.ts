@@ -68,9 +68,4 @@ export class PostUpdateDto {
   @Transform(({ value }) => value?.trim())
   @Length(1, 1000)
   content: string;
-
-  @IsString()
-  @Transform(({ value }) => value?.trim())
-  @IsNotEmpty()
-  blogId: string;
 }

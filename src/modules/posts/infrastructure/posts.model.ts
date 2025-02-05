@@ -47,7 +47,6 @@ export class Post {
   updatedAt: Date;
 
   updatePost(post: PostUpdateDto) {
-    this.blogId = post.blogId;
     this.content = post.content;
     this.title = post.title;
     this.shortDescription = post.shortDescription;
