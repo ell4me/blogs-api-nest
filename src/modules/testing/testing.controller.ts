@@ -19,7 +19,6 @@ export class TestingController {
     private readonly securityDevicesPgRepository: SecurityDevicesPgRepository,
     private readonly blogsPgRepository: BlogsPgRepository,
     private readonly postsPgRepository: PostsPgRepository,
-
     // private readonly usersRepository: UsersRepository,
     // private readonly postsRepository: PostsRepository,
     // private readonly blogsRepository: BlogsRepository,
@@ -31,18 +30,16 @@ export class TestingController {
   @Delete('all-data')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAllData() {
-    await Promise.all([
-      this.securityDevicesPgRepository.deleteAll(),
-      this.usersPgRepository.deleteAll(),
-      this.postsPgRepository.deleteAll(),
-      this.blogsPgRepository.deleteAll(),
+    await this.securityDevicesPgRepository.deleteAll();
+    await this.usersPgRepository.deleteAll();
+    await this.postsPgRepository.deleteAll();
+    await this.blogsPgRepository.deleteAll();
 
-      // this.usersRepository.deleteAll(),
-      // this.postsRepository.deleteAll(),
-      // this.blogsRepository.deleteAll(),
-      // this.commentsRepository.deleteAll(),
-      // this.likesPostRepository.deleteAll(),
-      // this.securityDevicesRepository.deleteAll(),
-    ]);
+    // this.usersRepository.deleteAll(),
+    // this.postsRepository.deleteAll(),
+    // this.blogsRepository.deleteAll(),
+    // this.commentsRepository.deleteAll(),
+    // this.likesPostRepository.deleteAll(),
+    // this.securityDevicesRepository.deleteAll(),
   }
 }
