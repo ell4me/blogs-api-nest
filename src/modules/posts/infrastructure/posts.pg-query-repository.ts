@@ -22,6 +22,7 @@ export class PostsPgQueryRepository {
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     const blogId = additionalFilter?.blogId || '';
     const offset = (pageNumber - 1) * pageSize;
+    const sortByQuery = sortBy === 'blogName' ? `"${sortBy}"` : `p."${sortBy}"`;
     const posts = await this.dataSource.query(
       `
       SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."createdAt", b."name" AS "blogName" 
@@ -29,7 +30,7 @@ export class PostsPgQueryRepository {
 	    LEFT JOIN "Blogs" AS b  
       ON b."id"=p."blogId"
 	    WHERE p."title" ilike $1 and p."blogId" like $2
-      ORDER BY p."${sortBy}" ${sortDirection}
+      ORDER BY ${sortByQuery} ${sortDirection}
       LIMIT $3 OFFSET $4
     `,
       [`%${searchNameTerm}%`, `%${blogId}%`, pageSize, offset],

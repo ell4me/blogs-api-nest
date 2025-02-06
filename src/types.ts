@@ -40,7 +40,7 @@ export class FilteredBlogQueries extends PaginationQueries {
 }
 
 export class FilteredPostQueries extends PaginationQueries {
-  @IsIn(['createdAt', 'updatedAt', 'title'])
+  @IsIn(['createdAt', 'updatedAt', 'title', 'blogName'])
   sortBy: string = 'createdAt';
 
   @IsString()
