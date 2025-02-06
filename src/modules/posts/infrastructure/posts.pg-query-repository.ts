@@ -20,6 +20,7 @@ export class PostsPgQueryRepository {
     userId?: string,
     additionalFilter?: { blogId?: string },
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
+    const blogId = additionalFilter?.blogId || '';
     const offset = (pageNumber - 1) * pageSize;
     const posts = await this.dataSource.query(
       `
@@ -27,11 +28,11 @@ export class PostsPgQueryRepository {
 	    FROM "Posts" AS p
 	    LEFT JOIN "Blogs" AS b  
       ON b."id"=p."blogId"
-	    WHERE p."title" ilike $1 and p."blogId"=$2
+	    WHERE p."title" ilike $1 and p."blogId" like $2
       ORDER BY p."${sortBy}" ${sortDirection}
       LIMIT $3 OFFSET $4
     `,
-      [`%${searchNameTerm}%`, additionalFilter?.blogId, pageSize, offset],
+      [`%${searchNameTerm}%`, `%${blogId}%`, pageSize, offset],
     );
 
     // const postIds = posts.map(({ id }) => id);
@@ -93,10 +94,12 @@ export class PostsPgQueryRepository {
   }
 
   async getCount(filter?: { blogId?: string }): Promise<number> {
+    const blogId = filter?.blogId || '';
+
     const result = await this.dataSource.query(
       `SELECT count(*) FROM "Posts"
-      WHERE "blogId"=$1`,
-      [filter?.blogId],
+      WHERE "blogId" like $1`,
+      [`%${blogId}%`],
     );
 
     return Number(result[0].count);
