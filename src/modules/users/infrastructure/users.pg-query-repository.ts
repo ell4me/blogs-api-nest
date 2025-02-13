@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { FilteredUserQueries, ItemsPaginationViewDto } from '../../../types';
+import { UserQueries, ItemsPaginationViewDto } from '../../../types';
 import { UserViewDto } from '../users.dto';
 import { CurrentUserViewDto } from '../../../common/dto/currentUserView.dto';
 
@@ -16,7 +16,7 @@ export class UsersPgQueryRepository {
     sortDirection,
     searchLoginTerm,
     searchEmailTerm,
-  }: FilteredUserQueries): Promise<ItemsPaginationViewDto<UserViewDto>> {
+  }: UserQueries): Promise<ItemsPaginationViewDto<UserViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
 
     const users = await this.dataSource.query(

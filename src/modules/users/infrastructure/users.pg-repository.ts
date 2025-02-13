@@ -14,6 +14,22 @@ import { UserEntity } from './users.entity';
 export class UsersPgRepository {
   constructor(private readonly dataSource: DataSource) {}
 
+  async findOrNotFoundFail(id: string): Promise<UserEntity> {
+    const result = await this.dataSource.query(
+      `
+        SELECT * FROM "Users" 
+        WHERE id=$1
+    `,
+      [id],
+    );
+
+    if (!result[0]) {
+      throw NotFoundDomainException.create();
+    }
+
+    return UserEntity.createInstance(result[0]);
+  }
+
   async findByEmailOrLogin({
     email,
     login,

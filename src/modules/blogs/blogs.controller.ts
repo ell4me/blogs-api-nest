@@ -14,11 +14,7 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import {
-  FilteredBlogQueries,
-  FilteredPostQueries,
-  ItemsPaginationViewDto,
-} from '../../types';
+import { BlogQueries, PostQueries, ItemsPaginationViewDto } from '../../types';
 import { PostCreateDto, PostUpdateDto, PostViewDto } from '../posts/posts.dto';
 import { ROUTERS_PATH } from '../../constants';
 import {
@@ -65,7 +61,7 @@ export class BlogsController {
 
   @Get([ROUTERS_PATH.BLOGS, ROUTERS_PATH.SA_BLOGS])
   async getAllBlogs(
-    @Query() queries: FilteredBlogQueries,
+    @Query() queries: BlogQueries,
   ): Promise<ItemsPaginationViewDto<BlogViewDto>> {
     return await this.blogsQueryRepository.getAll(queries);
   }
@@ -88,7 +84,7 @@ export class BlogsController {
     `${ROUTERS_PATH.SA_BLOGS}/:id/posts`,
   ])
   async getPostsByBlogId(
-    @Query() queries: FilteredPostQueries,
+    @Query() queries: PostQueries,
     @CurrentUser('id') userId: string,
     @Param('id') id: string,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {

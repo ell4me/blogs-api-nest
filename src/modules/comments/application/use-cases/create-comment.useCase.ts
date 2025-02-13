@@ -1,9 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { CommentCreateDto } from '../../comments.dto';
-import { CommentCreate } from '../../comments.types';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { UsersPgRepository } from '../../../users/infrastructure/users.pg-repository';
+import { CommentsPgRepository } from '../../infrastructure/comments.pg-repository';
 
 export type TExecuteCreateComment = { id: string };
 
@@ -20,27 +19,16 @@ export class CreateCommentUseCase
   implements ICommandHandler<CreateCommentCommand, TExecuteCreateComment>
 {
   constructor(
-    private readonly commentsRepository: CommentsRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly commentsRepository: CommentsPgRepository,
+    private readonly usersRepository: UsersPgRepository,
   ) {}
 
   async execute({
-    commentCreateDto: { content },
+    commentCreateDto,
     userId,
     postId,
   }: CreateCommentCommand): Promise<TExecuteCreateComment> {
-    const user = await this.usersRepository.findOrNotFoundFail(userId);
-    const newComment: CommentCreate = {
-      id: new Date().getTime().toString(),
-      content,
-      postId,
-      commentatorInfo: {
-        userId,
-        userLogin: user.login,
-      },
-    };
-
-    const createdComment = await this.commentsRepository.create(newComment);
-    return { id: createdComment.id };
+    await this.usersRepository.findOrNotFoundFail(userId);
+    return this.commentsRepository.create(commentCreateDto, postId, userId);
   }
 }

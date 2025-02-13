@@ -1,15 +1,15 @@
 import { IsEnum, IsString, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 import { STATUSES_LIKE } from '../../constants';
 
 import { CommentatorInfo } from './infrastructure/comments.model';
-import { Transform } from 'class-transformer';
 
 export interface CommentViewDto {
   id: string;
   content: string;
   commentatorInfo: CommentatorInfo;
-  createdAt: Date;
+  createdAt: Date | string;
   likesInfo: LikesInfoDto;
 }
 

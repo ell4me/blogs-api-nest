@@ -6,6 +6,7 @@ import { UsersModule } from '../users/users.module';
 import { CommentsModule } from '../comments/comments.module';
 import { LikesPostModule } from '../likes-post/likes-post.module';
 import { SecurityDevicesModule } from '../security-devices/security-devices.module';
+import { LikesCommentModule } from '../likes-comment/likes-comment.module';
 
 import { TestingController } from './testing.controller';
 
@@ -17,6 +18,7 @@ import { TestingController } from './testing.controller';
     CommentsModule,
     LikesPostModule,
     SecurityDevicesModule,
+    LikesCommentModule,
   ],
   controllers: [TestingController],
 })

@@ -31,7 +31,12 @@ export class PaginationQueries {
   pageSize: number = 10;
 }
 
-export class FilteredBlogQueries extends PaginationQueries {
+export class CommentQueries extends PaginationQueries {
+  @IsIn(['createdAt', 'updatedAt', 'content'])
+  sortBy: string = 'createdAt';
+}
+
+export class BlogQueries extends PaginationQueries {
   @IsIn(['createdAt', 'updatedAt', 'name'])
   sortBy: string = 'createdAt';
 
@@ -39,7 +44,7 @@ export class FilteredBlogQueries extends PaginationQueries {
   searchNameTerm: string = '';
 }
 
-export class FilteredPostQueries extends PaginationQueries {
+export class PostQueries extends PaginationQueries {
   @IsIn(['createdAt', 'updatedAt', 'title', 'blogName'])
   sortBy: string = 'createdAt';
 
@@ -47,7 +52,7 @@ export class FilteredPostQueries extends PaginationQueries {
   searchNameTerm: string = '';
 }
 
-export class FilteredUserQueries extends PaginationQueries {
+export class UserQueries extends PaginationQueries {
   @IsString()
   searchLoginTerm: string = '';
   @IsString()

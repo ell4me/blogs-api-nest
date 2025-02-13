@@ -14,12 +14,11 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 
 import {
-  FilteredPostQueries,
+  PostQueries,
   ItemsPaginationViewDto,
-  PaginationQueries,
+  CommentQueries,
 } from '../../types';
 import { ROUTERS_PATH } from '../../constants';
-import { CommentsQueryRepository } from '../comments/infrastructure/comments.query-repository';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CommentCreateDto, CommentViewDto } from '../comments/comments.dto';
 import { AccessTokenGuard } from '../../common/guards/access-token.guard';
@@ -30,6 +29,7 @@ import {
   TExecuteUpdateLikeStatusPost,
   UpdateLikeStatusPostCommand,
 } from '../likes-post/application/use-cases/update-like-status-post.useCase';
+import { CommentsPgQueryRepository } from '../comments/infrastructure/comments.pg-query-repository';
 
 import { PostViewDto } from './posts.dto';
 import { PostsPgQueryRepository } from './infrastructure/posts.pg-query-repository';
@@ -38,7 +38,7 @@ import { PostsPgQueryRepository } from './infrastructure/posts.pg-query-reposito
 export class PostsController {
   constructor(
     private readonly postsQueryRepository: PostsPgQueryRepository,
-    private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commentsQueryRepository: CommentsPgQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -46,7 +46,7 @@ export class PostsController {
   @UseGuards(AccessTokenGuard)
   @Get()
   async getAllPosts(
-    @Query() queries: FilteredPostQueries,
+    @Query() queries: PostQueries,
     @CurrentUser('id') userId: string,
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     return this.postsQueryRepository.getAll(queries, userId);
@@ -72,7 +72,7 @@ export class PostsController {
   @UseGuards(AccessTokenGuard)
   @Get(':postId/comments')
   async getCommentsByPostId(
-    @Query() queries: PaginationQueries,
+    @Query() queries: CommentQueries,
     @CurrentUser('id') userId: string,
     @Param('postId') postId: string,
   ) {

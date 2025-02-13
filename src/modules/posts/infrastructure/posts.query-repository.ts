@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { FilteredPostQueries, ItemsPaginationViewDto } from '../../../types';
+import { PostQueries, ItemsPaginationViewDto } from '../../../types';
 import { PostViewDto } from '../posts.dto';
 import { LikesPostQueryRepository } from '../../likes-post/infrastructure/likes-post.query-repository';
 
@@ -21,7 +21,7 @@ export class PostsQueryRepository {
       sortBy,
       sortDirection,
       searchNameTerm,
-    }: FilteredPostQueries,
+    }: PostQueries,
     userId?: string,
     additionalFilter?: { blogId?: string },
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {

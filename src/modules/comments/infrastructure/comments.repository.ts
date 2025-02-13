@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeleteResult } from 'mongodb';
 
-import { CommentCreate } from '../comments.types';
 import { NotFoundDomainException } from '../../../common/exception/domain-exception';
+import { CommentCreateDto } from '../comments.dto';
 
 import { Comment, CommentDocument, TCommentModel } from './comments.model';
 
@@ -13,8 +13,19 @@ export class CommentsRepository {
     @InjectModel(Comment.name) private readonly CommentsModel: TCommentModel,
   ) {}
 
-  async create(comment: CommentCreate): Promise<CommentDocument> {
-    const createdComment = new this.CommentsModel(comment);
+  async create(
+    { content }: CommentCreateDto,
+    userId: string,
+    postId: string,
+  ): Promise<CommentDocument> {
+    const createdComment = new this.CommentsModel({
+      id: Date.now().toString(),
+      content,
+      commentatorInfo: {
+        userId,
+      },
+      postId,
+    });
     await createdComment.save();
 
     return createdComment;

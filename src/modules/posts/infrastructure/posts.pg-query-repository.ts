@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { FilteredPostQueries, ItemsPaginationViewDto } from '../../../types';
+import { PostQueries, ItemsPaginationViewDto } from '../../../types';
 import { PostViewDto } from '../posts.dto';
 import { STATUSES_LIKE } from '../../../constants';
 
@@ -16,7 +16,7 @@ export class PostsPgQueryRepository {
       sortBy,
       sortDirection,
       searchNameTerm,
-    }: FilteredPostQueries,
+    }: PostQueries,
     userId?: string,
     additionalFilter?: { blogId?: string },
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {

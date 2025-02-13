@@ -16,8 +16,11 @@ import { ROUTERS_PATH } from '../../constants';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AccessTokenGuard } from '../../common/guards/access-token.guard';
 import { Public } from '../../common/decorators/public.decorator';
+import {
+  TExecuteUpdateLikeStatusComment,
+  UpdateLikeStatusCommentCommand,
+} from '../likes-comment/application/update-like-status-comment.useCase';
 
-import { CommentsQueryRepository } from './infrastructure/comments.query-repository';
 import {
   CommentLikeDto,
   CommentUpdateDto,
@@ -28,18 +31,15 @@ import {
   UpdateCommentCommand,
 } from './application/use-cases/update-comment.useCase';
 import {
-  LikeCommentCommand,
-  TExecuteLikeComment,
-} from './application/use-cases/like-comment.useCase';
-import {
   DeleteCommentCommand,
   TExecuteDeleteComment,
 } from './application/use-cases/delete-comment.useCase';
+import { CommentsPgQueryRepository } from './infrastructure/comments.pg-query-repository';
 
 @Controller(ROUTERS_PATH.COMMENTS)
 export class CommentsController {
   constructor(
-    private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commentsQueryRepository: CommentsPgQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -94,16 +94,17 @@ export class CommentsController {
       throw new NotFoundException();
     }
 
-    await this.commandBus.execute<LikeCommentCommand, TExecuteLikeComment>(
-      new LikeCommentCommand(
+    return this.commandBus.execute<
+      UpdateLikeStatusCommentCommand,
+      TExecuteUpdateLikeStatusComment
+    >(
+      new UpdateLikeStatusCommentCommand(
         comment.likesInfo.myStatus,
         commentId,
         userId,
         commentLikeDto,
       ),
     );
-
-    return;
   }
 
   @UseGuards(AccessTokenGuard)

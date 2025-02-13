@@ -5,6 +5,8 @@ import { UsersPgRepository } from '../users/infrastructure/users.pg-repository';
 import { SecurityDevicesPgRepository } from '../security-devices/infrastructure/security-devices.pg-repository';
 import { BlogsPgRepository } from '../blogs/infrastructure/blogs.pg-repository';
 import { PostsPgRepository } from '../posts/infrastructure/posts.pg-repository';
+import { CommentsPgRepository } from '../comments/infrastructure/comments.pg-repository';
+import { LikesCommentPgRepository } from '../likes-comment/infrastructure/likes-comment.pg-repository';
 // import { UsersRepository } from '../users/infrastructure/users.repository';
 // import { PostsRepository } from '../posts/infrastructure/posts.repository';
 // import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
@@ -19,6 +21,8 @@ export class TestingController {
     private readonly securityDevicesPgRepository: SecurityDevicesPgRepository,
     private readonly blogsPgRepository: BlogsPgRepository,
     private readonly postsPgRepository: PostsPgRepository,
+    private readonly commentsPgRepository: CommentsPgRepository,
+    private readonly likesCommentPgRepository: LikesCommentPgRepository,
     // private readonly usersRepository: UsersRepository,
     // private readonly postsRepository: PostsRepository,
     // private readonly blogsRepository: BlogsRepository,
@@ -31,6 +35,8 @@ export class TestingController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAllData() {
     await this.securityDevicesPgRepository.deleteAll();
+    await this.likesCommentPgRepository.deleteAll();
+    await this.commentsPgRepository.deleteAll();
     await this.usersPgRepository.deleteAll();
     await this.postsPgRepository.deleteAll();
     await this.blogsPgRepository.deleteAll();

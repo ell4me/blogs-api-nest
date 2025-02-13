@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { CommentUpdateDto } from '../../comments.dto';
 import { ForbiddenDomainException } from '../../../../common/exception/domain-exception';
+import { CommentsPgRepository } from '../../infrastructure/comments.pg-repository';
 
 export type TExecuteUpdateComment = boolean;
 
@@ -18,7 +18,7 @@ export class UpdateCommentCommand {
 export class UpdateCommentUseCase
   implements ICommandHandler<UpdateCommentCommand, TExecuteUpdateComment>
 {
-  constructor(private readonly commentsRepository: CommentsRepository) {}
+  constructor(private readonly commentsRepository: CommentsPgRepository) {}
 
   async execute({
     commentId,
@@ -27,7 +27,7 @@ export class UpdateCommentUseCase
   }: UpdateCommentCommand): Promise<TExecuteUpdateComment> {
     const comment = await this.commentsRepository.findOrNotFoundFail(commentId);
 
-    if (comment.commentatorInfo.userId !== userId) {
+    if (comment.commentatorId !== userId) {
       throw ForbiddenDomainException.create();
     }
 

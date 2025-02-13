@@ -15,6 +15,7 @@ import { CommonConfigModule } from '../../common/config/common-config.module';
 import { CommonConfig } from '../../common/config/common.config';
 import { LikesPostModule } from '../likes-post/likes-post.module';
 import { SecurityDevicesModule } from '../security-devices/security-devices.module';
+import { LikesCommentModule } from '../likes-comment/likes-comment.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { SecurityDevicesModule } from '../security-devices/security-devices.modu
     CommentsModule,
     AuthModule,
     SecurityDevicesModule,
+    LikesCommentModule,
   ],
 })
 export class AppModule {
