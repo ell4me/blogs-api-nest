@@ -72,7 +72,7 @@ export class PostsPgQueryRepository {
         createdAt: new Date(post.createdAt),
         shortDescription: post.shortDescription,
         extendedLikesInfo: {
-          newestLikes: newestLikes[post.id],
+          newestLikes: newestLikes[post.id] ? newestLikes[post.id] : [],
           likesCount: Number(post.likes),
           dislikesCount: Number(post.dislikes),
           myStatus: PostEntity.getCurrentStatusLikeUser(
