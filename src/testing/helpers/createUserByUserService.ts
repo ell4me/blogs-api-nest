@@ -1,4 +1,4 @@
-import { UserDocument } from '../../modules/users/infrastructure/users.model';
+import { UserDocument } from '../../modules/users/infrastructure/mongo/users.model';
 import {
   CreateUserCommand,
   CreateUserUseCase,

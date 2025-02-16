@@ -26,7 +26,7 @@ import {
   TExecuteDeleteSessionByDeviceIdResult,
 } from '../security-devices/application/use-cases/delete-session-by-device-id.useCase';
 import { RefreshTokenGuard } from '../../common/guards/refresh-token.guard';
-import { UsersPgQueryRepository } from '../users/infrastructure/users.pg-query-repository';
+import { UsersPgQueryRepository } from '../users/infrastructure/pg/users.pg-query-repository';
 
 import {
   PasswordRecoveryDto,

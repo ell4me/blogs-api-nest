@@ -25,7 +25,7 @@ import {
   DeleteUserByIdCommand,
   TExecuteDeleteUserByIdResult,
 } from './application/use-cases/delete-user-by-id.useCase';
-import { UsersPgQueryRepository } from './infrastructure/users.pg-query-repository';
+import { UsersPgQueryRepository } from './infrastructure/pg/users.pg-query-repository';
 
 @Controller(ROUTERS_PATH.USERS)
 @UseGuards(BasicAuthGuard)

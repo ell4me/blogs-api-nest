@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { CommentCreateDto } from '../../comments.dto';
-import { UsersPgRepository } from '../../../users/infrastructure/users.pg-repository';
-import { CommentsPgRepository } from '../../infrastructure/comments.pg-repository';
+import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
+import { CommentsPgRepository } from '../../infrastructure/pg/comments.pg-repository';
 
 export type TExecuteCreateComment = { id: string };
 

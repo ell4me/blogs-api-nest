@@ -10,7 +10,7 @@ import {
   EXPIRATION_TOKEN,
   REFRESH_TOKEN_COOKIE_NAME,
 } from '../../../../constants';
-import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/security-devices.pg-repository';
+import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/pg/security-devices.pg-repository';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(

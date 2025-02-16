@@ -4,15 +4,15 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from '../users/users.module';
 import { LikesCommentModule } from '../likes-comment/likes-comment.module';
 
-import { CommentsQueryRepository } from './infrastructure/comments.query-repository';
+import { CommentsQueryRepository } from './infrastructure/mongo/comments.query-repository';
 import { CommentsController } from './comments.controller';
-import { Comment, CommentSchema } from './infrastructure/comments.model';
-import { CommentsRepository } from './infrastructure/comments.repository';
+import { Comment, CommentSchema } from './infrastructure/mongo/comments.model';
+import { CommentsRepository } from './infrastructure/mongo/comments.repository';
 import { CreateCommentUseCase } from './application/use-cases/create-comment.useCase';
 import { UpdateCommentUseCase } from './application/use-cases/update-comment.useCase';
 import { DeleteCommentUseCase } from './application/use-cases/delete-comment.useCase';
-import { CommentsPgQueryRepository } from './infrastructure/comments.pg-query-repository';
-import { CommentsPgRepository } from './infrastructure/comments.pg-repository';
+import { CommentsPgQueryRepository } from './infrastructure/pg/comments.pg-query-repository';
+import { CommentsPgRepository } from './infrastructure/pg/comments.pg-repository';
 
 const useCases = [
   CreateCommentUseCase,

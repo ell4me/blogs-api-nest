@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { LikesPostUpdateDto } from '../../likes-post.dto';
-import { LikesPostRepository } from '../../infrastructure/likes-post.repository';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { LikesPostPgRepository } from '../../infrastructure/pg/likes-post.pg-repository';
+import { STATUSES_LIKE } from '../../../../constants';
 
 export type TExecuteUpdateLikeStatusPost = void;
 
@@ -11,6 +11,7 @@ export class UpdateLikeStatusPostCommand {
     public postId: string,
     public userId: string,
     public likesPostUpdateDto: LikesPostUpdateDto,
+    public currentUserLikeStatus: STATUSES_LIKE,
   ) {}
 }
 
@@ -19,34 +20,42 @@ export class UpdateLikeStatusPostUseCase
   implements
     ICommandHandler<UpdateLikeStatusPostCommand, TExecuteUpdateLikeStatusPost>
 {
-  constructor(
-    private readonly likesPostRepository: LikesPostRepository,
-    private readonly usersRepository: UsersRepository,
-  ) {}
+  constructor(private readonly likesPostRepository: LikesPostPgRepository) {}
 
   async execute({
     postId,
     likesPostUpdateDto: { likeStatus },
     userId,
+    currentUserLikeStatus,
   }: UpdateLikeStatusPostCommand): Promise<TExecuteUpdateLikeStatusPost> {
-    const user = await this.usersRepository.findOrUnauthorizedFail(userId);
-    const like = await this.likesPostRepository.getLikePost(userId, postId);
-
-    if (like) {
-      like.updateStatus(likeStatus);
-
-      if (like.getIsDelete()) {
-        await this.likesPostRepository.delete(like.id);
-        return;
-      }
-
-      await this.likesPostRepository.save(like);
+    if (currentUserLikeStatus === likeStatus) {
       return;
     }
 
-    await this.likesPostRepository.create(postId, likeStatus, {
-      id: userId,
-      login: user.login,
+    console.log(currentUserLikeStatus, 'currentUserLikeStatus');
+    console.log(likeStatus, 'likeStatus');
+
+    if (
+      currentUserLikeStatus === STATUSES_LIKE.NONE &&
+      likeStatus !== STATUSES_LIKE.NONE
+    ) {
+      await this.likesPostRepository.create({
+        userId,
+        postId,
+        status: likeStatus,
+      });
+      return;
+    }
+
+    if (likeStatus === STATUSES_LIKE.NONE) {
+      await this.likesPostRepository.deleteOne(postId, userId);
+      return;
+    }
+
+    await this.likesPostRepository.update({
+      status: likeStatus,
+      postId,
+      userId,
     });
 
     return;

@@ -34,7 +34,7 @@ import {
   DeleteCommentCommand,
   TExecuteDeleteComment,
 } from './application/use-cases/delete-comment.useCase';
-import { CommentsPgQueryRepository } from './infrastructure/comments.pg-query-repository';
+import { CommentsPgQueryRepository } from './infrastructure/pg/comments.pg-query-repository';
 
 @Controller(ROUTERS_PATH.COMMENTS)
 export class CommentsController {

@@ -7,7 +7,7 @@ import { LikesCommentCreate } from '../likes-comment.types';
 export class LikesCommentPgRepository {
   constructor(private readonly dataSource: DataSource) {}
 
-  deleteByCommentId(commentId: string, userId: string) {
+  deleteOne(commentId: string, userId: string) {
     return this.dataSource.query(
       `DELETE FROM "LikesComment" WHERE "commentId"=$1 AND "userId"=$2`,
       [commentId, userId],

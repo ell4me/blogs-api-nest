@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SecurityDevicesCreate } from '../../../security-devices/security-devices.types';
 import { TokensService } from '../tokens.service';
 import { Tokens } from '../../auth.types';
-import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/security-devices.pg-repository';
+import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/pg/security-devices.pg-repository';
 
 export type TExecuteLoginResult = Tokens;
 

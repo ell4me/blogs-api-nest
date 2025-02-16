@@ -50,7 +50,7 @@ export class UpdateLikeStatusCommentUseCase
     }
 
     if (likeStatus === STATUSES_LIKE.NONE) {
-      await this.likesCommentPgRepository.deleteByCommentId(commentId, userId);
+      await this.likesCommentPgRepository.deleteOne(commentId, userId);
       return;
     }
 

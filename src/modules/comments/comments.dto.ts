@@ -3,7 +3,7 @@ import { Transform } from 'class-transformer';
 
 import { STATUSES_LIKE } from '../../constants';
 
-import { CommentatorInfo } from './infrastructure/comments.model';
+import { CommentatorInfo } from './infrastructure/mongo/comments.model';
 
 export interface CommentViewDto {
   id: string;

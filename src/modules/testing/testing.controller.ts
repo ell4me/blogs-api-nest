@@ -1,18 +1,13 @@
 import { Controller, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 
 import { ROUTERS_PATH } from '../../constants';
-import { UsersPgRepository } from '../users/infrastructure/users.pg-repository';
-import { SecurityDevicesPgRepository } from '../security-devices/infrastructure/security-devices.pg-repository';
-import { BlogsPgRepository } from '../blogs/infrastructure/blogs.pg-repository';
-import { PostsPgRepository } from '../posts/infrastructure/posts.pg-repository';
-import { CommentsPgRepository } from '../comments/infrastructure/comments.pg-repository';
+import { UsersPgRepository } from '../users/infrastructure/pg/users.pg-repository';
+import { SecurityDevicesPgRepository } from '../security-devices/infrastructure/pg/security-devices.pg-repository';
+import { BlogsPgRepository } from '../blogs/infrastructure/pg/blogs.pg-repository';
+import { PostsPgRepository } from '../posts/infrastructure/pg/posts.pg-repository';
+import { CommentsPgRepository } from '../comments/infrastructure/pg/comments.pg-repository';
 import { LikesCommentPgRepository } from '../likes-comment/infrastructure/likes-comment.pg-repository';
-// import { UsersRepository } from '../users/infrastructure/users.repository';
-// import { PostsRepository } from '../posts/infrastructure/posts.repository';
-// import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
-// import { CommentsRepository } from '../comments/infrastructure/comments.repository';
-// import { LikesPostRepository } from '../likes-post/infrastructure/likes-post.repository';
-// import { SecurityDevicesRepository } from '../security-devices/infrastructure/security-devices.repository';
+import { LikesPostPgRepository } from '../likes-post/infrastructure/pg/likes-post.pg-repository';
 
 @Controller(ROUTERS_PATH.TESTING)
 export class TestingController {
@@ -23,12 +18,7 @@ export class TestingController {
     private readonly postsPgRepository: PostsPgRepository,
     private readonly commentsPgRepository: CommentsPgRepository,
     private readonly likesCommentPgRepository: LikesCommentPgRepository,
-    // private readonly usersRepository: UsersRepository,
-    // private readonly postsRepository: PostsRepository,
-    // private readonly blogsRepository: BlogsRepository,
-    // private readonly commentsRepository: CommentsRepository,
-    // private readonly likesPostRepository: LikesPostRepository,
-    // private readonly securityDevicesRepository: SecurityDevicesRepository,
+    private readonly likesPostPgRepository: LikesPostPgRepository,
   ) {}
 
   @Delete('all-data')
@@ -36,16 +26,10 @@ export class TestingController {
   async deleteAllData() {
     await this.securityDevicesPgRepository.deleteAll();
     await this.likesCommentPgRepository.deleteAll();
+    await this.likesPostPgRepository.deleteAll();
     await this.commentsPgRepository.deleteAll();
     await this.usersPgRepository.deleteAll();
     await this.postsPgRepository.deleteAll();
     await this.blogsPgRepository.deleteAll();
-
-    // this.usersRepository.deleteAll(),
-    // this.postsRepository.deleteAll(),
-    // this.blogsRepository.deleteAll(),
-    // this.commentsRepository.deleteAll(),
-    // this.likesPostRepository.deleteAll(),
-    // this.securityDevicesRepository.deleteAll(),
   }
 }

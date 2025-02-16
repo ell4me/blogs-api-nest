@@ -4,14 +4,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PostsModule } from '../posts/posts.module';
 
 import { BlogsController } from './blogs.controller';
-import { BlogsQueryRepository } from './infrastructure/blogs.query-repository';
-import { BlogsRepository } from './infrastructure/blogs.repository';
-import { Blog, BlogsSchema } from './infrastructure/blogs.model';
+import { BlogsQueryRepository } from './infrastructure/mongo/blogs.query-repository';
+import { BlogsRepository } from './infrastructure/mongo/blogs.repository';
+import { Blog, BlogsSchema } from './infrastructure/mongo/blogs.model';
 import { DeleteBlogUseCase } from './application/use-cases/delete-blog.useCase';
 import { UpdateBlogUseCase } from './application/use-cases/update-blog.useCase';
 import { CreateBlogUseCase } from './application/use-cases/create-blog.useCase';
-import { BlogsPgQueryRepository } from './infrastructure/blogs.pg-query-repository';
-import { BlogsPgRepository } from './infrastructure/blogs.pg-repository';
+import { BlogsPgQueryRepository } from './infrastructure/pg/blogs.pg-query-repository';
+import { BlogsPgRepository } from './infrastructure/pg/blogs.pg-repository';
 
 const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
 

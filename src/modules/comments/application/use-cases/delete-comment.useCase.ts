@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { ForbiddenDomainException } from '../../../../common/exception/domain-exception';
-import { CommentsPgRepository } from '../../infrastructure/comments.pg-repository';
+import { CommentsPgRepository } from '../../infrastructure/pg/comments.pg-repository';
 import { LikesCommentPgRepository } from '../../../likes-comment/infrastructure/likes-comment.pg-repository';
 
 export type TExecuteDeleteComment = boolean;
@@ -29,7 +29,7 @@ export class DeleteCommentUseCase
       throw ForbiddenDomainException.create();
     }
 
-    await this.likesCommentPgRepository.deleteByCommentId(commentId, userId);
+    await this.likesCommentPgRepository.deleteOne(commentId, userId);
     await this.commentsRepository.deleteById(commentId);
 
     return true;

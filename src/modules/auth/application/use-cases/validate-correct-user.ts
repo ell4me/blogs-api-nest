@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { compare } from 'bcryptjs';
 
 import { AuthLoginDto } from '../../auth.dto';
-import { UsersPgRepository } from '../../../users/infrastructure/users.pg-repository';
+import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
 
 export type TExecuteValidateCorrectUserResult = string | void;
 

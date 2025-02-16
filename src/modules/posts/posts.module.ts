@@ -5,14 +5,14 @@ import { CommentsModule } from '../comments/comments.module';
 import { LikesPostModule } from '../likes-post/likes-post.module';
 
 import { PostsController } from './posts.controller';
-import { Post, PostsSchema } from './infrastructure/posts.model';
-import { PostsQueryRepository } from './infrastructure/posts.query-repository';
-import { PostsRepository } from './infrastructure/posts.repository';
+import { Post, PostsSchema } from './infrastructure/mongo/posts.model';
+import { PostsQueryRepository } from './infrastructure/mongo/posts.query-repository';
+import { PostsRepository } from './infrastructure/mongo/posts.repository';
 import { UpdatePostUseCase } from './application/use-cases/update-post.useCase';
 import { CreatePostUseCase } from './application/use-cases/create-post.useCase';
 import { DeletePostUseCase } from './application/use-cases/delete-post.useCase';
-import { PostsPgQueryRepository } from './infrastructure/posts.pg-query-repository';
-import { PostsPgRepository } from './infrastructure/posts.pg-repository';
+import { PostsPgQueryRepository } from './infrastructure/pg/posts.pg-query-repository';
+import { PostsPgRepository } from './infrastructure/pg/posts.pg-repository';
 
 const useCases = [UpdatePostUseCase, CreatePostUseCase, DeletePostUseCase];
 

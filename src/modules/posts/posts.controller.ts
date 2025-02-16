@@ -29,10 +29,10 @@ import {
   TExecuteUpdateLikeStatusPost,
   UpdateLikeStatusPostCommand,
 } from '../likes-post/application/use-cases/update-like-status-post.useCase';
-import { CommentsPgQueryRepository } from '../comments/infrastructure/comments.pg-query-repository';
+import { CommentsPgQueryRepository } from '../comments/infrastructure/pg/comments.pg-query-repository';
 
 import { PostViewDto } from './posts.dto';
-import { PostsPgQueryRepository } from './infrastructure/posts.pg-query-repository';
+import { PostsPgQueryRepository } from './infrastructure/pg/posts.pg-query-repository';
 
 @Controller(ROUTERS_PATH.POSTS)
 export class PostsController {
@@ -120,7 +120,7 @@ export class PostsController {
     @CurrentUser('id') userId: string,
     @Param('postId') postId: string,
   ): Promise<void> {
-    const post = await this.postsQueryRepository.getById(postId);
+    const post = await this.postsQueryRepository.getById(postId, userId);
 
     if (!post) {
       throw new NotFoundException();
@@ -129,6 +129,13 @@ export class PostsController {
     return this.commandBus.execute<
       UpdateLikeStatusPostCommand,
       TExecuteUpdateLikeStatusPost
-    >(new UpdateLikeStatusPostCommand(postId, userId, likesPostUpdateDto));
+    >(
+      new UpdateLikeStatusPostCommand(
+        postId,
+        userId,
+        likesPostUpdateDto,
+        post.extendedLikesInfo.myStatus,
+      ),
+    );
   }
 }

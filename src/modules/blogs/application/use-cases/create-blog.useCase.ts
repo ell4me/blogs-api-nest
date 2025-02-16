@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { BlogCreateDto } from '../../blogs.dto';
 import { BlogCreate } from '../../blogs.types';
-import { BlogsPgRepository } from '../../infrastructure/blogs.pg-repository';
+import { BlogsPgRepository } from '../../infrastructure/pg/blogs.pg-repository';
 
 export type TExecuteCreateBlog = { id: string };
 

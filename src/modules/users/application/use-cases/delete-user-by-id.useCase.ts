@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { UsersPgRepository } from '../../infrastructure/users.pg-repository';
+import { UsersPgRepository } from '../../infrastructure/pg/users.pg-repository';
 
 export type TExecuteDeleteUserByIdResult = boolean;
 

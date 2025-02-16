@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { CommentUpdateDto } from '../../comments.dto';
 import { ForbiddenDomainException } from '../../../../common/exception/domain-exception';
-import { CommentsPgRepository } from '../../infrastructure/comments.pg-repository';
+import { CommentsPgRepository } from '../../infrastructure/pg/comments.pg-repository';
 
 export type TExecuteUpdateComment = boolean;
 

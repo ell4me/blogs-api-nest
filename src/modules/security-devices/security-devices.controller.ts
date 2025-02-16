@@ -23,7 +23,7 @@ import {
   DeleteSessionByDeviceIdCommand,
   TExecuteDeleteSessionByDeviceIdResult,
 } from './application/use-cases/delete-session-by-device-id.useCase';
-import { SecurityDevicesPgQueryRepository } from './infrastructure/security-devices.pg-query-repository';
+import { SecurityDevicesPgQueryRepository } from './infrastructure/pg/security-devices.pg-query-repository';
 
 @UseGuards(RefreshTokenGuard)
 @Controller(ROUTERS_PATH.SECURITY_DEVICES)

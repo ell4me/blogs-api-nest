@@ -9,7 +9,7 @@ import {
 } from '../../../../common/exception/domain-exception';
 import { Tokens } from '../../auth.types';
 import { TokensService } from '../tokens.service';
-import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/security-devices.pg-repository';
+import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/pg/security-devices.pg-repository';
 
 export type TExecuteRefreshTokenResult = Tokens;
 

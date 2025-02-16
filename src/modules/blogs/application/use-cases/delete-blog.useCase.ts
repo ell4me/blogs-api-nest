@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { BlogsPgRepository } from '../../infrastructure/blogs.pg-repository';
-import { PostsPgRepository } from '../../../posts/infrastructure/posts.pg-repository';
+import { BlogsPgRepository } from '../../infrastructure/pg/blogs.pg-repository';
+import { PostsPgRepository } from '../../../posts/infrastructure/pg/posts.pg-repository';
 
 export type TExecuteDeleteBlog = boolean;
 

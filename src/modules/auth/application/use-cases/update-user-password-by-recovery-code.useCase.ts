@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { PasswordRecoveryDto } from '../../auth.dto';
 import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
-import { UsersPgRepository } from '../../../users/infrastructure/users.pg-repository';
+import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
 
 export type TExecuteUpdateUserPasswordByRecoveryCodeResult = void;
 

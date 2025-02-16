@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { BlogUpdateDto } from '../../blogs.dto';
-import { BlogsPgRepository } from '../../infrastructure/blogs.pg-repository';
+import { BlogsPgRepository } from '../../infrastructure/pg/blogs.pg-repository';
 
 export type TExecuteUpdateBlog = boolean;
 

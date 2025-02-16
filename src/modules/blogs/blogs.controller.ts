@@ -25,7 +25,7 @@ import { Public } from '../../common/decorators/public.decorator';
 import { AccessTokenGuard } from '../../common/guards/access-token.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
-import { PostsPgQueryRepository } from '../posts/infrastructure/posts.pg-query-repository';
+import { PostsPgQueryRepository } from '../posts/infrastructure/pg/posts.pg-query-repository';
 import {
   TExecuteUpdatePostById,
   UpdatePostByIdCommand,
@@ -48,7 +48,7 @@ import {
   CreateBlogCommand,
   TExecuteCreateBlog,
 } from './application/use-cases/create-blog.useCase';
-import { BlogsPgQueryRepository } from './infrastructure/blogs.pg-query-repository';
+import { BlogsPgQueryRepository } from './infrastructure/pg/blogs.pg-query-repository';
 
 @UseGuards(BasicAuthGuard)
 @Controller()

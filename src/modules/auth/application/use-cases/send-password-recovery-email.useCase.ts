@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { PasswordRecoveryEmailDto } from '../../auth.dto';
 import { EmailAdapter } from '../../../../common/adapters/email/email.adapter';
-import { UsersPgRepository } from '../../../users/infrastructure/users.pg-repository';
+import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
 
 export type TExecuteSendPasswordRecoveryEmailResult = void;
 

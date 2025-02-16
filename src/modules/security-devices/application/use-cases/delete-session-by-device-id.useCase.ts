@@ -4,7 +4,7 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../../common/exception/domain-exception';
-import { SecurityDevicesPgRepository } from '../../infrastructure/security-devices.pg-repository';
+import { SecurityDevicesPgRepository } from '../../infrastructure/pg/security-devices.pg-repository';
 
 export type TExecuteDeleteSessionByDeviceIdResult = void;
 
