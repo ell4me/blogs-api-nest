@@ -48,7 +48,7 @@ export class PostsPgRepository {
     return post;
   }
 
-  async deleteOrNotFoundFail(postId: string, blogId?: string): Promise<void> {
+  async deleteOrNotFoundFail(postId: string, blogId: string): Promise<void> {
     const result = await this.dataSource.query(
       `DELETE FROM "Posts" WHERE "id"=$1 AND "blogId"=$2`,
       [postId, blogId],
