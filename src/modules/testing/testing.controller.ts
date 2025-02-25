@@ -24,11 +24,11 @@ export class TestingController {
   @Delete('all-data')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAllData() {
+    await this.securityDevicesRepository.deleteAll();
     // await this.likesCommentPgRepository.deleteAll();
     // await this.likesPostPgRepository.deleteAll();
     // await this.commentsPgRepository.deleteAll();
     await this.usersRepository.deleteAll();
-    await this.securityDevicesRepository.deleteAll();
     // await this.postsPgRepository.deleteAll();
     // await this.blogsPgRepository.deleteAll();
   }

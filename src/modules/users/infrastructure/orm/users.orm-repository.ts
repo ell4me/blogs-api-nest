@@ -87,6 +87,6 @@ export class UsersOrmRepository implements IUsersRepository {
   }
 
   deleteAll() {
-    return this.usersRepository.clear();
+    return this.usersRepository.delete({});
   }
 }

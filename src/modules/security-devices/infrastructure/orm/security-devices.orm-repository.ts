@@ -46,6 +46,6 @@ export class SecurityDevicesOrmRepository {
   }
 
   deleteAll() {
-    return this.securityDevicesRepository.clear();
+    return this.securityDevicesRepository.delete({});
   }
 }
