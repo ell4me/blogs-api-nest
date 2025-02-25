@@ -12,10 +12,13 @@ export class BasicAuthGuard extends AuthGuard('basic') {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    if (!request.path.includes(ROUTERS_PATH.SA_BLOGS)) {
-      return true;
+    if (
+      request.path.includes(ROUTERS_PATH.SA_BLOGS) ||
+      request.path.includes(ROUTERS_PATH.USERS)
+    ) {
+      return super.canActivate(context);
     }
 
-    return super.canActivate(context);
+    return true;
   }
 }
