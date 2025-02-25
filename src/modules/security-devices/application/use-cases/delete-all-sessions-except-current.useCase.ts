@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { SecurityDevicesPgRepository } from '../../infrastructure/pg/security-devices.pg-repository';
+import { SecurityDevicesOrmRepository } from '../../infrastructure/orm/security-devices.orm-repository';
 
 export type TExecuteDeleteAllSessionsExceptCurrentResult = void;
 
@@ -20,7 +20,7 @@ export class DeleteAllSessionsExceptCurrentUseCase
     >
 {
   constructor(
-    private readonly securityDevicesRepository: SecurityDevicesPgRepository,
+    private readonly securityDevicesRepository: SecurityDevicesOrmRepository,
   ) {}
 
   async execute({ deviceId, userId }: DeleteAllSessionsExceptCurrentCommand) {

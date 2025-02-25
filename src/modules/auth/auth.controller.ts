@@ -26,7 +26,7 @@ import {
   TExecuteDeleteSessionByDeviceIdResult,
 } from '../security-devices/application/use-cases/delete-session-by-device-id.useCase';
 import { RefreshTokenGuard } from '../../common/guards/refresh-token.guard';
-import { UsersPgQueryRepository } from '../users/infrastructure/pg/users.pg-query-repository';
+import { UsersOrmQueryRepository } from '../users/infrastructure/orm/users.orm-query-repository';
 
 import {
   PasswordRecoveryDto,
@@ -63,7 +63,7 @@ import { Tokens } from './auth.types';
 @Controller(ROUTERS_PATH.AUTH)
 export class AuthController {
   constructor(
-    private readonly usersQueryRepository: UsersPgQueryRepository,
+    private readonly usersQueryRepository: UsersOrmQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 

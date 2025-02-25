@@ -10,7 +10,7 @@ import {
   EXPIRATION_TOKEN,
   REFRESH_TOKEN_COOKIE_NAME,
 } from '../../../../constants';
-import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/pg/security-devices.pg-repository';
+import { SecurityDevicesOrmRepository } from '../../../security-devices/infrastructure/orm/security-devices.orm-repository';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -19,7 +19,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
 ) {
   constructor(
     private readonly authConfig: AuthConfig,
-    private readonly securityDevicesRepository: SecurityDevicesPgRepository,
+    private readonly securityDevicesRepository: SecurityDevicesOrmRepository,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors<Request>([
@@ -42,7 +42,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
 
     if (
       !currentDeviceSession ||
-      iat !== currentDeviceSession.iat ||
+      iat !== Number(currentDeviceSession.iat) ||
       exp < Date.now() ||
       expirationTime > EXPIRATION_TOKEN.REFRESH
     ) {

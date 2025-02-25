@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { UsersPgRepository } from '../../infrastructure/pg/users.pg-repository';
+import { UsersOrmRepository } from '../../infrastructure/orm/users.orm-repository';
 
 export type TExecuteDeleteUserByIdResult = boolean;
 
@@ -13,7 +13,7 @@ export class DeleteUserByIdUseCase
   implements
     ICommandHandler<DeleteUserByIdCommand, TExecuteDeleteUserByIdResult>
 {
-  constructor(private readonly usersRepository: UsersPgRepository) {}
+  constructor(private readonly usersRepository: UsersOrmRepository) {}
 
   execute({ id }: DeleteUserByIdCommand) {
     return this.usersRepository.deleteOrNotFoundFail(id);

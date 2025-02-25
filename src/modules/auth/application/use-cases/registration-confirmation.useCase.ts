@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RegistrationConfirmationDto } from '../../auth.dto';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
-import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
+import { UsersOrmRepository } from '../../../users/infrastructure/orm/users.orm-repository';
 
 export type TExecuteRegistrationConfirmationResult = void;
 
@@ -17,7 +17,7 @@ export class RegistrationConfirmationCommand {
 export class RegistrationConfirmationUseCase
   implements ICommandHandler<RegistrationConfirmationCommand>
 {
-  constructor(private readonly usersRepository: UsersPgRepository) {}
+  constructor(private readonly usersRepository: UsersOrmRepository) {}
 
   async execute({
     registrationConfirmationDto: { code },

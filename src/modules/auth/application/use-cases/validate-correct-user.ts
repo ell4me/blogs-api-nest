@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { compare } from 'bcryptjs';
 
 import { AuthLoginDto } from '../../auth.dto';
-import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
+import { UsersOrmRepository } from '../../../users/infrastructure/orm/users.orm-repository';
 
 export type TExecuteValidateCorrectUserResult = string | void;
 
@@ -18,7 +18,7 @@ export class ValidateCorrectUserUseCase
       TExecuteValidateCorrectUserResult
     >
 {
-  constructor(private readonly usersRepository: UsersPgRepository) {}
+  constructor(private readonly usersRepository: UsersOrmRepository) {}
 
   async execute({
     authLoginDto: { loginOrEmail, password },

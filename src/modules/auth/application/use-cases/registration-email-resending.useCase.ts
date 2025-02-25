@@ -4,7 +4,7 @@ import { RegistrationEmailResendingDto } from '../../auth.dto';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { EmailAdapter } from '../../../../common/adapters/email/email.adapter';
 import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
-import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
+import { UsersOrmRepository } from '../../../users/infrastructure/orm/users.orm-repository';
 
 export type TExecuteRegistrationEmailResendingResult = void;
 
@@ -23,7 +23,7 @@ export class RegistrationEmailResendingUseCase
     >
 {
   constructor(
-    private readonly usersRepository: UsersPgRepository,
+    private readonly usersRepository: UsersOrmRepository,
     private readonly emailAdapter: EmailAdapter,
   ) {}
 

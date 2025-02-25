@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { PasswordRecoveryDto } from '../../auth.dto';
 import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
-import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
+import { UsersOrmRepository } from '../../../users/infrastructure/orm/users.orm-repository';
 
 export type TExecuteUpdateUserPasswordByRecoveryCodeResult = void;
 
@@ -19,7 +19,7 @@ export class UpdateUserPasswordByRecoveryCodeUseCase
       TExecuteUpdateUserPasswordByRecoveryCodeResult
     >
 {
-  constructor(private readonly usersRepository: UsersPgRepository) {}
+  constructor(private readonly usersRepository: UsersOrmRepository) {}
 
   async execute({
     passwordRecoveryDto: { recoveryCode, newPassword },

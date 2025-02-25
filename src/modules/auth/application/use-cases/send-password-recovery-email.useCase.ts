@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { PasswordRecoveryEmailDto } from '../../auth.dto';
 import { EmailAdapter } from '../../../../common/adapters/email/email.adapter';
-import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
+import { UsersOrmRepository } from '../../../users/infrastructure/orm/users.orm-repository';
 
 export type TExecuteSendPasswordRecoveryEmailResult = void;
 
@@ -19,7 +19,7 @@ export class SendPasswordRecoveryEmailUseCase
     >
 {
   constructor(
-    private readonly usersRepository: UsersPgRepository,
+    private readonly usersRepository: UsersOrmRepository,
     private readonly emailAdapter: EmailAdapter,
   ) {}
 

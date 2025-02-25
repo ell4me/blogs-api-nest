@@ -9,7 +9,7 @@ import {
 } from '../../../../common/exception/domain-exception';
 import { Tokens } from '../../auth.types';
 import { TokensService } from '../tokens.service';
-import { SecurityDevicesPgRepository } from '../../../security-devices/infrastructure/pg/security-devices.pg-repository';
+import { SecurityDevicesOrmRepository } from '../../../security-devices/infrastructure/orm/security-devices.orm-repository';
 
 export type TExecuteRefreshTokenResult = Tokens;
 
@@ -25,7 +25,7 @@ export class RefreshTokenUseCase
   implements ICommandHandler<RefreshTokenCommand, TExecuteRefreshTokenResult>
 {
   constructor(
-    private readonly securityDevicesRepository: SecurityDevicesPgRepository,
+    private readonly securityDevicesRepository: SecurityDevicesOrmRepository,
     private readonly tokensService: TokensService,
   ) {}
 

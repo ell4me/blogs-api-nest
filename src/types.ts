@@ -4,6 +4,8 @@ import { Type } from 'class-transformer';
 
 import { NODE_ENVS } from './constants';
 
+export type TSortDirection = 'ASC' | 'DESC';
+
 export interface ErrorMessage {
   message: string;
   field: string;

@@ -23,13 +23,13 @@ import {
   DeleteSessionByDeviceIdCommand,
   TExecuteDeleteSessionByDeviceIdResult,
 } from './application/use-cases/delete-session-by-device-id.useCase';
-import { SecurityDevicesPgQueryRepository } from './infrastructure/pg/security-devices.pg-query-repository';
+import { SecurityDevicesOrmQueryRepository } from './infrastructure/orm/security-devices.orm-query-repository';
 
 @UseGuards(RefreshTokenGuard)
 @Controller(ROUTERS_PATH.SECURITY_DEVICES)
 export class SecurityDevicesController {
   constructor(
-    private readonly securityDevicesQueryRepository: SecurityDevicesPgQueryRepository,
+    private readonly securityDevicesQueryRepository: SecurityDevicesOrmQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 

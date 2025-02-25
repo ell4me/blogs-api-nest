@@ -54,7 +54,8 @@ import { LikesCommentModule } from '../likes-comment/likes-comment.module';
 
         return {
           type: 'postgres',
-          synchronize: false,
+          synchronize: true,
+          autoLoadEntities: true,
           ...ormConfig,
         };
       },

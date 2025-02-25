@@ -4,8 +4,8 @@ import { UserCreateDto } from '../../users.dto';
 import { VALIDATION_MESSAGES } from '../../../../constants';
 import { EmailAdapter } from '../../../../common/adapters/email/email.adapter';
 import { BadRequestDomainException } from '../../../../common/exception/domain-exception';
-import { UsersPgRepository } from '../../infrastructure/pg/users.pg-repository';
-import { UserEntity } from '../../infrastructure/pg/users.entity';
+import { UsersOrmRepository } from '../../infrastructure/orm/users.orm-repository';
+import { User } from '../../infrastructure/orm/user.entity';
 
 export type TExecuteCreateUserResult = { id: string };
 
@@ -21,7 +21,7 @@ export class CreateUserUseCase
   implements ICommandHandler<CreateUserCommand, TExecuteCreateUserResult>
 {
   constructor(
-    private readonly usersRepository: UsersPgRepository,
+    private readonly usersRepository: UsersOrmRepository,
     private readonly emailAdapter: EmailAdapter,
   ) {}
 
@@ -63,10 +63,7 @@ export class CreateUserUseCase
     return { id: createdUser.id };
   }
 
-  private throwErrorDuplicateEmailOrLogin(
-    user: UserEntity,
-    currentEmail: string,
-  ) {
+  private throwErrorDuplicateEmailOrLogin(user: User, currentEmail: string) {
     if (currentEmail === user.email) {
       return {
         field: 'email',

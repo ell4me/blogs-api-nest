@@ -4,7 +4,7 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../../common/exception/domain-exception';
-import { SecurityDevicesPgRepository } from '../../infrastructure/pg/security-devices.pg-repository';
+import { SecurityDevicesOrmRepository } from '../../infrastructure/orm/security-devices.orm-repository';
 
 export type TExecuteDeleteSessionByDeviceIdResult = void;
 
@@ -24,7 +24,7 @@ export class DeleteSessionByDeviceIdUseCase
     >
 {
   constructor(
-    private readonly securityDevicesRepository: SecurityDevicesPgRepository,
+    private readonly securityDevicesRepository: SecurityDevicesOrmRepository,
   ) {}
 
   async execute({ deviceId, userId }: DeleteSessionByDeviceIdCommand) {
