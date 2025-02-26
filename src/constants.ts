@@ -1,7 +1,7 @@
 // In seconds
 export const EXPIRATION_TOKEN = {
-  ACCESS: 350,
-  REFRESH: 350,
+  ACCESS: 10,
+  REFRESH: 20,
 };
 
 export const ROUTERS_PATH = {
