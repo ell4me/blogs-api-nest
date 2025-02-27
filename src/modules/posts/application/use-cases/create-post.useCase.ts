@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { PostCreateByBlogIdDto } from '../../posts.dto';
-import { PostsPgRepository } from '../../infrastructure/pg/posts.pg-repository';
+import { PostsOrmRepository } from '../../infrastructure/orm/posts.orm-repository';
 
 export type TExecuteCreatePost = { id: string };
 
@@ -13,7 +13,7 @@ export class CreatePostCommand {
 export class CreatePostUseCase
   implements ICommandHandler<CreatePostCommand, TExecuteCreatePost>
 {
-  constructor(private readonly postsRepository: PostsPgRepository) {}
+  constructor(private readonly postsRepository: PostsOrmRepository) {}
 
   async execute({ newPost }: CreatePostCommand): Promise<TExecuteCreatePost> {
     const post = await this.postsRepository.create(newPost);

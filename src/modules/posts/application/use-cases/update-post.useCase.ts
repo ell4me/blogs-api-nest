@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { PostUpdateDto } from '../../posts.dto';
-import { PostsPgRepository } from '../../infrastructure/pg/posts.pg-repository';
+import { PostsOrmRepository } from '../../infrastructure/orm/posts.orm-repository';
 
 export type TExecuteUpdatePostById = void;
 
@@ -17,7 +17,7 @@ export class UpdatePostByIdCommand {
 export class UpdatePostUseCase
   implements ICommandHandler<UpdatePostByIdCommand, TExecuteUpdatePostById>
 {
-  constructor(private readonly postsRepository: PostsPgRepository) {}
+  constructor(private readonly postsRepository: PostsOrmRepository) {}
 
   async execute({
     postId,

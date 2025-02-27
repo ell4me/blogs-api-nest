@@ -1,7 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { BlogUpdateDto } from '../../blogs.dto';
-import { BlogsPgRepository } from '../../infrastructure/pg/blogs.pg-repository';
+import { BlogsOrmRepository } from '../../infrastructure/orm/blogs.orm-repository';
+import { NotFoundDomainException } from '../../../../common/exception/domain-exception';
 
 export type TExecuteUpdateBlog = boolean;
 
@@ -16,13 +17,21 @@ export class UpdateBlogCommand {
 export class UpdateBlogUseCase
   implements ICommandHandler<UpdateBlogCommand, TExecuteUpdateBlog>
 {
-  constructor(private readonly blogsRepository: BlogsPgRepository) {}
+  constructor(private readonly blogsRepository: BlogsOrmRepository) {}
 
   async execute({
     id,
     blogUpdateDto,
   }: UpdateBlogCommand): Promise<TExecuteUpdateBlog> {
-    await this.blogsRepository.updateOrNotFoundFail(id, blogUpdateDto);
+    const blog = await this.blogsRepository.getById(id);
+
+    if (!blog) {
+      throw NotFoundDomainException.create();
+    }
+
+    blog.update(blogUpdateDto);
+
+    await this.blogsRepository.save(blog);
 
     return true;
   }

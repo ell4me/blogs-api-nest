@@ -12,7 +12,7 @@ export class User extends DateTimestampEntity {
   @PrimaryColumn()
   id: string;
 
-  @Column({ type: 'varchar', collation: 'en_US.utf8' })
+  @Column({ type: 'varchar', collation: 'С' })
   login: string;
 
   @Column()

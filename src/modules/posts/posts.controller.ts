@@ -6,39 +6,31 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
-  Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import {
-  PostQueries,
-  ItemsPaginationViewDto,
-  CommentQueries,
-} from '../../types';
+import { PostQueries, ItemsPaginationViewDto } from '../../types';
 import { ROUTERS_PATH } from '../../constants';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { CommentCreateDto, CommentViewDto } from '../comments/comments.dto';
 import { AccessTokenGuard } from '../../common/guards/access-token.guard';
-import { CreateCommentCommand } from '../comments/application/use-cases/create-comment.useCase';
 import { Public } from '../../common/decorators/public.decorator';
 import { LikesPostUpdateDto } from '../likes-post/likes-post.dto';
 import {
   TExecuteUpdateLikeStatusPost,
   UpdateLikeStatusPostCommand,
 } from '../likes-post/application/use-cases/update-like-status-post.useCase';
-import { CommentsPgQueryRepository } from '../comments/infrastructure/pg/comments.pg-query-repository';
 
 import { PostViewDto } from './posts.dto';
-import { PostsPgQueryRepository } from './infrastructure/pg/posts.pg-query-repository';
+import { PostsOrmQueryRepository } from './infrastructure/orm/posts.orm-query-repository';
 
 @Controller(ROUTERS_PATH.POSTS)
 export class PostsController {
   constructor(
-    private readonly postsQueryRepository: PostsPgQueryRepository,
-    private readonly commentsQueryRepository: CommentsPgQueryRepository,
+    private readonly postsQueryRepository: PostsOrmQueryRepository,
+    // private readonly commentsQueryRepository: CommentsPgQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -68,49 +60,49 @@ export class PostsController {
     return post;
   }
 
-  @Public()
-  @UseGuards(AccessTokenGuard)
-  @Get(':postId/comments')
-  async getCommentsByPostId(
-    @Query() queries: CommentQueries,
-    @CurrentUser('id') userId: string,
-    @Param('postId') postId: string,
-  ) {
-    const post = await this.postsQueryRepository.getById(postId);
-    if (!post) {
-      throw new NotFoundException();
-    }
+  // @Public()
+  // @UseGuards(AccessTokenGuard)
+  // @Get(':postId/comments')
+  // async getCommentsByPostId(
+  //   @Query() queries: CommentQueries,
+  //   @CurrentUser('id') userId: string,
+  //   @Param('postId') postId: string,
+  // ) {
+  //   const post = await this.postsQueryRepository.getById(postId);
+  //   if (!post) {
+  //     throw new NotFoundException();
+  //   }
+  //
+  //   return await this.commentsQueryRepository.getCommentsByPostId(
+  //     postId,
+  //     queries,
+  //     userId,
+  //   );
+  // }
 
-    return await this.commentsQueryRepository.getCommentsByPostId(
-      postId,
-      queries,
-      userId,
-    );
-  }
-
-  @UseGuards(AccessTokenGuard)
-  @Post(':postId/comments')
-  async createComment(
-    @Body() commentCreateDto: CommentCreateDto,
-    @CurrentUser('id') userId: string,
-    @Param('postId') postId: string,
-  ): Promise<CommentViewDto> {
-    const post = await this.postsQueryRepository.getById(postId);
-    if (!post) {
-      throw new NotFoundException();
-    }
-
-    const { id } = await this.commandBus.execute(
-      new CreateCommentCommand(commentCreateDto, postId, userId),
-    );
-
-    const comment = await this.commentsQueryRepository.getCommentById(
-      id,
-      userId,
-    );
-
-    return comment!;
-  }
+  // @UseGuards(AccessTokenGuard)
+  // @Post(':postId/comments')
+  // async createComment(
+  //   @Body() commentCreateDto: CommentCreateDto,
+  //   @CurrentUser('id') userId: string,
+  //   @Param('postId') postId: string,
+  // ): Promise<CommentViewDto> {
+  //   const post = await this.postsQueryRepository.getById(postId);
+  //   if (!post) {
+  //     throw new NotFoundException();
+  //   }
+  //
+  //   const { id } = await this.commandBus.execute(
+  //     new CreateCommentCommand(commentCreateDto, postId, userId),
+  //   );
+  //
+  //   const comment = await this.commentsQueryRepository.getCommentById(
+  //     id,
+  //     userId,
+  //   );
+  //
+  //   return comment!;
+  // }
 
   @UseGuards(AccessTokenGuard)
   @Put(':postId/like-status')

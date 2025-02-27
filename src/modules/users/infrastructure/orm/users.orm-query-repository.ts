@@ -17,7 +17,7 @@ import { IUsersQueryRepository } from './interfaces';
 export class UsersOrmQueryRepository implements IUsersQueryRepository {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   async getAll({

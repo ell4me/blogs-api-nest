@@ -10,7 +10,6 @@ import {
   Res,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { ThrottlerGuard } from '@nestjs/throttler';
 
 import { UserCreateDto } from '../users/users.dto';
 import { REFRESH_TOKEN_COOKIE_NAME, ROUTERS_PATH } from '../../constants';
@@ -68,7 +67,8 @@ export class AuthController {
     private readonly commandBus: CommandBus,
   ) {}
 
-  @UseGuards(ThrottlerGuard, LocalAuthGuard)
+  //ThrottlerGuard
+  @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
@@ -90,7 +90,7 @@ export class AuthController {
     return { accessToken };
   }
 
-  @UseGuards(ThrottlerGuard)
+  // @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registration(@Body() userCreateDto: UserCreateDto): Promise<void> {
@@ -107,7 +107,7 @@ export class AuthController {
     return this.usersQueryRepository.getCurrentUser(userId);
   }
 
-  @UseGuards(ThrottlerGuard)
+  // @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
   registrationConfirmation(
@@ -119,7 +119,7 @@ export class AuthController {
     >(new RegistrationConfirmationCommand(registrationConfirmationDto));
   }
 
-  @UseGuards(ThrottlerGuard)
+  // @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
   registrationEmailResending(
@@ -131,7 +131,7 @@ export class AuthController {
     >(new RegistrationEmailResendingCommand(registrationEmailResendingDto));
   }
 
-  @UseGuards(ThrottlerGuard)
+  // @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('password-recovery')
   async sendPasswordRecoveryEmail(
@@ -143,7 +143,7 @@ export class AuthController {
     >(new SendPasswordRecoveryEmailCommand(passwordRecoveryEmailDto));
   }
 
-  @UseGuards(ThrottlerGuard)
+  // @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('new-password')
   updateUserPasswordByRecoveryCode(

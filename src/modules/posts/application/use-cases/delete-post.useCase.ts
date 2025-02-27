@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { PostsPgRepository } from '../../infrastructure/pg/posts.pg-repository';
+import { PostsOrmRepository } from '../../infrastructure/orm/posts.orm-repository';
 
 export type TExecuteDeletePost = void;
 
@@ -15,7 +15,7 @@ export class DeletePostCommand {
 export class DeletePostUseCase
   implements ICommandHandler<DeletePostCommand, TExecuteDeletePost>
 {
-  constructor(private readonly postsRepository: PostsPgRepository) {}
+  constructor(private readonly postsRepository: PostsOrmRepository) {}
 
   async execute({
     postId,

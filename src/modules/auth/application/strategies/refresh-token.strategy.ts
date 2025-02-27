@@ -44,7 +44,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
       !currentDeviceSession ||
       iat !== Number(currentDeviceSession.iat) ||
       exp < Date.now() ||
-      expirationTime > EXPIRATION_TOKEN.REFRESH
+      expirationTime !== EXPIRATION_TOKEN.REFRESH
     ) {
       throw UnauthorizedDomainException.create();
     }

@@ -25,7 +25,6 @@ import { Public } from '../../common/decorators/public.decorator';
 import { AccessTokenGuard } from '../../common/guards/access-token.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
-import { PostsPgQueryRepository } from '../posts/infrastructure/pg/posts.pg-query-repository';
 import {
   TExecuteUpdatePostById,
   UpdatePostByIdCommand,
@@ -34,6 +33,7 @@ import {
   DeletePostCommand,
   TExecuteDeletePost,
 } from '../posts/application/use-cases/delete-post.useCase';
+import { PostsOrmQueryRepository } from '../posts/infrastructure/orm/posts.orm-query-repository';
 
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 import {
@@ -48,14 +48,14 @@ import {
   CreateBlogCommand,
   TExecuteCreateBlog,
 } from './application/use-cases/create-blog.useCase';
-import { BlogsPgQueryRepository } from './infrastructure/pg/blogs.pg-query-repository';
+import { BlogsOrmQueryRepository } from './infrastructure/orm/blogs.orm-query-repository';
 
 @UseGuards(BasicAuthGuard)
 @Controller()
 export class BlogsController {
   constructor(
-    private readonly blogsQueryRepository: BlogsPgQueryRepository,
-    private readonly postsQueryRepository: PostsPgQueryRepository,
+    private readonly blogsQueryRepository: BlogsOrmQueryRepository,
+    private readonly postsQueryRepository: PostsOrmQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
