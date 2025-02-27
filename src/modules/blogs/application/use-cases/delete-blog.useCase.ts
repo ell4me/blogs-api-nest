@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { PostsPgRepository } from '../../../posts/infrastructure/pg/posts.pg-repository';
 import { BlogsOrmRepository } from '../../infrastructure/orm/blogs.orm-repository';
+import { PostsOrmRepository } from '../../../posts/infrastructure/orm/posts.orm-repository';
 
 export type TExecuteDeleteBlog = boolean;
 
@@ -14,7 +14,7 @@ export class DeleteBlogUseCase
   implements ICommandHandler<DeleteBlogCommand, TExecuteDeleteBlog>
 {
   constructor(
-    private readonly postsRepository: PostsPgRepository,
+    private readonly postsRepository: PostsOrmRepository,
     private readonly blogsRepository: BlogsOrmRepository,
   ) {}
 
