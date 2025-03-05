@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { STATUSES_LIKE } from '../../../constants';
 import { CommentLikeDto } from '../../comments/comments.dto';
-import { LikesCommentPgRepository } from '../infrastructure/likes-comment.pg-repository';
+import { LikesCommentOrmRepository } from '../infrastructure/orm/likes-comment.orm-repository';
 
 export type TExecuteUpdateLikeStatusComment = void;
 
@@ -24,7 +24,7 @@ export class UpdateLikeStatusCommentUseCase
     >
 {
   constructor(
-    private readonly likesCommentPgRepository: LikesCommentPgRepository,
+    private readonly likesCommentRepository: LikesCommentOrmRepository,
   ) {}
 
   async execute({
@@ -37,11 +37,13 @@ export class UpdateLikeStatusCommentUseCase
       return;
     }
 
-    if (
-      currentUserLikeStatus === STATUSES_LIKE.NONE &&
-      likeStatus !== STATUSES_LIKE.NONE
-    ) {
-      await this.likesCommentPgRepository.create({
+    const likeComment = await this.likesCommentRepository.findOne(
+      commentId,
+      userId,
+    );
+
+    if (!likeComment) {
+      await this.likesCommentRepository.create({
         status: likeStatus,
         commentId,
         userId,
@@ -50,15 +52,13 @@ export class UpdateLikeStatusCommentUseCase
     }
 
     if (likeStatus === STATUSES_LIKE.NONE) {
-      await this.likesCommentPgRepository.deleteOne(commentId, userId);
+      await this.likesCommentRepository.deleteOne(commentId, userId);
       return;
     }
 
-    await this.likesCommentPgRepository.updateStatus({
-      status: likeStatus,
-      commentId,
-      userId,
-    });
+    likeComment.updateStatus(likeStatus);
+    await this.likesCommentRepository.save(likeComment);
+
     return;
   }
 }

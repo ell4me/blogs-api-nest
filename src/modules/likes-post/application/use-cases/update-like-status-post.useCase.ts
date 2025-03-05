@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { LikesPostUpdateDto } from '../../likes-post.dto';
-import { LikesPostPgRepository } from '../../infrastructure/pg/likes-post.pg-repository';
 import { STATUSES_LIKE } from '../../../../constants';
+import { LikesPostOrmRepository } from '../../infrastructure/orm/likes-post.orm-repository';
 
 export type TExecuteUpdateLikeStatusPost = void;
 
@@ -20,7 +20,7 @@ export class UpdateLikeStatusPostUseCase
   implements
     ICommandHandler<UpdateLikeStatusPostCommand, TExecuteUpdateLikeStatusPost>
 {
-  constructor(private readonly likesPostRepository: LikesPostPgRepository) {}
+  constructor(private readonly likesPostRepository: LikesPostOrmRepository) {}
 
   async execute({
     postId,
@@ -32,13 +32,9 @@ export class UpdateLikeStatusPostUseCase
       return;
     }
 
-    console.log(currentUserLikeStatus, 'currentUserLikeStatus');
-    console.log(likeStatus, 'likeStatus');
+    const likePost = await this.likesPostRepository.findOne(postId, userId);
 
-    if (
-      currentUserLikeStatus === STATUSES_LIKE.NONE &&
-      likeStatus !== STATUSES_LIKE.NONE
-    ) {
+    if (!likePost) {
       await this.likesPostRepository.create({
         userId,
         postId,
@@ -52,11 +48,8 @@ export class UpdateLikeStatusPostUseCase
       return;
     }
 
-    await this.likesPostRepository.update({
-      status: likeStatus,
-      postId,
-      userId,
-    });
+    likePost.updateStatus(likeStatus);
+    await this.likesPostRepository.save(likePost);
 
     return;
   }

@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { CommentCreateDto } from '../../comments.dto';
-import { UsersPgRepository } from '../../../users/infrastructure/pg/users.pg-repository';
-import { CommentsPgRepository } from '../../infrastructure/pg/comments.pg-repository';
+import { CommentsOrmRepository } from '../../infrastructure/orm/comments.orm-repository';
+import { UsersOrmRepository } from '../../../users/infrastructure/orm/users.orm-repository';
 
 export type TExecuteCreateComment = { id: string };
 
@@ -19,8 +19,8 @@ export class CreateCommentUseCase
   implements ICommandHandler<CreateCommentCommand, TExecuteCreateComment>
 {
   constructor(
-    private readonly commentsRepository: CommentsPgRepository,
-    private readonly usersRepository: UsersPgRepository,
+    private readonly commentsRepository: CommentsOrmRepository,
+    private readonly usersRepository: UsersOrmRepository,
   ) {}
 
   async execute({

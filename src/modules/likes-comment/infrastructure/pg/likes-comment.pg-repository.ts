@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { LikesCommentCreate } from '../likes-comment.types';
+import { LikesCommentCreate } from '../../likes-comment.types';
 
 @Injectable()
 export class LikesCommentPgRepository {

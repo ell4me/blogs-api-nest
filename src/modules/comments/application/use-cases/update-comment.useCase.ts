@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { CommentUpdateDto } from '../../comments.dto';
 import { ForbiddenDomainException } from '../../../../common/exception/domain-exception';
-import { CommentsPgRepository } from '../../infrastructure/pg/comments.pg-repository';
+import { CommentsOrmRepository } from '../../infrastructure/orm/comments.orm-repository';
 
 export type TExecuteUpdateComment = boolean;
 
@@ -18,7 +18,7 @@ export class UpdateCommentCommand {
 export class UpdateCommentUseCase
   implements ICommandHandler<UpdateCommentCommand, TExecuteUpdateComment>
 {
-  constructor(private readonly commentsRepository: CommentsPgRepository) {}
+  constructor(private readonly commentsRepository: CommentsOrmRepository) {}
 
   async execute({
     commentId,

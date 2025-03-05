@@ -37,3 +37,14 @@ export class CommentLikeDto {
   @IsEnum(STATUSES_LIKE)
   likeStatus: STATUSES_LIKE;
 }
+
+export type CommentRawViewDto = {
+  id: string;
+  content: string;
+  createdAt: string;
+  currentUserLikeStatus: STATUSES_LIKE;
+  commentatorId: string;
+  commentatorLogin: string;
+  likesCount: number;
+  dislikesCount: number;
+};

@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { ForbiddenDomainException } from '../../../../common/exception/domain-exception';
-import { CommentsPgRepository } from '../../infrastructure/pg/comments.pg-repository';
-import { LikesCommentPgRepository } from '../../../likes-comment/infrastructure/likes-comment.pg-repository';
+import { CommentsOrmRepository } from '../../infrastructure/orm/comments.orm-repository';
+import { LikesCommentOrmRepository } from '../../../likes-comment/infrastructure/orm/likes-comment.orm-repository';
 
 export type TExecuteDeleteComment = boolean;
 
@@ -18,8 +18,8 @@ export class DeleteCommentUseCase
   implements ICommandHandler<DeleteCommentCommand, TExecuteDeleteComment>
 {
   constructor(
-    private readonly commentsRepository: CommentsPgRepository,
-    private readonly likesCommentPgRepository: LikesCommentPgRepository,
+    private readonly commentsRepository: CommentsOrmRepository,
+    private readonly likesCommentPgRepository: LikesCommentOrmRepository,
   ) {}
 
   async execute({ commentId, userId }: DeleteCommentCommand) {
@@ -29,7 +29,7 @@ export class DeleteCommentUseCase
       throw ForbiddenDomainException.create();
     }
 
-    await this.likesCommentPgRepository.deleteOne(commentId, userId);
+    await this.likesCommentPgRepository.deleteByCommentId(commentId);
     await this.commentsRepository.deleteById(commentId);
 
     return true;

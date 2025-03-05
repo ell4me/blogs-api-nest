@@ -1,4 +1,4 @@
-import { STATUSES_LIKE } from '../../../constants';
+import { STATUSES_LIKE } from '../../../../constants';
 
 export class LikesCommentEntity {
   private constructor(
