@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import {
@@ -7,8 +7,11 @@ import {
   PostQueries,
   TSortDirection,
 } from '../../../../types';
-import { PostViewDto } from '../../posts.dto';
+import { PostRawViewDto, PostViewDto } from '../../posts.dto';
 import { STATUSES_LIKE } from '../../../../constants';
+import { LikesPost } from '../../../likes-post/infrastructure/orm/likes-post.entity';
+import { NewestLikeInfo } from '../../../likes-post/likes-post.types';
+import { LikesPostOrmQueryRepository } from '../../../likes-post/infrastructure/orm/likes-post.orm-query-repository';
 
 import { Post } from './post.entity';
 
@@ -16,7 +19,7 @@ import { Post } from './post.entity';
 export class PostsOrmQueryRepository {
   constructor(
     @InjectRepository(Post) private readonly postsRepository: Repository<Post>,
-    // private readonly likesPostPgQueryRepository: LikesPostPgQueryRepository,
+    private readonly likesPostQueryRepository: LikesPostOrmQueryRepository,
   ) {}
 
   async getAll(
@@ -31,13 +34,12 @@ export class PostsOrmQueryRepository {
     additionalFilter?: { blogId?: string },
   ): Promise<ItemsPaginationViewDto<PostViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
-    const sortByQuery = sortBy === 'blogName' ? `b."name"` : `p."${sortBy}"`;
-    const builder = this.postsRepository
-      .createQueryBuilder('p')
-      .where('p."title" ilike :searchNameTerm', {
+    const sortByQuery =
+      sortBy === 'blogName' ? `blogs."name"` : `posts."${sortBy}"`;
+    const builder = this.getPostBuilder(userId)
+      .where('posts."title" ilike :searchNameTerm', {
         searchNameTerm: `%${searchNameTerm}%`,
       })
-      .leftJoinAndSelect('p.blog', 'b')
       .orderBy(
         sortByQuery,
         String(sortDirection).toUpperCase() as TSortDirection,
@@ -46,70 +48,42 @@ export class PostsOrmQueryRepository {
       .offset(offset);
 
     if (additionalFilter?.blogId) {
-      builder.andWhere('p."blogId" like :blogId', {
+      builder.andWhere('posts."blogId" like  :blogId', {
         blogId: additionalFilter?.blogId,
       });
     }
 
-    const posts = await builder.getMany();
+    const posts = await builder.getRawMany<PostRawViewDto>();
     const postsCountByFilter = await this.getCount(additionalFilter);
-    // const newestLikes =
-    //   await this.likesPostPgQueryRepository.getNewestLikesByPostsId(
-    //     posts.map(({ id }) => id),
-    //   );
+    const newestLikes =
+      await this.likesPostQueryRepository.getNewestLikesByPostsId(
+        posts.map(({ id }) => id),
+      );
 
     return {
       page: pageNumber,
       pagesCount: Math.ceil(postsCountByFilter / pageSize),
       pageSize: pageSize,
       totalCount: postsCountByFilter,
-      items: posts.map((post) => ({
-        id: post.id,
-        content: post.content,
-        blogId: post.blogId,
-        title: post.title,
-        blogName: post.blog.name,
-        createdAt: new Date(post.createdAt),
-        shortDescription: post.shortDescription,
-        extendedLikesInfo: {
-          newestLikes: [],
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: STATUSES_LIKE.NONE,
-        },
-      })),
+      items: posts.map((post) =>
+        this.mapToPostViewDto(post, newestLikes[post.id]),
+      ),
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getById(postId: string, userId?: string): Promise<PostViewDto | null> {
-    const post = await this.postsRepository.findOne({
-      where: { id: postId },
-      relations: { blog: true },
-    });
+    const post = await this.getPostBuilder(userId)
+      .where('posts.id = :postId', { postId })
+      .getRawOne<PostRawViewDto>();
 
     if (!post) {
       return null;
     }
 
-    // const newestLikes =
-    //   await this.likesPostPgQueryRepository.getNewestLikesByPostId(post.id);
+    const newestLikes =
+      await this.likesPostQueryRepository.getNewestLikesByPostId(post.id);
 
-    return {
-      id: post.id,
-      content: post.content,
-      blogId: post.blogId,
-      title: post.title,
-      blogName: post.blog.name,
-      createdAt: new Date(post.createdAt),
-      shortDescription: post.shortDescription,
-      extendedLikesInfo: {
-        newestLikes: [],
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: STATUSES_LIKE.NONE,
-      },
-    };
+    return this.mapToPostViewDto(post, newestLikes);
   }
 
   getCount(filter?: { blogId?: string }): Promise<number> {
@@ -119,5 +93,63 @@ export class PostsOrmQueryRepository {
       .createQueryBuilder()
       .where('"blogId" like :blogId', { blogId: `%${blogId}%` })
       .getCount();
+  }
+
+  private mapToPostViewDto(
+    post: PostRawViewDto,
+    newestLikes: NewestLikeInfo[],
+  ): PostViewDto {
+    return {
+      id: post.id,
+      content: post.content,
+      blogId: post.blogId,
+      title: post.title,
+      blogName: post.blogName,
+      createdAt: new Date(post.createdAt),
+      shortDescription: post.shortDescription,
+      extendedLikesInfo: {
+        newestLikes,
+        likesCount: post.likesCount,
+        dislikesCount: post.dislikesCount,
+        myStatus: Post.getCurrentStatusLikeUser(post.currentLikeStatusUser),
+      },
+    };
+  }
+
+  private getPostBuilder(userId?: string): SelectQueryBuilder<Post> {
+    return this.postsRepository
+      .createQueryBuilder('posts')
+      .select([
+        'posts."id"',
+        'posts."content"',
+        'posts."blogId"',
+        'posts."title"',
+        'posts."createdAt"',
+        'posts."shortDescription"',
+        'blogs."name" as "blogName"',
+        'likes."status" as "currentLikeStatusUser"',
+      ])
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('CAST(COUNT(status) AS INT)', 'likesCount')
+            .where('lp.status = :likeStatus', {
+              likeStatus: STATUSES_LIKE.LIKE,
+            })
+            .from(LikesPost, 'lp'),
+        'likesCount',
+      )
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('CAST(COUNT(status) AS INT)', 'likesCount')
+            .where('lp.status = :dislikeStatus', {
+              dislikeStatus: STATUSES_LIKE.DISLIKE,
+            })
+            .from(LikesPost, 'lp'),
+        'dislikesCount',
+      )
+      .leftJoin('posts.blog', 'blogs')
+      .leftJoin('posts.likes', 'likes', 'likes."userId" = :userId', { userId });
   }
 }

@@ -5,6 +5,7 @@ import { PostCreateByBlogIdDto, PostUpdateDto } from '../../posts.dto';
 import { Blog } from '../../../blogs/infrastructure/orm/blog.entity';
 import { Comment } from '../../../comments/infrastructure/orm/comment.entity';
 import { LikesPost } from '../../../likes-post/infrastructure/orm/likes-post.entity';
+import { STATUSES_LIKE } from '../../../../constants';
 
 @Entity()
 export class Post extends DateTimestampEntity {
@@ -53,5 +54,11 @@ export class Post extends DateTimestampEntity {
     instance.blogId = blogId;
 
     return instance;
+  }
+
+  static getCurrentStatusLikeUser(
+    currentLikeStatusUser: STATUSES_LIKE | null,
+  ): STATUSES_LIKE {
+    return currentLikeStatusUser ? currentLikeStatusUser : STATUSES_LIKE.NONE;
   }
 }

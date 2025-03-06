@@ -15,6 +15,7 @@ import { UpdateLikeStatusPostUseCase } from './application/use-cases/update-like
 import { LikesPostPgRepository } from './infrastructure/pg/likes-post.pg-repository';
 import { LikesPostPgQueryRepository } from './infrastructure/pg/likes-post.pg-query-repository';
 import { LikesPostOrmRepository } from './infrastructure/orm/likes-post.orm-repository';
+import { LikesPostOrmQueryRepository } from './infrastructure/orm/likes-post.orm-query-repository';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LikesPostOrmRepository } from './infrastructure/orm/likes-post.orm-repo
     LikesPostPgRepository,
     LikesPostPgQueryRepository,
     LikesPostOrmRepository,
+    LikesPostOrmQueryRepository,
     UpdateLikeStatusPostUseCase,
   ],
   exports: [
@@ -38,6 +40,7 @@ import { LikesPostOrmRepository } from './infrastructure/orm/likes-post.orm-repo
     LikesPostPgRepository,
     LikesPostPgQueryRepository,
     LikesPostOrmRepository,
+    LikesPostOrmQueryRepository,
     UpdateLikeStatusPostUseCase,
   ],
 })
