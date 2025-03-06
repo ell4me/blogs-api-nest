@@ -15,7 +15,7 @@ export class User extends DateTimestampEntity {
   @PrimaryColumn()
   id: string;
 
-  @Column({ type: 'varchar', collation: 'С' })
+  @Column({ type: 'varchar' })
   login: string;
 
   @Column()
