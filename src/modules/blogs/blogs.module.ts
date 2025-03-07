@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { PostsModule } from '../posts/posts.module';
+import { LikesPostModule } from '../likes-post/likes-post.module';
 
 import { BlogsController } from './blogs.controller';
 import { BlogsQueryRepository } from './infrastructure/mongo/blogs.query-repository';
@@ -24,6 +25,7 @@ const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
     TypeOrmModule.forFeature([BlogEntity]),
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogsSchema }]),
     PostsModule,
+    LikesPostModule,
   ],
   controllers: [BlogsController],
   providers: [

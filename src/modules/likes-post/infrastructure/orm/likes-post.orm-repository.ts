@@ -23,6 +23,7 @@ export class LikesPostOrmRepository {
 
   create(likesPostCreate: LikesPostCreate): Promise<LikesPost> {
     const likePost = LikesPost.create(likesPostCreate);
+    console.log(likePost, 'likePost');
     return this.likesPostRepository.save(likePost);
   }
 
@@ -38,7 +39,7 @@ export class LikesPostOrmRepository {
     return !!affected;
   }
 
-  deleteAll(): Promise<DeleteResult> {
-    return this.likesPostRepository.delete({});
+  deleteAll(postId?: string): Promise<DeleteResult> {
+    return this.likesPostRepository.delete(postId ? { postId } : {});
   }
 }
