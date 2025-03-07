@@ -136,6 +136,7 @@ export class PostsOrmQueryRepository {
             .where('lp.status = :likeStatus', {
               likeStatus: STATUSES_LIKE.LIKE,
             })
+            .andWhere('posts."id" = lp."postId"')
             .from(LikesPost, 'lp'),
         'likesCount',
       )
@@ -146,6 +147,7 @@ export class PostsOrmQueryRepository {
             .where('lp.status = :dislikeStatus', {
               dislikeStatus: STATUSES_LIKE.DISLIKE,
             })
+            .andWhere('posts."id" = lp."postId"')
             .from(LikesPost, 'lp'),
         'dislikesCount',
       )

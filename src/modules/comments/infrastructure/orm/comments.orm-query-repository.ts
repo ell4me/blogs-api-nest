@@ -100,20 +100,19 @@ export class CommentsOrmQueryRepository {
       .addSelect((subQuery) => {
         return subQuery
           .select('CAST(count(status) AS INT)', 'likesCount')
-          .where(`lc."commentId" = comment.id AND lc."status" = :statusLike`, {
+          .where(`lc."status" = :statusLike`, {
             statusLike: STATUSES_LIKE.LIKE,
           })
+          .andWhere('lc."commentId" = comment.id')
           .from(LikesComment, 'lc');
       }, 'likesCount')
       .addSelect((subQuery) => {
         return subQuery
           .select('CAST(count(status) AS INT)', 'dislikesCount')
-          .where(
-            `lc."commentId" = comment.id AND lc."status" = :statusDislike`,
-            {
-              statusDislike: STATUSES_LIKE.DISLIKE,
-            },
-          )
+          .where(`lc."status" = :statusDislike`, {
+            statusDislike: STATUSES_LIKE.DISLIKE,
+          })
+          .andWhere('lc."commentId" = comment.id')
           .from(LikesComment, 'lc');
       }, 'dislikesCount')
       .leftJoin('comment.commentator', 'user')
