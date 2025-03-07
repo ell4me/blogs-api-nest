@@ -32,8 +32,8 @@ export class LikesPostOrmQueryRepository {
   async getNewestLikesByPostsId<T extends string>(
     postIds: T[],
   ): Promise<Record<T, NewestLikeInfo[]>> {
-    const postIdsIn = postIds.join("','");
-    const result = await this.dataSource
+    console.log(postIds, 'postIds');
+    const builder = this.dataSource
       .createQueryBuilder()
       .select('*')
       .from(
@@ -48,14 +48,15 @@ export class LikesPostOrmQueryRepository {
               'ROW_NUMBER() OVER (PARTITION BY lp."postId" ORDER BY lp."updatedAt" desc) as "position"',
             ])
             .leftJoin('lp.user', 'u')
-            .where('lp."postId" IN (:postIdsIn)', { postIdsIn })
+            .where('lp."postId" IN (:...postIds)', { postIds })
             .andWhere('lp."status" = :likeStatus', {
               likeStatus: STATUSES_LIKE.LIKE,
             }),
         'likes',
       )
-      .where('position < 4')
-      .getRawMany<LikesInfo>();
+      .where('position < 4');
+
+    const result = await builder.getRawMany<LikesInfo>();
 
     const likesInfo: Record<T, NewestLikeInfo[]> = {} as Record<
       string,
