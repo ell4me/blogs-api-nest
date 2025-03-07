@@ -97,7 +97,7 @@ export class PostsOrmQueryRepository {
 
   private mapToPostViewDto(
     post: PostRawViewDto,
-    newestLikes: NewestLikeInfo[],
+    newestLikes?: NewestLikeInfo[],
   ): PostViewDto {
     return {
       id: post.id,
@@ -108,7 +108,7 @@ export class PostsOrmQueryRepository {
       createdAt: new Date(post.createdAt),
       shortDescription: post.shortDescription,
       extendedLikesInfo: {
-        newestLikes,
+        newestLikes: newestLikes ? newestLikes : [],
         likesCount: post.likesCount,
         dislikesCount: post.dislikesCount,
         myStatus: Post.getCurrentStatusLikeUser(post.currentLikeStatusUser),
