@@ -10,6 +10,10 @@ import { configValidationUtility } from './config-validation.utility';
 
 @Injectable()
 export class CommonConfig {
+  constructor(private readonly configService: ConfigService) {
+    configValidationUtility.validateConfig(this);
+  }
+
   @Min(1, { message: 'Set Env variable PORT, example: 4000' })
   port: number = Number(this.configService.get(ENV_NAMES.PORT));
 
@@ -94,8 +98,4 @@ export class CommonConfig {
       'Set Env variable PG_URL, example: postgres://user:pass@host:port/database?ssl=true',
   })
   pgUrl: string = this.configService.get(ENV_NAMES.PG_URL) as string;
-
-  constructor(private readonly configService: ConfigService) {
-    configValidationUtility.validateConfig(this);
-  }
 }

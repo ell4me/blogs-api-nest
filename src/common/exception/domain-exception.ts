@@ -18,6 +18,7 @@ export class DomainException {
   ) {}
 }
 
+// mixin
 const ConcreteDomainExceptionFactory = (
   commonMessage: string,
   code: DomainExceptionCode,
