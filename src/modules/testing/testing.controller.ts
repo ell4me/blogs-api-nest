@@ -8,6 +8,10 @@ import { PostsOrmRepository } from '../posts/infrastructure/orm/posts.orm-reposi
 import { CommentsOrmRepository } from '../comments/infrastructure/orm/comments.orm-repository';
 import { LikesCommentOrmRepository } from '../likes-comment/infrastructure/orm/likes-comment.orm-repository';
 import { LikesPostOrmRepository } from '../likes-post/infrastructure/orm/likes-post.orm-repository';
+import { QuizQuestionsRepository } from '../quiz-game/quiz-questions/infrastructure/quiz-questions.repository';
+import { PairsQuizRepository } from '../quiz-game/pairs-quiz/infrastructure/pairs-quiz.repository';
+import { PairsQuizQuestionRepository } from '../quiz-game/pairs-quiz-question/infrastructure/pairs-quiz-question.repository';
+import { PairsQuizAnswerRepository } from '../quiz-game/pairs-quiz-answer/infrastructure/pairs-quiz-answer.repository';
 
 @Controller(ROUTERS_PATH.TESTING)
 export class TestingController {
@@ -19,6 +23,10 @@ export class TestingController {
     private readonly commentsRepository: CommentsOrmRepository,
     private readonly likesCommentRepository: LikesCommentOrmRepository,
     private readonly likesPostRepository: LikesPostOrmRepository,
+    private readonly quizQuestionsRepository: QuizQuestionsRepository,
+    private readonly pairsQuizRepository: PairsQuizRepository,
+    private readonly pairsQuizQuestionRepository: PairsQuizQuestionRepository,
+    private readonly pairsQuizAnswerRepository: PairsQuizAnswerRepository,
   ) {}
 
   @Delete('all-data')
@@ -30,6 +38,12 @@ export class TestingController {
     await this.commentsRepository.deleteAll();
     await this.postsRepository.deleteAll();
     await this.blogsRepository.deleteAll();
+
+    await this.pairsQuizAnswerRepository.deleteAll();
+    await this.pairsQuizQuestionRepository.deleteAll();
+    await this.quizQuestionsRepository.deleteAll();
+    await this.pairsQuizRepository.deleteAll();
+
     await this.usersRepository.deleteAll();
   }
 }

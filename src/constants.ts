@@ -6,6 +6,8 @@ export const EXPIRATION_TOKEN = {
 
 export const ROUTERS_PATH = {
   SA_BLOGS: 'sa/blogs',
+  SA_QUIZ_QUESTIONS: 'sa/quiz/questions',
+  PAIRS_QUIZ: 'pair-game-quiz/pairs',
   BLOGS: 'blogs',
   POSTS: 'posts',
   TESTING: 'testing',

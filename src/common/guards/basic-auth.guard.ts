@@ -14,7 +14,8 @@ export class BasicAuthGuard extends AuthGuard('basic') {
 
     if (
       request.path.includes(ROUTERS_PATH.SA_BLOGS) ||
-      request.path.includes(ROUTERS_PATH.USERS)
+      request.path.includes(ROUTERS_PATH.USERS) ||
+      request.path.includes(ROUTERS_PATH.SA_QUIZ_QUESTIONS)
     ) {
       return super.canActivate(context);
     }

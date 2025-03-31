@@ -1,5 +1,5 @@
 import { SortDirection } from 'mongodb';
-import { IsIn, IsInt, IsString, Min } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 import { NODE_ENVS } from './constants';
@@ -59,6 +59,23 @@ export class UserQueries extends PaginationQueries {
   searchLoginTerm: string = '';
   @IsString()
   searchEmailTerm: string = '';
+}
+
+export enum PublishedStatus {
+  ALL = 'all',
+  PUBLISHED = 'published',
+  NOT_PUBLISHED = 'notPublished',
+}
+
+export class QuizQuestionsQueries extends PaginationQueries {
+  @IsIn(['createdAt', 'updatedAt', 'body'])
+  sortBy: string = 'createdAt';
+
+  @IsString()
+  bodySearchTerm: string = '';
+
+  @IsEnum(PublishedStatus)
+  publishedStatus: PublishedStatus = PublishedStatus.ALL;
 }
 
 export interface ItemsPaginationViewDto<T = object> {
