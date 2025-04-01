@@ -37,7 +37,6 @@ import { PairsQuizModule } from '../quiz-game/pairs-quiz/pairs-quiz.module';
           password: config.dbPass,
         },
         dbName: config.dbName,
-        verboseRetryLog: true,
         retryAttempts: 5,
         retryDelay: 3000,
       }),
@@ -64,7 +63,6 @@ import { PairsQuizModule } from '../quiz-game/pairs-quiz/pairs-quiz.module';
           synchronize: true,
           autoLoadEntities: true,
           ...ormConfig,
-          logging: true,
         };
       },
       inject: [CommonConfig],
