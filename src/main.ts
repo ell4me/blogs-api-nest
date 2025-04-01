@@ -32,7 +32,7 @@ async function bootstrap() {
     await app.listen(commonConfig.port);
     logger.log(`🚀 Приложение запущено на порту ${commonConfig.port}`);
   } catch (error) {
-    logger.error('Ошибка при запуске приложения', error.stack);
+    logger.error('Ошибка при запуске приложения', JSON.stringify(error));
     process.exit(1); // Принудительное завершение процесса в случае ошибки
   }
 }
