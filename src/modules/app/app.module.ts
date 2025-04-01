@@ -5,9 +5,21 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { seconds, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { UsersModule } from '../users/users.module';
+import { PostsModule } from '../posts/posts.module';
+import { BlogsModule } from '../blogs/blogs.module';
+import { CommentsModule } from '../comments/comments.module';
+import { AuthModule } from '../auth/auth.module';
 import { TestingModule } from '../testing/testing.module';
 import { CommonConfigModule } from '../../common/config/common-config.module';
 import { CommonConfig } from '../../common/config/common.config';
+import { LikesPostModule } from '../likes-post/likes-post.module';
+import { SecurityDevicesModule } from '../security-devices/security-devices.module';
+import { LikesCommentModule } from '../likes-comment/likes-comment.module';
+import { QuizQuestionsModule } from '../quiz-game/quiz-questions/quiz-questions.module';
+import { PairsQuizQuestionModule } from '../quiz-game/pairs-quiz-question/pairs-quiz-question.module';
+import { PairsQuizAnswerModule } from '../quiz-game/pairs-quiz-answer/pairs-quiz-answer.module';
+import { PairsQuizModule } from '../quiz-game/pairs-quiz/pairs-quiz.module';
 
 @Module({
   imports: [
@@ -48,8 +60,9 @@ import { CommonConfig } from '../../common/config/common.config';
 
         return {
           type: 'postgres',
-          synchronize: true,
-          autoLoadEntities: true,
+          synchronize: false,
+          autoLoadEntities: false,
+          entities: [__dirname + '/../**/*.entity.{ts,js}'],
           ...ormConfig,
         };
       },
@@ -65,6 +78,18 @@ import { CommonConfig } from '../../common/config/common.config';
       ],
       inject: [CommonConfig],
     }),
+    UsersModule,
+    LikesPostModule,
+    PostsModule,
+    BlogsModule,
+    CommentsModule,
+    AuthModule,
+    SecurityDevicesModule,
+    LikesCommentModule,
+    PairsQuizModule,
+    QuizQuestionsModule,
+    PairsQuizQuestionModule,
+    PairsQuizAnswerModule,
   ],
 })
 export class AppModule {
