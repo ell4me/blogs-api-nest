@@ -1,6 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 
-import { DateTimestampEntity } from '../../../../common/helpers/date-timestamp';
 import {
   QuizQuestionCreateDto,
   QuizQuestionPublishDto,
@@ -9,7 +14,7 @@ import {
 import { PairQuizQuestion } from '../../pairs-quiz-question/infrastructure/pair-quiz-question.entity';
 
 @Entity()
-export class QuizQuestion extends DateTimestampEntity {
+export class QuizQuestion {
   @PrimaryColumn()
   id: string;
 
@@ -25,13 +30,25 @@ export class QuizQuestion extends DateTimestampEntity {
   @OneToMany(() => PairQuizQuestion, (pqq) => pqq.quizQuestion)
   pairsQuiz: PairQuizQuestion[];
 
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Column({
+    type: 'timestamp without time zone',
+    nullable: true,
+    default: null,
+  })
+  updatedAt: Date;
+
   updateQuestion({ body, correctAnswers }: QuizQuestionUpdateDto) {
     this.body = body;
     this.correctAnswers = correctAnswers;
+    this.updatedAt = new Date();
   }
 
   updatePublishStatus({ published }: QuizQuestionPublishDto) {
     this.published = published;
+    this.updatedAt = new Date();
   }
 
   static create({ body, correctAnswers }: QuizQuestionCreateDto): QuizQuestion {
