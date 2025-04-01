@@ -1,15 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CommentsModule } from '../comments/comments.module';
 import { LikesPostModule } from '../likes-post/likes-post.module';
 
 import { PostsController } from './posts.controller';
-import { Post, PostsSchema } from './infrastructure/mongo/posts.model';
 import { Post as PostEntity } from './infrastructure/orm/post.entity';
-import { PostsQueryRepository } from './infrastructure/mongo/posts.query-repository';
-import { PostsRepository } from './infrastructure/mongo/posts.repository';
 import { UpdatePostUseCase } from './application/use-cases/update-post.useCase';
 import { CreatePostUseCase } from './application/use-cases/create-post.useCase';
 import { DeletePostUseCase } from './application/use-cases/delete-post.useCase';
@@ -23,14 +19,14 @@ const useCases = [UpdatePostUseCase, CreatePostUseCase, DeletePostUseCase];
 @Module({
   imports: [
     TypeOrmModule.forFeature([PostEntity]),
-    MongooseModule.forFeature([{ name: Post.name, schema: PostsSchema }]),
+    // MongooseModule.forFeature([{ name: Post.name, schema: PostsSchema }]),
     CommentsModule,
     LikesPostModule,
   ],
   controllers: [PostsController],
   providers: [
-    PostsQueryRepository,
-    PostsRepository,
+    // PostsQueryRepository,
+    // PostsRepository,
     PostsPgQueryRepository,
     PostsPgRepository,
     PostsOrmRepository,
@@ -38,8 +34,8 @@ const useCases = [UpdatePostUseCase, CreatePostUseCase, DeletePostUseCase];
     ...useCases,
   ],
   exports: [
-    PostsQueryRepository,
-    PostsRepository,
+    // PostsQueryRepository,
+    // PostsRepository,
     PostsPgQueryRepository,
     PostsPgRepository,
     PostsOrmRepository,

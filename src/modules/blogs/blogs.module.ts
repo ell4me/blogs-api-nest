@@ -1,13 +1,9 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { PostsModule } from '../posts/posts.module';
 
 import { BlogsController } from './blogs.controller';
-import { BlogsQueryRepository } from './infrastructure/mongo/blogs.query-repository';
-import { BlogsRepository } from './infrastructure/mongo/blogs.repository';
-import { Blog, BlogsSchema } from './infrastructure/mongo/blogs.model';
 import { Blog as BlogEntity } from './infrastructure/orm/blog.entity';
 import { DeleteBlogUseCase } from './application/use-cases/delete-blog.useCase';
 import { UpdateBlogUseCase } from './application/use-cases/update-blog.useCase';
@@ -22,19 +18,23 @@ const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
 @Module({
   imports: [
     TypeOrmModule.forFeature([BlogEntity]),
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogsSchema }]),
+    // MongooseModule.forFeature([{ name: Blog.name, schema: BlogsSchema }]),
     PostsModule,
   ],
   controllers: [BlogsController],
   providers: [
-    BlogsQueryRepository,
-    BlogsRepository,
+    // BlogsQueryRepository,
+    // BlogsRepository,
     BlogsPgQueryRepository,
     BlogsPgRepository,
     BlogsOrmRepository,
     BlogsOrmQueryRepository,
     ...useCases,
   ],
-  exports: [BlogsRepository, BlogsPgRepository, BlogsOrmRepository],
+  exports: [
+    // BlogsRepository,
+    BlogsPgRepository,
+    BlogsOrmRepository,
+  ],
 })
 export class BlogsModule {}

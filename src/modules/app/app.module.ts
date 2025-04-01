@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+// import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { seconds, ThrottlerModule } from '@nestjs/throttler';
@@ -28,20 +28,20 @@ import { PairsQuizModule } from '../quiz-game/pairs-quiz/pairs-quiz.module';
     }),
     CqrsModule.forRoot(),
     CommonConfigModule,
-    MongooseModule.forRootAsync({
-      imports: [CommonConfigModule],
-      useFactory: (config: CommonConfig) => ({
-        uri: config.dbHost,
-        auth: {
-          username: config.dbUser,
-          password: config.dbPass,
-        },
-        dbName: config.dbName,
-        retryAttempts: 5,
-        retryDelay: 3000,
-      }),
-      inject: [CommonConfig],
-    }),
+    // MongooseModule.forRootAsync({
+    //   imports: [CommonConfigModule],
+    //   useFactory: (config: CommonConfig) => ({
+    //     uri: config.dbHost,
+    //     auth: {
+    //       username: config.dbUser,
+    //       password: config.dbPass,
+    //     },
+    //     dbName: config.dbName,
+    //     retryAttempts: 5,
+    //     retryDelay: 3000,
+    //   }),
+    //   inject: [CommonConfig],
+    // }),
     TypeOrmModule.forRootAsync({
       imports: [CommonConfigModule],
       useFactory: (config: CommonConfig) => {
