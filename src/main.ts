@@ -23,4 +23,4 @@ async function bootstrap() {
   await app.listen(commonConfig.port);
 }
 
-bootstrap().catch((e) => console.error(e));
+bootstrap();
