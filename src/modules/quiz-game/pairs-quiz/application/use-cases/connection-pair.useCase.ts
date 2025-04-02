@@ -1,10 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { DataSource } from 'typeorm';
+import { Brackets, DataSource } from 'typeorm';
 
 import { PairsQuizRepository } from '../../infrastructure/pairs-quiz.repository';
 import { ForbiddenDomainException } from '../../../../../common/exception/domain-exception';
 import { QuizQuestionsRepository } from '../../../quiz-questions/infrastructure/quiz-questions.repository';
 import { PairsQuizQuestionRepository } from '../../../pairs-quiz-question/infrastructure/pairs-quiz-question.repository';
+import { PairQuizStatus } from '../../pairs-quiz.types';
+import { PairQuiz } from '../../infrastructure/pair-quiz.entity';
 
 export type TExecuteConnectionPair = { id: string };
 
@@ -26,18 +28,34 @@ export class ConnectionPairUseCase
   async execute({
     userId,
   }: ConnectionPairCommand): Promise<TExecuteConnectionPair> {
-    const currentActivePair =
-      await this.pairsQuizRepository.getActiveOrPendingPair(userId);
-
-    if (currentActivePair) {
-      throw ForbiddenDomainException.create();
-    }
-
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
+      const currentActivePair = await queryRunner.manager
+        .createQueryBuilder(PairQuiz, 'pair')
+        .where(
+          new Brackets((qb) => {
+            qb.where({ status: PairQuizStatus.ACTIVE }).orWhere({
+              status: PairQuizStatus.PENDING_SECOND_PLAYER,
+            });
+          }),
+        )
+        .andWhere(
+          new Brackets((qb) => {
+            qb.where({ firstPlayerId: userId }).orWhere({
+              secondPlayerId: userId,
+            });
+          }),
+        )
+        .setLock('pessimistic_write')
+        .getOne();
+
+      if (currentActivePair) {
+        throw ForbiddenDomainException.create();
+      }
+
       const pair = await this.pairsQuizRepository.getPendingPair(queryRunner);
 
       if (!pair) {
