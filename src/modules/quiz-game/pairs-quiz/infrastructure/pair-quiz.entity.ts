@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   ManyToOne,
   OneToMany,
   PrimaryColumn,
@@ -16,6 +17,7 @@ export class PairQuiz {
   @PrimaryColumn()
   id: string;
 
+  @Index()
   @Column({ type: 'enum', enum: PairQuizStatus })
   status: PairQuizStatus;
 
