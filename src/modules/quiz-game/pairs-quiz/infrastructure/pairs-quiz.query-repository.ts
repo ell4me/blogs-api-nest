@@ -54,13 +54,21 @@ export class PairsQuizQueryRepository {
       .leftJoinAndSelect('questions.quizQuestion', 'quizQuestion');
 
     if (!pairId) {
-      builder.where({ status: PairQuizStatus.ACTIVE }).andWhere(
-        new Brackets((qb) => {
-          qb.where({ firstPlayerId: userId }).orWhere({
-            secondPlayerId: userId,
-          });
-        }),
-      );
+      builder
+        .where(
+          new Brackets((qb) => {
+            qb.where({ status: PairQuizStatus.ACTIVE }).orWhere({
+              status: PairQuizStatus.PENDING_SECOND_PLAYER,
+            });
+          }),
+        )
+        .andWhere(
+          new Brackets((qb) => {
+            qb.where({ firstPlayerId: userId }).orWhere({
+              secondPlayerId: userId,
+            });
+          }),
+        );
     } else {
       builder.where('pair.id = :pairId', { pairId });
     }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   ForbiddenException,
@@ -57,6 +58,10 @@ export class PairsQuizController {
     @CurrentUser('id') userId: string,
     @Param('id') pairId: string,
   ): Promise<GamePairQuizViewDto> {
+    if (Number.isNaN(Number(pairId))) {
+      throw new BadRequestException();
+    }
+
     const pair = await this.pairsQuizQueryRepository.getPairById(pairId);
 
     if (!pair) {
