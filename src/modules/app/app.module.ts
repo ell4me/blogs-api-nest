@@ -60,7 +60,7 @@ import { PairsQuizModule } from '../quiz-game/pairs-quiz/pairs-quiz.module';
 
         return {
           type: 'postgres',
-          synchronize: false,
+          synchronize: true,
           autoLoadEntities: true,
           ...ormConfig,
         };
