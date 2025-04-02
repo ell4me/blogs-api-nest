@@ -26,13 +26,10 @@ export class ConnectionPairUseCase
   async execute({
     userId,
   }: ConnectionPairCommand): Promise<TExecuteConnectionPair> {
-    console.error('Forbidden:', { userId });
     const currentActivePair =
       await this.pairsQuizRepository.getActiveOrPendingPair(userId);
-    console.error('403 Forbidden:', { userId, currentActivePair });
 
     if (currentActivePair) {
-      console.error('🚨', { userId, currentActivePair });
       throw ForbiddenDomainException.create();
     }
 

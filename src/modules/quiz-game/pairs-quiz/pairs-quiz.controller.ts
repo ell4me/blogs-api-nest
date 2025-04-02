@@ -82,11 +82,15 @@ export class PairsQuizController {
   @Post('connection')
   async connectToPairQuiz(
     @CurrentUser('id') userId: string,
-  ): Promise<{ id: string }> {
-    return this.commandBus.execute<
+  ): Promise<GamePairQuizViewDto> {
+    const { id } = await this.commandBus.execute<
       ConnectionPairCommand,
       TExecuteConnectionPair
     >(new ConnectionPairCommand(userId));
+
+    const pair = await this.pairsQuizQueryRepository.getPairById(id);
+
+    return pair!;
   }
 
   @HttpCode(HttpStatus.OK)
