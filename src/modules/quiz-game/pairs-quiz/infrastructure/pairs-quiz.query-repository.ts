@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, QueryRunner, Repository } from 'typeorm';
 
 import { PairQuizStatus } from '../pairs-quiz.types';
 import { GamePairQuizViewDto } from '../pairs-quiz.dto';
@@ -23,8 +23,11 @@ export class PairsQuizQueryRepository {
     return this.getPair({ userId });
   }
 
-  async getPairById(pairId: string): Promise<GamePairQuizViewDto | null> {
-    return this.getPair({ pairId });
+  async getPairById(
+    pairId: string,
+    queryRunner?: QueryRunner,
+  ): Promise<GamePairQuizViewDto | null> {
+    return this.getPair({ pairId }, queryRunner);
   }
 
   private mapToAnswerDto({
@@ -39,15 +42,21 @@ export class PairsQuizQueryRepository {
     };
   }
 
-  private async getPair({
-    pairId,
-    userId,
-  }: {
-    userId?: string;
-    pairId?: string;
-  }) {
-    const builder = this.pairsQuizRepository
-      .createQueryBuilder('pair')
+  private async getPair(
+    {
+      pairId,
+      userId,
+    }: {
+      userId?: string;
+      pairId?: string;
+    },
+    queryRunner?: QueryRunner,
+  ) {
+    const builder = queryRunner
+      ? queryRunner.manager.createQueryBuilder(PairQuiz, 'pair')
+      : this.pairsQuizRepository.createQueryBuilder('pair');
+
+    builder
       .leftJoinAndSelect('pair.firstPlayer', 'fp')
       .leftJoinAndSelect('pair.secondPlayer', 'sp')
       .leftJoinAndSelect('pair.questions', 'questions')
@@ -155,7 +164,7 @@ export class PairsQuizQueryRepository {
             score: countSecondPlayer,
           }
         : null,
-      questions: pair.questions
+      questions: pair.questions?.length
         ? pair.questions.map((question) => ({
             id: question.quizQuestion.id,
             body: question.quizQuestion.body,

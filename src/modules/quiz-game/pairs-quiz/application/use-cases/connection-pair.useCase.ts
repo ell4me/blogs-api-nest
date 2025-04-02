@@ -5,8 +5,10 @@ import { PairsQuizRepository } from '../../infrastructure/pairs-quiz.repository'
 import { ForbiddenDomainException } from '../../../../../common/exception/domain-exception';
 import { QuizQuestionsRepository } from '../../../quiz-questions/infrastructure/quiz-questions.repository';
 import { PairsQuizQuestionRepository } from '../../../pairs-quiz-question/infrastructure/pairs-quiz-question.repository';
+import { GamePairQuizViewDto } from '../../pairs-quiz.dto';
+import { PairsQuizQueryRepository } from '../../infrastructure/pairs-quiz.query-repository';
 
-export type TExecuteConnectionPair = { id: string };
+export type TExecuteConnectionPair = GamePairQuizViewDto;
 
 export class ConnectionPairCommand {
   constructor(public userId: string) {}
@@ -20,6 +22,7 @@ export class ConnectionPairUseCase
     private readonly pairsQuizRepository: PairsQuizRepository,
     private readonly quizQuestionsRepository: QuizQuestionsRepository,
     private readonly pairsQuizQuestionRepository: PairsQuizQuestionRepository,
+    private readonly pairsQuizQueryRepository: PairsQuizQueryRepository,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -42,10 +45,13 @@ export class ConnectionPairUseCase
       if (!pair) {
         const pairQuiz = this.pairsQuizRepository.create(userId);
         await queryRunner.manager.save(pairQuiz);
-
+        const response = await this.pairsQuizQueryRepository.getPairById(
+          pairQuiz.id,
+          queryRunner,
+        );
         await queryRunner.commitTransaction();
 
-        return { id: pairQuiz.id };
+        return response!;
       }
 
       const questions =
@@ -59,10 +65,14 @@ export class ConnectionPairUseCase
 
       await queryRunner.manager.save(pairsQuizQuestion);
       await queryRunner.manager.save(pair);
+      const response = await this.pairsQuizQueryRepository.getPairById(
+        pair.id,
+        queryRunner,
+      );
 
       await queryRunner.commitTransaction();
 
-      return { id: pair.id };
+      return response!;
     } catch (e) {
       await queryRunner.rollbackTransaction();
       throw e;
