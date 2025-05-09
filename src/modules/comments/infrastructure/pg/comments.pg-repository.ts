@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult } from 'mongodb';
 import { DataSource } from 'typeorm';
 
 import { NotFoundDomainException } from '../../../../common/exception/domain-exception';
@@ -67,7 +66,7 @@ export class CommentsPgRepository {
     return this.dataSource.query(`DELETE FROM "Comments" WHERE id=$1`, [id]);
   }
 
-  deleteAll(): Promise<DeleteResult> {
-    return this.dataSource.query(`DELETE FROM "Comments"`);
+  async deleteAll(): Promise<void> {
+    await this.dataSource.query(`DELETE FROM "Comments"`);
   }
 }

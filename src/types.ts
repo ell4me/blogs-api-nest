@@ -1,7 +1,7 @@
-import { SortDirection } from 'mongodb';
 import { IsEnum, IsIn, IsInt, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { SortDirection } from 'typeorm';
 
 import { NODE_ENVS } from './constants';
 

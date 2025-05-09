@@ -1,4 +1,3 @@
-import { DeleteResult } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
@@ -44,13 +43,13 @@ export class SecurityDevicesRepository {
   async deleteAllExceptCurrent(
     userId: string,
     deviceId: string,
-  ): Promise<DeleteResult> {
-    return this.SecurityDevicesModel.deleteMany({ userId })
+  ): Promise<void> {
+    await this.SecurityDevicesModel.deleteMany({ userId })
       .where('deviceId')
       .nin([deviceId]);
   }
 
-  deleteAll(): Promise<DeleteResult> {
-    return this.SecurityDevicesModel.deleteMany().exec();
+  async deleteAll(): Promise<void> {
+    await this.SecurityDevicesModel.deleteMany().exec();
   }
 }

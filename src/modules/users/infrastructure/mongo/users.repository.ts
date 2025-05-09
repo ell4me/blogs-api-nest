@@ -1,4 +1,3 @@
-import { DeleteResult } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
@@ -30,8 +29,8 @@ export class UsersRepository {
     return await user.save();
   }
 
-  deleteAll(): Promise<DeleteResult> {
-    return this.UsersModel.deleteMany().exec();
+  async deleteAll(): Promise<void> {
+    await this.UsersModel.deleteMany().exec();
   }
 
   findByEmailOrLogin({

@@ -1,4 +1,3 @@
-import { DeleteResult } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -52,7 +51,7 @@ export class LikesPostRepository {
     return deletedCount === 1;
   }
 
-  deleteAll(): Promise<DeleteResult> {
-    return this.LikesPostModel.deleteMany().exec();
+  async deleteAll(): Promise<void> {
+    await this.LikesPostModel.deleteMany().exec();
   }
 }

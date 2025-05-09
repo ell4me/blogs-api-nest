@@ -1,6 +1,6 @@
-import { DeleteResult, ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
+import { Types } from 'mongoose';
 
 import { BlogUpdateDto, BlogViewDto } from '../../blogs.dto';
 import { BlogCreate } from '../../blogs.types';
@@ -29,7 +29,7 @@ export class BlogsRepository {
     return blog;
   }
 
-  async create(createdBlog: BlogCreate): Promise<ObjectId> {
+  async create(createdBlog: BlogCreate): Promise<Types.ObjectId> {
     const { _id } = await this.BlogsModel.create(createdBlog);
 
     return _id;
@@ -49,7 +49,7 @@ export class BlogsRepository {
     return true;
   }
 
-  deleteAll(): Promise<DeleteResult> {
-    return this.BlogsModel.deleteMany().exec();
+  async deleteAll(): Promise<void> {
+    await this.BlogsModel.deleteMany().exec();
   }
 }

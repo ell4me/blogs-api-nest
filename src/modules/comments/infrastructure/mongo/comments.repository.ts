@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DeleteResult } from 'mongodb';
 
 import { NotFoundDomainException } from '../../../../common/exception/domain-exception';
 import { CommentCreateDto } from '../../comments.dto';
@@ -51,7 +50,7 @@ export class CommentsRepository {
     return result.deletedCount === 1;
   }
 
-  deleteAll(): Promise<DeleteResult> {
-    return this.CommentsModel.deleteMany().exec();
+  async deleteAll(): Promise<void> {
+    await this.CommentsModel.deleteMany().exec();
   }
 }
