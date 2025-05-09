@@ -1,19 +1,8 @@
 import { STATUSES_LIKE } from '../../constants';
 
-export interface ExtendedLikesInfo {
-  likesCount: number;
-  dislikesCount: number;
-  myStatus: STATUSES_LIKE;
-  newestLikes: NewestLikeInfo[];
-}
+import { NewestLikeInfoViewDto } from './likes-post.dto';
 
-export interface NewestLikeInfo {
-  addedAt: Date;
-  userId: string;
-  login: string;
-}
-
-export interface LikesInfo extends NewestLikeInfo {
+export interface LikesInfo extends NewestLikeInfoViewDto {
   postId: string;
 }
 

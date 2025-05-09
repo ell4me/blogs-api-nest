@@ -2,16 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import {
-  ItemsPaginationViewDto,
-  PostQueries,
-  TSortDirection,
-} from '../../../../types';
+import { PostQueries, TSortDirection } from '../../../../types';
 import { PostRawViewDto, PostViewDto } from '../../posts.dto';
 import { STATUSES_LIKE } from '../../../../constants';
 import { LikesPost } from '../../../likes-post/infrastructure/orm/likes-post.entity';
-import { NewestLikeInfo } from '../../../likes-post/likes-post.types';
 import { LikesPostOrmQueryRepository } from '../../../likes-post/infrastructure/orm/likes-post.orm-query-repository';
+import { NewestLikeInfoViewDto } from '../../../likes-post/likes-post.dto';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { Post } from './post.entity';
 
@@ -32,7 +29,7 @@ export class PostsOrmQueryRepository {
     }: PostQueries,
     userId?: string,
     additionalFilter?: { blogId?: string },
-  ): Promise<ItemsPaginationViewDto<PostViewDto>> {
+  ): Promise<PaginationViewDto<PostViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
     const sortByQuery =
       sortBy === 'blogName' ? `blogs."name"` : `posts."${sortBy}"`;
@@ -55,10 +52,11 @@ export class PostsOrmQueryRepository {
 
     const posts = await builder.getRawMany<PostRawViewDto>();
     const postsCountByFilter = await this.getCount(additionalFilter);
-    const newestLikes =
-      await this.likesPostQueryRepository.getNewestLikesByPostsId(
-        posts.map(({ id }) => id),
-      );
+    const newestLikes = posts.length
+      ? await this.likesPostQueryRepository.getNewestLikesByPostsId(
+          posts.map(({ id }) => id),
+        )
+      : [];
 
     return {
       page: pageNumber,
@@ -97,7 +95,7 @@ export class PostsOrmQueryRepository {
 
   private mapToPostViewDto(
     post: PostRawViewDto,
-    newestLikes?: NewestLikeInfo[],
+    newestLikes?: NewestLikeInfoViewDto[],
   ): PostViewDto {
     return {
       id: post.id,

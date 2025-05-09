@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { DomainException, DomainExceptionCode } from '../domain-exception';
-import { ValidationErrorViewDto } from '../../../types';
+import { ValidationErrorViewDto } from '../../dto/validation-error-view.dto';
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {

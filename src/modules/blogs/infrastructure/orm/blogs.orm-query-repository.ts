@@ -2,12 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import {
-  BlogQueries,
-  ItemsPaginationViewDto,
-  TSortDirection,
-} from '../../../../types';
+import { BlogQueries, TSortDirection } from '../../../../types';
 import { BlogViewDto } from '../../blogs.dto';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { Blog } from './blog.entity';
 
@@ -23,7 +20,7 @@ export class BlogsOrmQueryRepository {
     sortBy,
     sortDirection,
     searchNameTerm,
-  }: BlogQueries): Promise<ItemsPaginationViewDto<BlogViewDto>> {
+  }: BlogQueries): Promise<PaginationViewDto<BlogViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
 
     const blogs = await this.blogsRepository

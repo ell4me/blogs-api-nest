@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { PostQueries, ItemsPaginationViewDto } from '../../../../types';
-import { PostViewDto } from '../../posts.dto';
+import { PostQueries } from '../../../../types';
 import { LikesPostPgQueryRepository } from '../../../likes-post/infrastructure/pg/likes-post.pg-query-repository';
+import { PostViewDto } from '../../posts.dto';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { PostEntity } from './posts.entity';
 
@@ -24,7 +25,7 @@ export class PostsPgQueryRepository {
     }: PostQueries,
     userId?: string,
     additionalFilter?: { blogId?: string },
-  ): Promise<ItemsPaginationViewDto<PostViewDto>> {
+  ): Promise<PaginationViewDto<PostViewDto>> {
     const blogId = additionalFilter?.blogId || '';
     const offset = (pageNumber - 1) * pageSize;
     const sortByQuery = sortBy === 'blogName' ? `"${sortBy}"` : `p."${sortBy}"`;

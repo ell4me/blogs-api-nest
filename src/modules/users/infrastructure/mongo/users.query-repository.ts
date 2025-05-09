@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { UserQueries, ItemsPaginationViewDto } from '../../../../types';
-import { CurrentUserViewDto } from '../../../../common/dto/currentUserView.dto';
+import { UserQueries } from '../../../../types';
+import { CurrentUserViewDto } from '../../../../common/dto/current-user-view.dto';
 import { getUsersFilterRepository } from '../../helpers/getUsersFilterRepository';
 import { UserViewDto } from '../../users.dto';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { TUserModel, User } from './users.model';
 
@@ -21,7 +22,7 @@ export class UsersQueryRepository {
     sortDirection,
     searchLoginTerm,
     searchEmailTerm,
-  }: UserQueries): Promise<ItemsPaginationViewDto<UserViewDto>> {
+  }: UserQueries): Promise<PaginationViewDto<UserViewDto>> {
     const filterOr = getUsersFilterRepository(searchLoginTerm, searchEmailTerm);
     const users = await this.UsersModel.find()
       .or(filterOr)

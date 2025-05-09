@@ -15,7 +15,8 @@ import { CommandBus } from '@nestjs/cqrs';
 
 import { ROUTERS_PATH } from '../../../constants';
 import { BasicAuthGuard } from '../../../common/guards/basic-auth.guard';
-import { ItemsPaginationViewDto, QuizQuestionsQueries } from '../../../types';
+import { QuizQuestionsQueries } from '../../../types';
+import { PaginationViewDto } from '../../../common/dto/pagination-view.dto';
 
 import {
   QuizQuestionCreateDto,
@@ -52,7 +53,7 @@ export class QuizQuestionsController {
   @Get()
   getAllQuestions(
     @Query() queries: QuizQuestionsQueries,
-  ): Promise<ItemsPaginationViewDto<QuizQuestionViewDto>> {
+  ): Promise<PaginationViewDto<QuizQuestionViewDto>> {
     return this.quizQuestionsQueryRepository.getAll(queries);
   }
 

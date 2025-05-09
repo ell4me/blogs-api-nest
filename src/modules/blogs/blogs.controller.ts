@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { BlogQueries, PostQueries, ItemsPaginationViewDto } from '../../types';
+import { BlogQueries, PostQueries } from '../../types';
 import { PostCreateDto, PostUpdateDto, PostViewDto } from '../posts/posts.dto';
 import { ROUTERS_PATH } from '../../constants';
 import {
@@ -34,6 +34,7 @@ import {
   TExecuteDeletePost,
 } from '../posts/application/use-cases/delete-post.useCase';
 import { PostsOrmQueryRepository } from '../posts/infrastructure/orm/posts.orm-query-repository';
+import { PaginationViewDto } from '../../common/dto/pagination-view.dto';
 
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 import {
@@ -62,7 +63,7 @@ export class BlogsController {
   @Get([ROUTERS_PATH.BLOGS, ROUTERS_PATH.SA_BLOGS])
   async getAllBlogs(
     @Query() queries: BlogQueries,
-  ): Promise<ItemsPaginationViewDto<BlogViewDto>> {
+  ): Promise<PaginationViewDto<BlogViewDto>> {
     return await this.blogsQueryRepository.getAll(queries);
   }
 
@@ -87,7 +88,7 @@ export class BlogsController {
     @Query() queries: PostQueries,
     @CurrentUser('id') userId: string,
     @Param('id') id: string,
-  ): Promise<ItemsPaginationViewDto<PostViewDto>> {
+  ): Promise<PaginationViewDto<PostViewDto>> {
     const blog = await this.blogsQueryRepository.getById(id);
 
     if (!blog) {

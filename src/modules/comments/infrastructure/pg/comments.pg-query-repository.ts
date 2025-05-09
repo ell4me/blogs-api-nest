@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { CommentQueries, ItemsPaginationViewDto } from '../../../../types';
+import { CommentQueries } from '../../../../types';
 import { CommentViewDto } from '../../comments.dto';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { CommentEntity } from './comments.entity';
 
@@ -14,7 +15,7 @@ export class CommentsPgQueryRepository {
     postId: string,
     { pageSize, pageNumber, sortBy, sortDirection }: CommentQueries,
     userId?: string,
-  ): Promise<ItemsPaginationViewDto<CommentViewDto>> {
+  ): Promise<PaginationViewDto<CommentViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
     const comments: CommentEntity[] = await this.dataSource.query(
       `

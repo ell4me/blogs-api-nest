@@ -2,14 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import {
-  CommentQueries,
-  ItemsPaginationViewDto,
-  TSortDirection,
-} from '../../../../types';
+import { CommentQueries, TSortDirection } from '../../../../types';
 import { CommentRawViewDto, CommentViewDto } from '../../comments.dto';
 import { STATUSES_LIKE } from '../../../../constants';
 import { LikesComment } from '../../../likes-comment/infrastructure/orm/like-comment.entity';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { Comment } from './comment.entity';
 
@@ -24,7 +21,7 @@ export class CommentsOrmQueryRepository {
     postId: string,
     { pageSize, pageNumber, sortBy, sortDirection }: CommentQueries,
     userId?: string,
-  ): Promise<ItemsPaginationViewDto<CommentViewDto>> {
+  ): Promise<PaginationViewDto<CommentViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
 
     const comments = await this.getCommentBuilder(userId)

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { PostQueries, ItemsPaginationViewDto } from '../../../../types';
-import { PostViewDto } from '../../posts.dto';
+import { PostQueries } from '../../../../types';
 import { LikesPostQueryRepository } from '../../../likes-post/infrastructure/mongo/likes-post.query-repository';
+import { PostViewDto } from '../../posts.dto';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { Post, TPostModel } from './posts.model';
 
@@ -24,7 +25,7 @@ export class PostsQueryRepository {
     }: PostQueries,
     userId?: string,
     additionalFilter?: { blogId?: string },
-  ): Promise<ItemsPaginationViewDto<PostViewDto>> {
+  ): Promise<PaginationViewDto<PostViewDto>> {
     const postsQuery = this.PostsModel.find();
 
     if (searchNameTerm) {

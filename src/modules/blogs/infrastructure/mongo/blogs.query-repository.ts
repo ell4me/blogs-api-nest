@@ -1,8 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
-import { BlogQueries, ItemsPaginationViewDto } from '../../../../types';
+import { BlogQueries } from '../../../../types';
 import { BlogViewDto } from '../../blogs.dto';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { Blog, TBlogModel } from './blogs.model';
 
@@ -18,7 +19,7 @@ export class BlogsQueryRepository {
     sortBy,
     sortDirection,
     searchNameTerm,
-  }: BlogQueries): Promise<ItemsPaginationViewDto<BlogViewDto>> {
+  }: BlogQueries): Promise<PaginationViewDto<BlogViewDto>> {
     const blogsQuery = this.BlogsModel.find();
     if (searchNameTerm) {
       blogsQuery.where('name').regex(new RegExp(searchNameTerm, 'i'));

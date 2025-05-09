@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { LikesInfo, NewestLikeInfo } from '../../likes-post.types';
+import { LikesInfo } from '../../likes-post.types';
 import { STATUSES_LIKE } from '../../../../constants';
+import { NewestLikeInfoViewDto } from '../../likes-post.dto';
 
 import { LikesPost } from './likes-post.entity';
 
@@ -15,7 +16,7 @@ export class LikesPostOrmQueryRepository {
     private readonly dataSource: DataSource,
   ) {}
 
-  getNewestLikesByPostId(postId: string): Promise<NewestLikeInfo[]> {
+  getNewestLikesByPostId(postId: string): Promise<NewestLikeInfoViewDto[]> {
     return this.likesPostRepository
       .createQueryBuilder('lp')
       .select(['lp."userId"', 'lp."updatedAt" as "addedAt"', 'u."login"'])
@@ -26,12 +27,12 @@ export class LikesPostOrmQueryRepository {
       })
       .orderBy('lp."updatedAt"', 'DESC')
       .limit(3)
-      .getRawMany<NewestLikeInfo>();
+      .getRawMany<NewestLikeInfoViewDto>();
   }
 
   async getNewestLikesByPostsId<T extends string>(
     postIds: T[],
-  ): Promise<Record<T, NewestLikeInfo[]>> {
+  ): Promise<Record<T, NewestLikeInfoViewDto[]>> {
     console.log(postIds, 'postIds');
     const builder = this.dataSource
       .createQueryBuilder()
@@ -58,9 +59,9 @@ export class LikesPostOrmQueryRepository {
 
     const result = await builder.getRawMany<LikesInfo>();
 
-    const likesInfo: Record<T, NewestLikeInfo[]> = {} as Record<
+    const likesInfo: Record<T, NewestLikeInfoViewDto[]> = {} as Record<
       string,
-      NewestLikeInfo[]
+      NewestLikeInfoViewDto[]
     >;
 
     result.forEach(({ userId, login, addedAt, postId }) => {

@@ -3,12 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import {
-  ItemsPaginationViewDto,
   PublishedStatus,
   QuizQuestionsQueries,
   TSortDirection,
 } from '../../../../types';
 import { QuizQuestionViewDto } from '../quiz-questions.dto';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { QuizQuestion } from './quiz-question.entity';
 
@@ -26,9 +26,7 @@ export class QuizQuestionsQueryRepository {
     pageSize,
     sortBy,
     sortDirection,
-  }: QuizQuestionsQueries): Promise<
-    ItemsPaginationViewDto<QuizQuestionViewDto>
-  > {
+  }: QuizQuestionsQueries): Promise<PaginationViewDto<QuizQuestionViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
     const queryBuilder = this.quizQuestionRepository
       .createQueryBuilder()

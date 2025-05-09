@@ -5,7 +5,7 @@ import { STATUSES_LIKE } from '../../constants';
 
 import { CommentatorInfo } from './infrastructure/mongo/comments.model';
 
-export interface CommentViewDto {
+export class CommentViewDto {
   id: string;
   content: string;
   commentatorInfo: CommentatorInfo;
@@ -13,7 +13,7 @@ export interface CommentViewDto {
   likesInfo: LikesInfoDto;
 }
 
-export interface LikesInfoDto {
+export class LikesInfoDto {
   likesCount: number;
   dislikesCount: number;
   myStatus: STATUSES_LIKE;

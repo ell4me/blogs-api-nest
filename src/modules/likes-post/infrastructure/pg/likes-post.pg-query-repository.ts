@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { LikesInfo, NewestLikeInfo } from '../../likes-post.types';
+import { LikesInfo } from '../../likes-post.types';
+import { NewestLikeInfoViewDto } from '../../likes-post.dto';
 
 @Injectable()
 export class LikesPostPgQueryRepository {
   constructor(private readonly dataSource: DataSource) {}
 
-  getNewestLikesByPostId(postId: string): Promise<NewestLikeInfo[]> {
+  getNewestLikesByPostId(postId: string): Promise<NewestLikeInfoViewDto[]> {
     return this.dataSource.query(
       `
       SELECT lp."userId", lp."updatedAt" as "addedAt", u."login" FROM "LikesPost" AS lp
@@ -23,7 +24,7 @@ export class LikesPostPgQueryRepository {
 
   async getNewestLikesByPostsId<T extends string>(
     postIds: T[],
-  ): Promise<Record<T, NewestLikeInfo[]>> {
+  ): Promise<Record<T, NewestLikeInfoViewDto[]>> {
     const postIdsIn = postIds.join("','");
     const result: LikesInfo[] = await this.dataSource.query(
       `
@@ -38,9 +39,9 @@ export class LikesPostPgQueryRepository {
     `,
     );
 
-    const likesInfo: Record<T, NewestLikeInfo[]> = {} as Record<
+    const likesInfo: Record<T, NewestLikeInfoViewDto[]> = {} as Record<
       string,
-      NewestLikeInfo[]
+      NewestLikeInfoViewDto[]
     >;
 
     result.forEach(({ userId, login, addedAt, postId }) => {

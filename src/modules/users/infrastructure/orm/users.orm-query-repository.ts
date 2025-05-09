@@ -2,13 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import {
-  UserQueries,
-  ItemsPaginationViewDto,
-  TSortDirection,
-} from '../../../../types';
+import { UserQueries, TSortDirection } from '../../../../types';
 import { UserViewDto } from '../../users.dto';
-import { CurrentUserViewDto } from '../../../../common/dto/currentUserView.dto';
+import { CurrentUserViewDto } from '../../../../common/dto/current-user-view.dto';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { User } from './user.entity';
 import { IUsersQueryRepository } from './interfaces';
@@ -27,7 +24,7 @@ export class UsersOrmQueryRepository implements IUsersQueryRepository {
     sortDirection,
     searchLoginTerm,
     searchEmailTerm,
-  }: UserQueries): Promise<ItemsPaginationViewDto<UserViewDto>> {
+  }: UserQueries): Promise<PaginationViewDto<UserViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
 
     const builder = this.usersRepository

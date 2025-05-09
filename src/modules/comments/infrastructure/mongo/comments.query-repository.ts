@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { ItemsPaginationViewDto, PaginationQueries } from '../../../../types';
+import { PaginationQueries } from '../../../../types';
 import { CommentViewDto, LikesInfoDto } from '../../comments.dto';
 import { STATUSES_LIKE } from '../../../../constants';
+import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { Comment, LikesInfo, TCommentModel } from './comments.model';
 
@@ -17,7 +18,7 @@ export class CommentsQueryRepository {
     postId: string,
     { pageSize, pageNumber, sortBy, sortDirection }: PaginationQueries,
     userId?: string,
-  ): Promise<ItemsPaginationViewDto<CommentViewDto>> {
+  ): Promise<PaginationViewDto<CommentViewDto>> {
     const comments: Comment[] = await this.CommentsModel.find({ postId })
       .skip((pageNumber - 1) * pageSize)
       .sort({ [sortBy]: sortDirection })

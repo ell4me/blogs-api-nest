@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { STATUSES_LIKE } from '../../../../constants';
-import { ExtendedLikesInfo } from '../../likes-post.types';
+import { ExtendedLikesInfoViewDto } from '../../likes-post.dto';
 
 import {
   LikesPost,
@@ -20,7 +20,7 @@ export class LikesPostQueryRepository {
   async getByPostId(
     postId: string,
     userId?: string,
-  ): Promise<ExtendedLikesInfo> {
+  ): Promise<ExtendedLikesInfoViewDto> {
     const likes: LikesPost[] = await this.LikesPostModel.find({ postId })
       .where('status', STATUSES_LIKE.LIKE)
       .limit(3)
@@ -63,14 +63,14 @@ export class LikesPostQueryRepository {
   async getByPostIds(
     postIds: string[],
     userId?: string,
-  ): Promise<Record<string, ExtendedLikesInfo>> {
+  ): Promise<Record<string, ExtendedLikesInfoViewDto>> {
     const likes: LikesPost[] = await this.LikesPostModel.find()
       .where('postId')
       .in(postIds)
       .sort({ createdAt: -1 })
       .lean();
 
-    const extendedLikesInfo: Record<string, ExtendedLikesInfo> = {};
+    const extendedLikesInfo: Record<string, ExtendedLikesInfoViewDto> = {};
 
     postIds.forEach((postId) => {
       extendedLikesInfo[postId] = {

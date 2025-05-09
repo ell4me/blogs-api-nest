@@ -12,9 +12,10 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { UserQueries, ItemsPaginationViewDto } from '../../types';
+import { UserQueries } from '../../types';
 import { ROUTERS_PATH } from '../../constants';
 import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
+import { PaginationViewDto } from '../../common/dto/pagination-view.dto';
 
 import { UserCreateDto, UserViewDto } from './users.dto';
 import {
@@ -38,7 +39,7 @@ export class UsersController {
   @Get()
   async getAllUsers(
     @Query() queries: UserQueries,
-  ): Promise<ItemsPaginationViewDto<UserViewDto>> {
+  ): Promise<PaginationViewDto<UserViewDto>> {
     return this.usersQueryRepository.getAll(queries);
   }
 
