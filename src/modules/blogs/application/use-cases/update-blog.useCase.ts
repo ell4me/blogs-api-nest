@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { BlogUpdateDto } from '../../blogs.dto';
+import { BlogUpdateDto } from '../../api/blogs.dto';
 import { BlogsOrmRepository } from '../../infrastructure/orm/blogs.orm-repository';
 import { NotFoundDomainException } from '../../../../common/exception/domain-exception';
 

@@ -33,7 +33,6 @@ export class LikesPostOrmQueryRepository {
   async getNewestLikesByPostsId<T extends string>(
     postIds: T[],
   ): Promise<Record<T, NewestLikeInfoViewDto[]>> {
-    console.log(postIds, 'postIds');
     const builder = this.dataSource
       .createQueryBuilder()
       .select('*')

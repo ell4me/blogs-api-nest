@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { BlogQueries, TSortDirection } from '../../../../types';
-import { BlogViewDto } from '../../blogs.dto';
+import { BlogViewDto } from '../../api/blogs.dto';
 import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { Blog } from './blog.entity';

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { PostCreateByBlogIdDto } from '../../posts.dto';
+import { PostCreateByBlogIdDto } from '../../api/posts.dto';
 import { NotFoundDomainException } from '../../../../common/exception/domain-exception';
 
 import { Post, PostDocument, TPostModel } from './posts.model';

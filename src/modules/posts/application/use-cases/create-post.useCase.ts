@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { PostCreateByBlogIdDto } from '../../posts.dto';
+import { PostCreateByBlogIdDto } from '../../api/posts.dto';
 import { PostsOrmRepository } from '../../infrastructure/orm/posts.orm-repository';
 
 export type TExecuteCreatePost = { id: string };

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 
 import { NotFoundDomainException } from '../../../../common/exception/domain-exception';
-import { BlogCreateDto } from '../../blogs.dto';
+import { BlogCreateDto } from '../../api/blogs.dto';
 
 import { Blog } from './blog.entity';
 

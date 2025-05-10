@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { PostQueries } from '../../../../types';
 import { LikesPostQueryRepository } from '../../../likes-post/infrastructure/mongo/likes-post.query-repository';
-import { PostViewDto } from '../../posts.dto';
+import { PostViewDto } from '../../api/posts.dto';
 import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { Post, TPostModel } from './posts.model';

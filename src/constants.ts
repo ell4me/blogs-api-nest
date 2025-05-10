@@ -1,4 +1,6 @@
 // In seconds
+import { registerEnumType } from '@nestjs/graphql';
+
 export const EXPIRATION_TOKEN = {
   ACCESS: 1000,
   REFRESH: 20,
@@ -38,6 +40,11 @@ export enum STATUSES_LIKE {
   LIKE = 'Like',
   DISLIKE = 'Dislike',
 }
+
+registerEnumType(STATUSES_LIKE, {
+  name: 'STATUSES_LIKE', // это будет имя типа в GraphQL
+  description: 'Like status: None, Like, Dislike',
+});
 
 export const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken';
 

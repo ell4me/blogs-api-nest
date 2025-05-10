@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 import { DateTimestampEntity } from '../../../../common/helpers/date-timestamp';
-import { PostCreateByBlogIdDto, PostUpdateDto } from '../../posts.dto';
+import { PostCreateByBlogIdDto, PostUpdateDto } from '../../api/posts.dto';
 import { Blog } from '../../../blogs/infrastructure/orm/blog.entity';
 import { Comment } from '../../../comments/infrastructure/orm/comment.entity';
 import { LikesPost } from '../../../likes-post/infrastructure/orm/likes-post.entity';

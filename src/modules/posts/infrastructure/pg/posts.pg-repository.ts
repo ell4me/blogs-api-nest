@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { PostCreateByBlogIdDto } from '../../posts.dto';
+import { PostCreateByBlogIdDto } from '../../api/posts.dto';
 import { NotFoundDomainException } from '../../../../common/exception/domain-exception';
 
 import { PostEntity } from './posts.entity';

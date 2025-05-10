@@ -3,7 +3,7 @@ import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { PostQueries, TSortDirection } from '../../../../types';
-import { PostRawViewDto, PostViewDto } from '../../posts.dto';
+import { PostRawViewDto, PostViewDto } from '../../api/posts.dto';
 import { STATUSES_LIKE } from '../../../../constants';
 import { LikesPost } from '../../../likes-post/infrastructure/orm/likes-post.entity';
 import { LikesPostOrmQueryRepository } from '../../../likes-post/infrastructure/orm/likes-post.orm-query-repository';
@@ -45,7 +45,7 @@ export class PostsOrmQueryRepository {
       .offset(offset);
 
     if (additionalFilter?.blogId) {
-      builder.andWhere('posts."blogId" like  :blogId', {
+      builder.andWhere('posts."blogId" = :blogId', {
         blogId: additionalFilter?.blogId,
       });
     }
@@ -69,9 +69,17 @@ export class PostsOrmQueryRepository {
     };
   }
 
-  async getById(postId: string, userId?: string): Promise<PostViewDto | null> {
+  async getById({
+    postId,
+    userId,
+  }: {
+    postId: string;
+    userId?: string;
+  }): Promise<PostViewDto | null> {
     const post = await this.getPostBuilder(userId)
-      .where('posts.id = :postId', { postId })
+      .where('posts.id = :postId', {
+        postId,
+      })
       .getRawOne<PostRawViewDto>();
 
     if (!post) {

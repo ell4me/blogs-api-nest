@@ -2,7 +2,7 @@ import {
   DateTimestamp,
   TEntityWithoutDate,
 } from '../../../../common/helpers/date-timestamp';
-import { PostCreateByBlogIdDto, PostUpdateDto } from '../../posts.dto';
+import { PostCreateByBlogIdDto, PostUpdateDto } from '../../api/posts.dto';
 import { STATUSES_LIKE } from '../../../../constants';
 
 interface PostEntityInstanceMethods {
