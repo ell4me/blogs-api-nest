@@ -2,7 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
 
-import { BlogUpdateDto, BlogViewDto } from '../../blogs.dto';
+import { BlogUpdateDto, BlogViewDto } from '../../api/blogs.dto';
 import { BlogCreate } from '../../blogs.types';
 import { NotFoundDomainException } from '../../../../common/exception/domain-exception';
 

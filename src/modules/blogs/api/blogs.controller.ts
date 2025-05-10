@@ -14,42 +14,46 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { BlogQueries, PostQueries } from '../../types';
-import { PostCreateDto, PostUpdateDto, PostViewDto } from '../posts/posts.dto';
-import { ROUTERS_PATH } from '../../constants';
+import { BlogQueries, PostQueries } from '../../../types';
+import {
+  PostCreateDto,
+  PostUpdateDto,
+  PostViewDto,
+} from '../../posts/api/posts.dto';
+import { ROUTERS_PATH } from '../../../constants';
 import {
   CreatePostCommand,
   TExecuteCreatePost,
-} from '../posts/application/use-cases/create-post.useCase';
-import { Public } from '../../common/decorators/public.decorator';
-import { AccessTokenGuard } from '../../common/guards/access-token.guard';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { BasicAuthGuard } from '../../common/guards/basic-auth.guard';
+} from '../../posts/application/use-cases/create-post.useCase';
+import { Public } from '../../../common/decorators/public.decorator';
+import { AccessTokenGuard } from '../../../common/guards/access-token.guard';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator';
+import { BasicAuthGuard } from '../../../common/guards/basic-auth.guard';
 import {
   TExecuteUpdatePostById,
   UpdatePostByIdCommand,
-} from '../posts/application/use-cases/update-post.useCase';
+} from '../../posts/application/use-cases/update-post.useCase';
 import {
   DeletePostCommand,
   TExecuteDeletePost,
-} from '../posts/application/use-cases/delete-post.useCase';
-import { PostsOrmQueryRepository } from '../posts/infrastructure/orm/posts.orm-query-repository';
-import { PaginationViewDto } from '../../common/dto/pagination-view.dto';
-
-import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
+} from '../../posts/application/use-cases/delete-post.useCase';
+import { PostsOrmQueryRepository } from '../../posts/infrastructure/orm/posts.orm-query-repository';
+import { PaginationViewDto } from '../../../common/dto/pagination-view.dto';
 import {
   DeleteBlogCommand,
   TExecuteDeleteBlog,
-} from './application/use-cases/delete-blog.useCase';
+} from '../application/use-cases/delete-blog.useCase';
 import {
   TExecuteUpdateBlog,
   UpdateBlogCommand,
-} from './application/use-cases/update-blog.useCase';
+} from '../application/use-cases/update-blog.useCase';
 import {
   CreateBlogCommand,
   TExecuteCreateBlog,
-} from './application/use-cases/create-blog.useCase';
-import { BlogsOrmQueryRepository } from './infrastructure/orm/blogs.orm-query-repository';
+} from '../application/use-cases/create-blog.useCase';
+import { BlogsOrmQueryRepository } from '../infrastructure/orm/blogs.orm-query-repository';
+
+import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 
 @UseGuards(BasicAuthGuard)
 @Controller()
@@ -109,7 +113,7 @@ export class BlogsController {
       TExecuteCreateBlog
     >(new CreateBlogCommand(blogCreateDto));
 
-    return await this.blogsQueryRepository.getById(id);
+    return this.blogsQueryRepository.getById(id);
   }
 
   @Post(`${ROUTERS_PATH.SA_BLOGS}/:blogId/posts`)
@@ -133,7 +137,7 @@ export class BlogsController {
       }),
     );
 
-    return await this.postsQueryRepository.getById(id);
+    return await this.postsQueryRepository.getById({ postId: id });
   }
 
   @Put(`${ROUTERS_PATH.SA_BLOGS}/:id`)

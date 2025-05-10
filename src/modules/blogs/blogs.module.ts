@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { PostsModule } from '../posts/posts.module';
 
-import { BlogsController } from './blogs.controller';
+import { BlogsController } from './api/blogs.controller';
 import { BlogsQueryRepository } from './infrastructure/mongo/blogs.query-repository';
 import { BlogsRepository } from './infrastructure/mongo/blogs.repository';
 import { Blog, BlogsSchema } from './infrastructure/mongo/blogs.model';
@@ -16,8 +16,10 @@ import { BlogsPgQueryRepository } from './infrastructure/pg/blogs.pg-query-repos
 import { BlogsPgRepository } from './infrastructure/pg/blogs.pg-repository';
 import { BlogsOrmQueryRepository } from './infrastructure/orm/blogs.orm-query-repository';
 import { BlogsOrmRepository } from './infrastructure/orm/blogs.orm-repository';
+import { BlogsResolver } from './api/graphql/blogs.resolver';
 
 const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
+const resolvers = [BlogsResolver];
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
     BlogsOrmRepository,
     BlogsOrmQueryRepository,
     ...useCases,
+    ...resolvers,
   ],
   exports: [BlogsRepository, BlogsPgRepository, BlogsOrmRepository],
 })

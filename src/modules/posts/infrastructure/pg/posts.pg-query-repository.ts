@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 
 import { PostQueries } from '../../../../types';
 import { LikesPostPgQueryRepository } from '../../../likes-post/infrastructure/pg/likes-post.pg-query-repository';
-import { PostViewDto } from '../../posts.dto';
+import { PostViewDto } from '../../api/posts.dto';
 import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
 
 import { PostEntity } from './posts.entity';

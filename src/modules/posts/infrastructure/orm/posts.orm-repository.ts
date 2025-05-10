@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 
-import { PostCreateByBlogIdDto } from '../../posts.dto';
+import { PostCreateByBlogIdDto } from '../../api/posts.dto';
 import { NotFoundDomainException } from '../../../../common/exception/domain-exception';
 
 import { Post } from './post.entity';

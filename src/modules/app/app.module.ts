@@ -4,6 +4,12 @@ import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { seconds, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { GraphQLModule } from '@nestjs/graphql';
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from '@apollo/server/plugin/landingPage/default';
 
 import { UsersModule } from '../users/users.module';
 import { PostsModule } from '../posts/posts.module';
@@ -75,6 +81,21 @@ import { PairsQuizModule } from '../quiz-game/pairs-quiz/pairs-quiz.module';
           limit: config.numberRateLimit,
         },
       ],
+      inject: [CommonConfig],
+    }),
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      imports: [CommonConfigModule],
+      driver: ApolloDriver,
+      useFactory: (config: CommonConfig) => ({
+        autoSchemaFile: true,
+        sortSchema: true,
+        playground: false,
+        plugins: [
+          config.nodeEnv === 'production'
+            ? ApolloServerPluginLandingPageProductionDefault()
+            : ApolloServerPluginLandingPageLocalDefault(),
+        ],
+      }),
       inject: [CommonConfig],
     }),
     UsersModule,

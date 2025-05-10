@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { PostUpdateDto } from '../../posts.dto';
+import { PostUpdateDto } from '../../api/posts.dto';
 import { PostsOrmRepository } from '../../infrastructure/orm/posts.orm-repository';
 
 export type TExecuteUpdatePostById = void;

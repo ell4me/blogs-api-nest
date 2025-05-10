@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommentsModule } from '../comments/comments.module';
 import { LikesPostModule } from '../likes-post/likes-post.module';
 
-import { PostsController } from './posts.controller';
+import { PostsController } from './api/posts.controller';
 import { Post, PostsSchema } from './infrastructure/mongo/posts.model';
 import { Post as PostEntity } from './infrastructure/orm/post.entity';
 import { PostsQueryRepository } from './infrastructure/mongo/posts.query-repository';

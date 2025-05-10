@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { STATUSES_LIKE } from '../../constants';
-import { ExtendedLikesInfoViewDto } from '../likes-post/likes-post.dto';
+import { STATUSES_LIKE } from '../../../constants';
+import { ExtendedLikesInfoViewDto } from '../../likes-post/likes-post.dto';
 
 export interface PostRawViewDto {
   id: string;
@@ -15,6 +15,17 @@ export interface PostRawViewDto {
   likesCount: number;
   dislikesCount: number;
   currentLikeStatusUser: STATUSES_LIKE;
+}
+
+export class PostViewDto {
+  id: string;
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+  blogName: string;
+  createdAt: Date;
+  extendedLikesInfo: ExtendedLikesInfoViewDto;
 }
 
 export class PostCreateByBlogIdDto {
@@ -71,15 +82,4 @@ export class PostUpdateDto {
   @Transform(({ value }) => value?.trim())
   @Length(1, 1000)
   content: string;
-}
-
-export class PostViewDto {
-  id: string;
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
-  blogName: string;
-  createdAt: Date;
-  extendedLikesInfo: ExtendedLikesInfoViewDto;
 }
