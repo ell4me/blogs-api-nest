@@ -1,0 +1,18 @@
+filebeat.inputs:
+  - type: container
+    enabled: true
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    processors:
+      - drop_event:
+          when:
+            contains:
+              container.name: "pg"
+      - add_docker_metadata: ~
+    json.keys_under_root: true # Добавляет поля из JSON сразу в корень события
+    json.add_error_key: true # Если не удастся распарсить JSON — добавляет ошибку
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+
+# нельзя добавлять два output, поэтому 2 разных конфига один напрямую пишет в elastic, другой в logstash

@@ -1,0 +1,20 @@
+filebeat.inputs:
+  - type: filestream
+    enabled: true
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    parsers:
+      - ndjson:
+          keys_under_root: true # Добавляет поля из JSON сразу в корень события
+          add_error_key: true # Если не удастся распарсить JSON — добавляет ошибку
+          message_key: log  # так как docker хранит логи в поле log, это нужно указать "log"
+    processors:
+      - drop_event:
+          when.not.contains:
+            container.name: "pg"
+      - add_docker_metadata: ~ # добавляет поля container.name, image и пр.
+
+output.logstash:
+  hosts: ["logstash:5044"]
+
+# нельзя добавлять два output, поэтому 2 разных конфига один напрямую пишет в elastic, другой в logstash

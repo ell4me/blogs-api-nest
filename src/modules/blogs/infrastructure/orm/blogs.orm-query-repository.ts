@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 
-import { BlogQueries, TSortDirection } from '../../../../types';
+import { BlogQueries } from '../../../../types';
 import { BlogViewDto } from '../../api/blogs.dto';
 import { PaginationViewDto } from '../../../../common/dto/pagination-view.dto';
+import { BLOGS_INDEX } from '../../application/constants';
 
 import { Blog } from './blog.entity';
 
@@ -12,37 +14,53 @@ import { Blog } from './blog.entity';
 export class BlogsOrmQueryRepository {
   constructor(
     @InjectRepository(Blog) private readonly blogsRepository: Repository<Blog>,
+    private readonly esClient: ElasticsearchService,
   ) {}
 
   async getAll({
     pageSize,
     pageNumber,
-    sortBy,
-    sortDirection,
     searchNameTerm,
   }: BlogQueries): Promise<PaginationViewDto<BlogViewDto>> {
     const offset = (pageNumber - 1) * pageSize;
 
-    const blogs = await this.blogsRepository
-      .createQueryBuilder()
-      .where('name ILIKE :searchNameTerm', {
-        searchNameTerm: `%${searchNameTerm}%`,
-      })
-      .orderBy(
-        `"${sortBy}"`,
-        String(sortDirection).toUpperCase() as TSortDirection,
-      )
-      .limit(pageSize)
-      .offset(offset)
-      .getMany();
+    const result = await this.esClient.search<Blog>({
+      index: BLOGS_INDEX,
+      from: offset,
+      size: pageSize,
+      query: searchNameTerm
+        ? {
+            multi_match: {
+              query: searchNameTerm,
+              fields: ['description', 'name'],
+            },
+          }
+        : { match_all: {} },
+    });
 
-    const totalCount = await this.getCountBlogsByFilter(searchNameTerm);
+    // const blogs = await this.blogsRepository
+    //   .createQueryBuilder()
+    //   .where('name ILIKE :searchNameTerm', {
+    //     searchNameTerm: `%${searchNameTerm}%`,
+    //   })
+    //   .orderBy(
+    //     `"${sortBy}"`,
+    //     String(sortDirection).toUpperCase() as TSortDirection,
+    //   )
+    //   .limit(pageSize)
+    //   .offset(offset)
+    //   .getMany();
+
+    // const totalCount = await this.getCountBlogsByFilter(searchNameTerm);
+
+    const totalCount = result.hits.total as { value: number; relation: string };
+    const blogs = result.hits.hits.map((hit) => hit._source) as Blog[];
 
     return {
       page: pageNumber,
-      pagesCount: Math.ceil(totalCount / pageSize),
+      pagesCount: Math.ceil(totalCount.value / pageSize),
       pageSize: pageSize,
-      totalCount,
+      totalCount: totalCount.value,
       items: blogs.map(
         ({ description, createdAt, name, websiteUrl, isMembership, id }) => ({
           id,

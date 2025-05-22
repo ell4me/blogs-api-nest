@@ -52,6 +52,7 @@ import {
   TExecuteCreateBlog,
 } from '../application/use-cases/create-blog.useCase';
 import { BlogsOrmQueryRepository } from '../infrastructure/orm/blogs.orm-query-repository';
+import { BlogsService } from '../application/blogs.service';
 
 import { BlogCreateDto, BlogUpdateDto, BlogViewDto } from './blogs.dto';
 
@@ -61,6 +62,7 @@ export class BlogsController {
   constructor(
     private readonly blogsQueryRepository: BlogsOrmQueryRepository,
     private readonly postsQueryRepository: PostsOrmQueryRepository,
+    private readonly blogsService: BlogsService,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -193,5 +195,10 @@ export class BlogsController {
     return this.commandBus.execute<DeletePostCommand, TExecuteDeletePost>(
       new DeletePostCommand(postId, blogId),
     );
+  }
+
+  @Get(`${ROUTERS_PATH.SA_BLOGS}/sync`)
+  async syncElastic(): Promise<void> {
+    return this.blogsService.syncAllBlogsToElastic();
   }
 }

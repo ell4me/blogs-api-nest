@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { PostsModule } from '../posts/posts.module';
+import { ElasticModule } from '../elastic/elastic.module';
 
 import { BlogsController } from './api/blogs.controller';
 import { BlogsQueryRepository } from './infrastructure/mongo/blogs.query-repository';
@@ -17,12 +18,14 @@ import { BlogsPgRepository } from './infrastructure/pg/blogs.pg-repository';
 import { BlogsOrmQueryRepository } from './infrastructure/orm/blogs.orm-query-repository';
 import { BlogsOrmRepository } from './infrastructure/orm/blogs.orm-repository';
 import { BlogsResolver } from './api/graphql/blogs.resolver';
+import { BlogsService } from './application/blogs.service';
 
 const useCases = [DeleteBlogUseCase, UpdateBlogUseCase, CreateBlogUseCase];
 const resolvers = [BlogsResolver];
 
 @Module({
   imports: [
+    ElasticModule,
     TypeOrmModule.forFeature([BlogEntity]),
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogsSchema }]),
     PostsModule,
@@ -35,6 +38,7 @@ const resolvers = [BlogsResolver];
     BlogsPgRepository,
     BlogsOrmRepository,
     BlogsOrmQueryRepository,
+    BlogsService,
     ...useCases,
     ...resolvers,
   ],

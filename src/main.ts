@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './modules/app/app.module';
 import { useAppSettings } from './common/helpers/useAppSettings';
 import { CommonConfig } from './common/config/common.config';
+import { winstonLogger } from './logger';
 
 async function bootstrap() {
   // из-за того, что нам нужно донастроить динамический AppModule, мы не можем сразу создавать приложение,
@@ -14,8 +15,12 @@ async function bootstrap() {
   // как бы вручную инжектим в инициализацию модуля нужную зависимость, донастраивая динамический модуль
   const DynamicAppModule = await AppModule.forRoot(commonConfig);
 
-  const app =
-    await NestFactory.create<NestExpressApplication>(DynamicAppModule);
+  const app = await NestFactory.create<NestExpressApplication>(
+    DynamicAppModule,
+    {
+      logger: winstonLogger,
+    },
+  );
   // Закрываем контекст, если он больше не нужен
   await appContext.close();
 
