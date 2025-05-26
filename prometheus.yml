@@ -1,0 +1,34 @@
+global:
+  scrape_interval: 15s        # как часто опрашивать цели (по умолчанию 15с)
+  evaluation_interval: 15s    # как часто вычислять правила (алерты/записи)
+  # scrape_timeout по умолчанию равен scrape_interval
+
+#alerting:
+  #alertmanagers:
+    #- static_configs:
+        #- targets: ['alertmanager:9093']   # адрес Alertmanager (если используем)
+
+#rule_files:
+  #- "alerts.yml"   # подключаем файл(ы) с правилами алертов
+
+scrape_configs:
+  # Сбор метрик самого Prometheus (метрики экспонируются на localhost:9090)
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  # Сбор системных метрик с Node Exporter
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    # Обычно node_exporter на локальном хосте, либо указать имя/IP хоста
+
+  # Сбор метрик нашего приложения (например, Node.js app)
+  - job_name: 'myapp'
+    static_configs:
+      - targets: ['blog:4000']
+    metrics_path: '/metrics'   # (опционально, по умолчанию и так /metrics)
+    # Можно добавить labels для группы целей:
+    relabel_configs:
+      - target_label: 'app'
+        replacement: 'blogs-api'

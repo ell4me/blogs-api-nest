@@ -1,9 +1,74 @@
 version: '3.7'
 
+volumes:
+  esdata:
+  prometheus_data: { }
+  grafana_data: { }
+
+# !!!!! Когда вы не указываете сеть, Compose создает сеть ПО УМОЛЧАНИЮ и подключает все сервисы к ней. !!!!!!
+# Создавая отдельную сеть (например, monitoring), ты ограничиваешь видимость только нужным сервисам.
+# Подключив сервисы к сети monitoring, ты разрешаешь им использовать Docker DNS и видеть остальных, кто подключен к этой сети.
+# ПОДКЛЮЧИЛ ПРОСТО ДЛЯ ПРИМЕРА, НА САМОМ ДЕЛЕ ОНА ТУТ НЕ НУЖНА И ТАК ВСЕ БУДЕТ РАБОТАТЬ, ТАК КАК СОЗДАСТСЯ СЕТЬ ПО УМОЛЧАНИЮ
+networks:
+  monitoring:
+    driver: bridge
+
 services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    # web.enable-lifecycle позволяет делать hot-reload конфига через API (опционально)
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    networks:
+      - monitoring
+    ports:
+      - "9100:9100"
+    # Примонтируем системные файлы, чтобы Node Exporter мог читать метрики хоста
+    # В Linux Docker нужно права --privileged или конкретные mounts:
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      # опционально: выключим некоторые метрики, которые могут не работать в контейнере
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    networks:
+      - monitoring
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # пароль для admin (поменяйте в продакшене!)
+    volumes:
+      - grafana_data:/var/lib/grafana
+
   elasticsearch:
     image: elasticsearch:8.18.1
     container_name: elasticsearch
+    networks:
+      - monitoring
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -16,6 +81,8 @@ services:
   kibana:
     image: kibana:8.18.1
     container_name: kibana
+    networks:
+      - monitoring
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
@@ -26,6 +93,8 @@ services:
   logstash:
     image: logstash:8.18.1
     container_name: logstash
+    networks:
+      - monitoring
     volumes:
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     ports:
@@ -36,6 +105,8 @@ services:
   filebeat:
     image: elastic/filebeat:8.18.1
     container_name: filebeat
+    networks:
+      - monitoring
     user: root
     volumes:
       - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
@@ -43,35 +114,38 @@ services:
     depends_on:
       - elasticsearch
 
-# НЕ БУДЕТ РАБОТАТЬ ТАК ЧТЕНИЕ ЛОГОВ НЕ ВОЗМОЖНО ЛОКАЛЬНО, ИЗ-ЗА ИЗОЛИРОВАННОСТИ КОНТЕЙНЕРОВ, ЛОГОВ И ТД
-# ПОЭТОМУ БУДЕТ ЧИТАТЬ ЛОГИ С ФАЙЛА В КОТОРЫЙ САМИ ЖЕ И БУДЕМ ПИСАТЬ
-#  filebeat-logstash:
-#    image: elastic/filebeat:8.18.1
-#    container_name: filebeat-logstash
-#    user: root
-#    volumes:
-#      - ./filebeat-logstash.yml:/usr/share/filebeat/filebeat.yml:ro
-#      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    depends_on:
-#      - logstash
-#
-#  filebeat-elastic:
-#    image: elastic/filebeat:8.18.1
-#    container_name: filebeat-elastic
-#    user: root
-#    volumes:
-#      - ./filebeat-elastic.yml:/usr/share/filebeat/filebeat.yml:ro
-#      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    depends_on:
-#      - elasticsearch
+  # НЕ БУДЕТ РАБОТАТЬ ТАК ЧТЕНИЕ ЛОГОВ НЕ ВОЗМОЖНО ЛОКАЛЬНО, ИЗ-ЗА ИЗОЛИРОВАННОСТИ КОНТЕЙНЕРОВ, ЛОГОВ И ТД
+  # Соответственно не сможем достучаться до файлов с логами
+  # ПОЭТОМУ БУДЕТ ЧИТАТЬ ЛОГИ С ФАЙЛА В КОТОРЫЙ САМИ ЖЕ И БУДЕМ ПИСАТЬ
+  #  filebeat-logstash:
+  #    image: elastic/filebeat:8.18.1
+  #    container_name: filebeat-logstash
+  #    user: root
+  #    volumes:
+  #      - ./filebeat-logstash.yml:/usr/share/filebeat/filebeat.yml:ro
+  #      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  #      - /var/run/docker.sock:/var/run/docker.sock
+  #    depends_on:
+  #      - logstash
+  #
+  #  filebeat-elastic:
+  #    image: elastic/filebeat:8.18.1
+  #    container_name: filebeat-elastic
+  #    user: root
+  #    volumes:
+  #      - ./filebeat-elastic.yml:/usr/share/filebeat/filebeat.yml:ro
+  #      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  #      - /var/run/docker.sock:/var/run/docker.sock
+  #    depends_on:
+  #      - elasticsearch
 
   # нельзя добавлять два output, поэтому 2 разных конфига filebeat один напрямую пишет в elastic, другой в logstash(просто для примера, что можно так и так)
 
   metricbeat:
     image: elastic/metricbeat:8.18.1
     container_name: metricbeat
+    networks:
+      - monitoring
     user: root
     volumes:
       - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro # ro - read-only
@@ -85,6 +159,8 @@ services:
   pg:
     image: postgres
     container_name: pg
+    networks:
+      - monitoring
     environment:
       - POSTGRES_DB=${PG_DB:-blog_db}
       - POSTGRES_USER=${PG_USER:-postgres}
@@ -96,6 +172,8 @@ services:
   pgAdmin:
     image: dpage/pgadmin4
     container_name: pgAdmin
+    networks:
+      - monitoring
     ports:
       - "5050:80"
     environment:
@@ -107,6 +185,8 @@ services:
 
   mongodb:
     container_name: mongodb
+    networks:
+      - monitoring
     image: mongo:6.0.2
     restart: always
     ports:
@@ -118,6 +198,8 @@ services:
 
   blog:
     container_name: blogs-api-nest
+    networks:
+      - monitoring
     volumes:
       - '.:/app'
       - '/app/node_modules'
@@ -126,7 +208,6 @@ services:
     restart: always
     ports:
       - '4000:4000'
-      - '9229:9229'
     environment:
       - PORT=4000
       - DB_USER=root
@@ -149,6 +230,3 @@ services:
     depends_on:
       - mongodb
       - pg
-
-volumes:
-  esdata:

@@ -10,6 +10,7 @@ import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
 } from '@apollo/server/plugin/landingPage/default';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { UsersModule } from '../users/users.module';
 import { PostsModule } from '../posts/posts.module';
@@ -26,6 +27,8 @@ import { QuizQuestionsModule } from '../quiz-game/quiz-questions/quiz-questions.
 import { PairsQuizQuestionModule } from '../quiz-game/pairs-quiz-question/pairs-quiz-question.module';
 import { PairsQuizAnswerModule } from '../quiz-game/pairs-quiz-answer/pairs-quiz-answer.module';
 import { PairsQuizModule } from '../quiz-game/pairs-quiz/pairs-quiz.module';
+import { MetricsModule } from '../../metrics/metrics.module';
+import { CounterInterceptor } from '../../common/interceptors/counter.interceptor';
 
 @Module({
   imports: [
@@ -98,6 +101,7 @@ import { PairsQuizModule } from '../quiz-game/pairs-quiz/pairs-quiz.module';
       }),
       inject: [CommonConfig],
     }),
+    MetricsModule,
     UsersModule,
     LikesPostModule,
     PostsModule,
@@ -110,6 +114,12 @@ import { PairsQuizModule } from '../quiz-game/pairs-quiz/pairs-quiz.module';
     QuizQuestionsModule,
     PairsQuizQuestionModule,
     PairsQuizAnswerModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CounterInterceptor,
+    },
   ],
 })
 export class AppModule {

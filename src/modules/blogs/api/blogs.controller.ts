@@ -70,6 +70,7 @@ export class BlogsController {
   async getAllBlogs(
     @Query() queries: BlogQueries,
   ): Promise<PaginationViewDto<BlogViewDto>> {
+    await new Promise((res) => setTimeout(res, 3000));
     return await this.blogsQueryRepository.getAll(queries);
   }
 
